@@ -1,0 +1,85 @@
+{
+    "universitas": "Universitas Ma'soem",
+    "fakultas": [
+        {
+            "nama_fakultas": "Fakultas Ekonomi Bisnis Islam",
+            "program_studi": [
+                {
+                    "kode": "PS",
+                    "nama_prodi": "Perbankan Syariah",
+                    "jenjang": "S1"
+                },
+                {
+                    "kode": "MBS",
+                    "nama_prodi": "Manajemen Bisnis Syariah",
+                    "jenjang": "S1"
+                }
+            ]
+        },
+        {
+            "nama_fakultas": "Fakultas Komputer",
+            "program_studi": [
+                {
+                    "kode": "SI",
+                    "nama_prodi": "Sistem Informasi",
+                    "jenjang": "S1"
+                },
+                {
+                    "kode": "BD",
+                    "nama_prodi": "Bisnis Digital",
+                    "jenjang": "S1"
+                },
+                {
+                    "kode": "KA",
+                    "nama_prodi": "Komputerisasi Akuntansi",
+                    "jenjang": "D3"
+                }
+            ]
+        },
+        {
+            "nama_fakultas": "Fakultas Pertanian",
+            "program_studi": [
+                {
+                    "kode": "AG",
+                    "nama_prodi": "Agribisnis",
+                    "jenjang": "S1"
+                },
+                {
+                    "kode": "TP",
+                    "nama_prodi": "Teknologi Pangan",
+                    "jenjang": "S1"
+                }
+            ]
+        },
+        {
+            "nama_fakultas": "Fakultas Keguruan dan Ilmu Pendidikan",
+            "program_studi": [
+                {
+                    "kode": "BI",
+                    "nama_prodi": "Pendidikan Bahasa Inggris",
+                    "jenjang": "S1"
+                },
+                {
+                    "kode": "BK",
+                    "nama_prodi": "Bimbingan dan Konseling",
+                    "jenjang": "S1"
+                }
+            ]
+        },
+        {
+            "nama_fakultas": "Fakultas Teknik",
+            "program_studi": [
+                {
+                    "kode": "TI",
+                    "nama_prodi": "Teknik Industri",
+                    "jenjang": "S1"
+                },
+                {
+                    "kode": "IF",
+                    "nama_prodi": "Informatika",
+                    "jenjang": "S1"
+                }
+            ]
+        }
+    ]
+}
