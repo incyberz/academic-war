@@ -9,37 +9,27 @@ class FakultasSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('fakultas')->insert([
-            [
-                'kode' => 'fkom',
-                'nama' => 'Fakultas Komputer',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'kode' => 'ftek',
-                'nama' => 'Fakultas Teknik',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'kode' => 'febi',
-                'nama' => 'Fakultas Ekonomi dan Bisnis Syariah',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'kode' => 'faperta',
-                'nama' => 'Fakultas Pertanian',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'kode' => 'fkip',
-                'nama' => 'Fakultas Keguruan dan Ilmu Pendidikan',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+        // Jika tabel tidak ada, skip seeding
+        if (!DB::getSchemaBuilder()->hasTable('fakultas')) {
+            return;
+        }
+
+        $data = [
+            ['fakultas' => 'FAPERTA', 'urutan' => 4, 'nama' => 'Fakultas Pertanian'],
+            ['fakultas' => 'FEBI',    'urutan' => 2, 'nama' => 'Fakultas Ekonomi dan Bisnis Syariah'],
+            ['fakultas' => 'FKIP',    'urutan' => 3, 'nama' => 'Fakultas Keguruan dan Ilmu Pendidikan'],
+            ['fakultas' => 'FKOM',    'urutan' => 1, 'nama' => 'Fakultas Komputer'],
+            ['fakultas' => 'FTEK',    'urutan' => 5, 'nama' => 'Fakultas Teknik'],
+        ];
+
+        foreach ($data as $row) {
+            DB::table('fakultas')->updateOrInsert(
+                ['fakultas' => $row['fakultas']],
+                [
+                    'urutan' => $row['urutan'],
+                    'nama'   => $row['nama'],
+                ]
+            );
+        }
     }
 }

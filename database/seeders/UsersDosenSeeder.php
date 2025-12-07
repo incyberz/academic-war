@@ -14,41 +14,43 @@ class UsersDosenSeeder extends Seeder
         // ==========================
         // 1. User + Dosen: insho
         // ==========================
-        $insho = User::create([
-            'username' => 'iin',
-            'email' => 'iin@gmail.com',
-            'name' => 'Kang Solihin',
-            'password' => Hash::make('iin'), // silakan ganti
-        ]);
+        $insho = User::updateOrCreate(
+            ['username' => 'iin'], // cek berdasarkan username
+            [
+                'email' => 'iin@gmail.com',
+                'name' => 'Kang Solihin',
+                'role' => 'dosen',
+                'password' => Hash::make('iin'),
+            ]
+        );
 
-        Dosen::create([
-            'nama' => 'Iin Sholihin',
-            'user_id' => $insho->id,
-            'prodi_id' => 5, // KA
-            'nidn' => null,
-            'gelar_depan' => null,
-            'gelar_belakang' => null,
-            'jabatan_fungsional' => null,
-        ]);
+        Dosen::updateOrCreate(
+            ['user_id' => $insho->id], // cek dosen berdasarkan user_id
+            [
+                'nama' => 'Iin Sholihin',
+                'prodi' => 'KA',
+            ]
+        );
 
         // ==========================
         // 2. User + Dosen: topan
         // ==========================
-        $topan = User::create([
-            'username' => 'topan',
-            'email' => 'topan@gmail.com',
-            'name' => 'Topan',
-            'password' => Hash::make('topan'), // silakan ganti
-        ]);
+        $topan = User::updateOrCreate(
+            ['username' => 'topan'], // cek based on username
+            [
+                'email' => 'topan@gmail.com',
+                'name' => 'Topan Trianto',
+                'role' => 'dosen',
+                'password' => Hash::make('topan'),
+            ]
+        );
 
-        Dosen::create([
-            'nama' => 'Topan Trianto',
-            'user_id' => $topan->id,
-            'prodi_id' => 4, // BD
-            'nidn' => null,
-            'gelar_depan' => null,
-            'gelar_belakang' => null,
-            'jabatan_fungsional' => null,
-        ]);
+        Dosen::updateOrCreate(
+            ['user_id' => $topan->id],
+            [
+                'nama' => 'Topan Trianto',
+                'prodi' => 'BD',
+            ]
+        );
     }
 }

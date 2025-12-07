@@ -12,8 +12,18 @@ class PesertaBimbinganSeeder extends Seeder
 {
     public function run(): void
     {
-        // User yang menunjuk
-        $insho = User::where('username', 'insho')->firstOrFail();
+        // Pastikan user 'insho' ada
+        $insho = User::firstOrCreate(
+            ['username' => 'insho'],
+            [
+                'name' => 'Super Admin',
+                'email' => 'insho@gmail.com',
+                'role' => 'super_admin',
+                'whatsapp' => '6287729007318',
+                'whatsapp_verified_at' => now(),
+                'password' => Hash::make('insho'),
+            ]
+        );
 
         $data = [
             [
@@ -58,10 +68,9 @@ class PesertaBimbinganSeeder extends Seeder
             $mhs = Mhs::firstOrCreate(
                 ['user_id' => $user->id],
                 [
-                    'nim' => strtoupper($m['username']) . '001', // contoh NIM sementara
+                    'nim' => strtoupper($m['username']) . '001',
                     'nama' => $m['nama'],
                     'angkatan' => $m['angkatan'],
-                    'prodi_id' => null,
                 ]
             );
 
@@ -70,7 +79,7 @@ class PesertaBimbinganSeeder extends Seeder
                 ['mhs_id' => $mhs->id],
                 [
                     'ditunjuk_oleh' => $insho->id,
-                    'jenis_bimbingan' => 'pkl', // placeholder (boleh disesuaikan)
+                    'jenis_bimbingan' => 'pkl',
                 ]
             );
         }

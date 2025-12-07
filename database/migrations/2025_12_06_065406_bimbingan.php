@@ -7,44 +7,69 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('bimbingan', function (Blueprint $t) {
-            $t->id();
+        // Buat tabel jika belum ada
+        if (!Schema::hasTable('bimbingan')) {
+            Schema::create('bimbingan', function (Blueprint $t) {
+                $t->id();
 
-            // FK ke pembimbing
-            $t->foreignId('pembimbing_id')
-                ->constrained('pembimbing')
-                ->cascadeOnDelete();
+                $t->foreignId('pembimbing_id')
+                    ->constrained('pembimbing')
+                    ->cascadeOnDelete();
 
-            // FK ke peserta bimbingan
-            $t->foreignId('peserta_bimbingan_id')
-                ->constrained('peserta_bimbingan')
-                ->cascadeOnDelete();
+                $t->foreignId('peserta_bimbingan_id')
+                    ->constrained('peserta_bimbingan')
+                    ->cascadeOnDelete();
 
-            // FK ke jenis_bimbingan (PK berupa string: pkl, skripsi, kkn)
-            $t->string('jenis_bimbingan', 20);
-            $t->foreign('jenis_bimbingan')
-                ->references('jenis_bimbingan')->on('jenis_bimbingan')
-                ->restrictOnDelete();
+                $t->string('jenis_bimbingan', 20);
+                $t->smallInteger('tahun_ajar')->unsigned();
 
-            // FK ke tahun ajar (smallint PK)
-            $t->smallInteger('tahun_ajar')->unsigned();
-            $t->foreign('tahun_ajar')
-                ->references('tahun_ajar')->on('tahun_ajar')
-                ->restrictOnDelete();
+                $t->string('status', 20)->default('aktif');
+                $t->text('catatan')->nullable();
 
-            // Status bimbingan
-            // contoh: 'aktif', 'selesai', 'dibatalkan'
-            $t->string('status', 20)->default('aktif');
+                $t->timestamps();
+            });
+        }
 
-            // Keterangan umum (optional)
-            $t->text('catatan')->nullable();
+        // Tambahkan foreign key dengan try-catch agar aman jika sudah ada
+        Schema::table('bimbingan', function (Blueprint $t) {
+            try {
+                if (Schema::hasColumn('bimbingan', 'jenis_bimbingan')) {
+                    $t->foreign('jenis_bimbingan')
+                        ->references('jenis_bimbingan')->on('jenis_bimbingan')
+                        ->restrictOnDelete();
+                }
+            } catch (\Throwable $e) {
+                // FK sudah ada → diamkan (auto resume)
+            }
 
-            $t->timestamps();
+            try {
+                if (Schema::hasColumn('bimbingan', 'tahun_ajar')) {
+                    $t->foreign('tahun_ajar')
+                        ->references('tahun_ajar')->on('tahun_ajar')
+                        ->restrictOnDelete();
+                }
+            } catch (\Throwable $e) {
+                // FK sudah ada → diamkan
+            }
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('bimbingan');
+        if (Schema::hasTable('bimbingan')) {
+            // drop FK dengan try-catch agar aman walau tidak ada
+            Schema::table('bimbingan', function (Blueprint $t) {
+                try {
+                    $t->dropForeign(['jenis_bimbingan']);
+                } catch (\Throwable $e) {
+                }
+                try {
+                    $t->dropForeign(['tahun_ajar']);
+                } catch (\Throwable $e) {
+                }
+            });
+
+            Schema::dropIfExists('bimbingan');
+        }
     }
 };

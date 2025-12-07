@@ -7,21 +7,33 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('dosen', function (Blueprint $t) {
-            $t->id();
-            $t->string('nama', 50);
-            $t->foreignId('user_id')
+        // Skip jika tabel sudah ada
+        if (Schema::hasTable('dosen')) {
+            return;
+        }
+
+        Schema::create('dosen', function (Blueprint $table) {
+            $table->id(); // bigint unsigned primary key
+
+            $table->string('nama', 50);
+
+            // FK ke users
+            $table->foreignId('user_id')
                 ->constrained('users')
-                ->restrictOnDelete(); // tidak nullable, dosen wajib punya user_id
-            $t->foreignId('prodi_id')
-                ->nullable()
-                ->constrained('prodi')
+                ->cascadeOnDelete();
+
+            // FK ke prodi (nullable)
+            $table->string('prodi', 10)->nullable();
+            $table->foreign('prodi')
+                ->references('prodi')->on('prodi')
                 ->restrictOnDelete();
-            $t->char('nidn', 16)->unique()->nullable();
-            $t->string('gelar_depan', 10)->nullable();
-            $t->string('gelar_belakang', 30)->nullable();
-            $t->string('jabatan_fungsional', 10)->nullable();
-            $t->timestamps();
+
+            $table->char('nidn', 16)->nullable();
+            $table->string('gelar_depan', 10)->nullable();
+            $table->string('gelar_belakang', 30)->nullable();
+            $table->string('jabatan_fungsional', 10)->nullable();
+
+            $table->timestamps();
         });
     }
 

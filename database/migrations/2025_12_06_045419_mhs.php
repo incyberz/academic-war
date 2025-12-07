@@ -15,11 +15,10 @@ return new class extends Migration {
                 ->constrained('users')
                 ->restrictOnDelete();
 
-            // FK ke prodi (nullable)
-            $t->foreignId('prodi_id')
-                ->nullable()
-                ->constrained('prodi')
-                ->nullOnDelete();
+            $t->string('prodi', 10)->nullable();
+            $t->foreign('prodi')
+                ->references('prodi')->on('prodi')
+                ->restrictOnDelete();
 
             // Data mahasiswa
             $t->string('nama');

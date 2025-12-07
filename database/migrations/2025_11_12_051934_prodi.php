@@ -7,15 +7,24 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('prodi', function (Blueprint $t) {
-            $t->id();
-            $t->foreignId('fakultas_id')
-                ->constrained('fakultas')
-                ->restrictOnDelete(); // ON DELETE RESTRICT
-            $t->string('nama');
-            $t->string('kode')->unique();
-            $t->string('jenjang'); // S1, D3, S2, dll
-            $t->timestamps();
+        // Skip jika tabel sudah ada
+        if (Schema::hasTable('prodi')) {
+            return;
+        }
+
+        Schema::create('prodi', function (Blueprint $table) {
+            $table->string('prodi', 10)->primary();
+            $table->tinyInteger('urutan')->nullable();
+
+            $table->string('fakultas', 10)->default('fkom');
+            $table->string('nama', 30);
+            $table->char('jenjang', 2)->nullable();
+
+            $table->timestamps();
+
+            // Index sesuai SQL
+            $table->index('jenjang');
+            $table->index('fakultas');
         });
     }
 

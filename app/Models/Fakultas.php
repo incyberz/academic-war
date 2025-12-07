@@ -2,26 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Fakultas extends Model
 {
-    use HasFactory;
-
+    // Nama tabel
     protected $table = 'fakultas';
 
-    protected $fillable = [
-        'nama',
-        'kode',
-    ];
+    // Primary key bukan id, melainkan string 'fakultas'
+    protected $primaryKey = 'fakultas';
 
-    /**
-     * Relasi ke Prodi
-     * Satu Fakultas memiliki banyak Prodi
-     */
-    public function prodi()
-    {
-        return $this->hasMany(Prodi::class);
-    }
+    // PK bertipe string, bukan increment
+    public $incrementing = false;
+    protected $keyType = 'string';
+
+    // Field yang boleh diisi
+    protected $fillable = [
+        'fakultas',
+        'urutan',
+        'nama',
+    ];
 }
