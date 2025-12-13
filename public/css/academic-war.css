@@ -1,0 +1,23 @@
+.debug{
+background: red;
+font-family: consolas,'Courier New', Courier, monospace;
+}
+
+.img_role{
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  transition: .3s;
+  object-fit: cover;
+}
+
+.img_role:hover{
+  transform: scale(1.1);
+}
+
+.blok_roles{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
