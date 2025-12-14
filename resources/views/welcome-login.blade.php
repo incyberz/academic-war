@@ -29,7 +29,7 @@ $roles = [
 @endphp
 
 <div class="text-center flex flex-col gap-4">
-  <h1 class="text-2xl font-bold mb-2 text-gray-800 dark:text-gray-100">
+  <h1 class="text-2xl font-bold mb-2 ">
     Welcome!
   </h1>
   <p class="text-sm text-gray-600 dark:text-gray-400 mb-8">
@@ -38,7 +38,7 @@ $roles = [
 
   <div class="blok_roles">
     @foreach ($roles as $role)
-    <a href="{{ url('/login/' . $role['key']) }}" class="group flex-shrink-0">
+    <a href="{{ url('/login?role=' . $role['key']) }}" class="group flex-shrink-0">
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition p-4 w-36 text-center">
 
         <img src="{{ asset($role['image']) }}" alt="{{ $role['label'] }}" class="img_role mx-auto">

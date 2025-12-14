@@ -1,0 +1,97 @@
+/* =========================
+   BASE (sudah ada)
+   ========================= */
+.btn-fire {
+  position: relative;
+  padding: 12px 40px;
+  color: #fff;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background-color: rgba(10, 10, 10, 0.6);
+  border: 1px solid rgba(255, 70, 0, 0.25);
+  border-radius: 6px;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.btn-fire::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  left: -100%;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 70, 0, 0.25),
+      transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-fire:hover::before {
+  left: 100%;
+}
+
+.btn-fire:hover {
+  background-color: rgba(20, 20, 20, 0.85);
+  border-color: rgba(255, 70, 0, 0.7);
+  box-shadow: 0 0 20px rgba(255, 70, 0, 0.6);
+  transform: scale(1.05);
+}
+
+/* =========================
+   SMALL VERSION
+   ========================= */
+.btn-fire-sm {
+  padding: 8px 22px;
+  font-size: 0.75rem;
+  letter-spacing: 1.5px;
+  border-radius: 5px;
+}
+
+.btn-fire-sm:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 12px rgba(255, 70, 0, 0.45);
+}
+
+/* =========================
+   ACTIVE / SELECTED STATE
+   ========================= */
+.btn-fire-active {
+  background-color: rgba(30, 30, 30, 0.95);
+  border-color: rgba(255, 70, 0, 0.9);
+  box-shadow:
+    0 0 25px rgba(255, 70, 0, 0.8),
+    inset 0 0 12px rgba(255, 70, 0, 0.35);
+  transform: scale(1.04);
+}
+
+.btn-fire-active::before {
+  left: 0;
+  background: linear-gradient(90deg,
+      rgba(255, 70, 0, 0.2),
+      rgba(255, 120, 0, 0.35),
+      rgba(255, 70, 0, 0.2));
+}
+
+/* =========================
+   ACTIVE + HOVER (STABLE)
+   ========================= */
+.btn-fire-active:hover {
+  transform: scale(1.06);
+  box-shadow:
+    0 0 35px rgba(255, 70, 0, 0.9),
+    inset 0 0 16px rgba(255, 70, 0, 0.4);
+}
+
+/* =========================
+   JIKA ISINYA HANYA EMOJI / ICON
+   ========================= */
+.btn-fire-icon {
+  font-size: 150% !important;
+  padding: 2px 5px !important;
+}

@@ -30,52 +30,56 @@
 
     <div class="blok_menu">
         @foreach ($menus as $menu)
-        {{-- <button class="menu-item-outline {{ $menu['active'] ? 'active' : '' }}"
-            onclick="showSection('{{ $menu['key'] }}')"> --}}
-            <button class="btn_nav menu-item-outline {{ $menu['active'] ? 'active' : '' }}"
-                id="btn_nav--{{$menu['key']}}">
-                <span class="icon">{{ $menu['icon'] }}</span>
-                <span class="label">{{ $menu['label'] }}</span>
-            </button>
-            @endforeach
-            <script>
-                $(function(){
-                    $('.btn_nav').click(function(){
-                        let tid = $(this).prop('id');
-                        let rid = tid.split('--');
-                        let key = rid[1];
-                        $('.spa-section').slideUp();
-                        $('#'+key).slideDown();
-                        $('.btn_nav').removeClass('active');
-                        $(this).addClass('active');
-                    })
-                })
-            </script>
+        @php $id = 'btn_nav--'.$menu['key']; @endphp
+        <button class="btn_nav btn-fire btn-fire-icon" id="{{$id}}">
+            <span class="icon">{{ $menu['icon'] }}</span>
+            <span class="hide label">{{ $menu['label'] }}</span>
+        </button>
+        @endforeach
+        <script>
+            $(function(){
+                $('.btn_nav').click(function(){
+                    let tid = $(this).prop('id');
+                    let rid = tid.split('--');
+                    let key = rid[1];
+                    $('.spa-section').slideUp();
+                    $('#'+key).slideDown();
+                    $('.btn_nav').removeClass('btn-fire-active');
+                    $(this).addClass('btn-fire-active');
+
+                    localStorage.setItem('active_menu', key);
+                });
+
+                const lastActive = localStorage.getItem('active_menu');
+                console.log(lastActive);
+                
+                if (lastActive) {
+                // setActive(lastActive);
+                $('#btn_nav--'+lastActive).addClass('btn-fire-active');
+                $('.spa-section').hide();
+                $('#'+lastActive).slideDown();
+                }
+            })
+        </script>
     </div>
 
     {{-- SPA Sections --}}
     <div class="blok_content">
 
-        <div id="login" class="spa-section active">
-
+        <div id="login" class="spa-section">
             @include('welcome-login')
-
-
         </div>
 
         <div id="leaderboard" class="spa-section">
-            <h2>🏆 Leaderboard</h2>
-            <p>Fitur ini akan segera hadir.</p>
+            @include('leaderboard')
         </div>
 
         <div id="help" class="spa-section">
-            <h2>❓ Help</h2>
-            <p>Panduan penggunaan Academic War.</p>
+            @include('help')
         </div>
 
         <div id="about" class="spa-section">
-            <h2>ℹ️ About</h2>
-            <p>Academic War — Gamified Learning System.</p>
+            @include('about')
         </div>
 
     </div>
