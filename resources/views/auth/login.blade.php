@@ -1,3 +1,6 @@
+@php
+$role = $_GET['role'] ?? 'mhs';
+@endphp
 <x-guest-layout>
     <style>
         .blok_login {
@@ -7,11 +10,13 @@
     </style>
 
     <div class="blok_login">
-        <h1 class="text-2xl font-bold mb-2 text-center mb-4">
+        <h1 class="text-2xl font-bold text-center mb-4">
             Lets Login!
         </h1>
 
         <x-auth-session-status class="mb-4" :status="session('status')" />
+
+        <img src="{{ asset('img/roles/'.$role.'.png')}}" alt="role image">
 
         <form method="POST" action="{{ route('login') }}">
             @csrf
@@ -52,28 +57,13 @@
                 </a>
                 @endif
 
-                <x-primary-button class="ms-3">
-                    {{ __('Log in') }}
+                <x-primary-button class="ms-3" id="btn_login">
+                    {{ __('Log in '.$role) }}
                 </x-primary-button>
             </div>
         </form>
 
-        <div class="debug">
-            <div>DevLogin</div>
-            <button>As Mhs</button>
-            <button>As Dosen</button>
-            <button>As Akademik</button>
-            <button id='insho@gmail.com--insho' class="btn_login_as btn btn-primary w-100 mb-1">As
-                SuperAdmin</button>
+        @include('auth.devlogin')
 
-            <script>
-                $(function(){
-                    $('.btn_login_as').click(function(){
-                        console.log($(this).prop('id'));
-                        
-                    })
-                })
-            </script>
-        </div>
     </div>
 </x-guest-layout>

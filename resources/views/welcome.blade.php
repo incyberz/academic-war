@@ -84,7 +84,6 @@
 
     </div>
 
-
     <style>
         .blok_menu {
             display: flex;

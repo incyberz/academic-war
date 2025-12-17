@@ -23,6 +23,9 @@ tmp/
 doc/
 html/
 
+test*.*
+tmp*.*
+*_old.*
 
 *.doc
 *.xls

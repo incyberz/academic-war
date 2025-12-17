@@ -1,1 +1,1 @@
-<img src="{{ asset('img/header-logo-text.png') }}" alt="Academic War" class="h-16 w-auto mx-auto">
+<img src="{{ asset('img/header-logo-text.png') }}" alt="Academic War" class="h-12 w-auto mx-auto">
