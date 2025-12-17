@@ -17,6 +17,12 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('username', 20)->unique();
 
+            $table->foreignId('role_id')
+                ->constrained('role')
+                ->restrictOnDelete()
+                ->nullable();
+
+
             $table->string('whatsapp', 15)->nullable();
             $table->timestamp('whatsapp_verified_at')->nullable();
             $table->enum('gender', ['L', 'P'])->nullable();

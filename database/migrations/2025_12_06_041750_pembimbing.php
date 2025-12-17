@@ -15,9 +15,6 @@ return new class extends Migration {
                 ->constrained('dosen')
                 ->restrictOnDelete();
 
-            // Jenis pembimbing: pkl, skripsi, magang, tugasakhir, dll
-            $t->string('jenis_bimbingan', 30);
-
             // Surat Tugas
             $t->string('nomor_surat')->nullable(); // nomor surat tugas
             $t->string('file_surat')->nullable();  // path file surat tugas

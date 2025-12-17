@@ -15,16 +15,16 @@ class FakultasSeeder extends Seeder
         }
 
         $data = [
-            ['fakultas' => 'FAPERTA', 'urutan' => 4, 'nama' => 'Fakultas Pertanian'],
-            ['fakultas' => 'FEBI',    'urutan' => 2, 'nama' => 'Fakultas Ekonomi dan Bisnis Syariah'],
-            ['fakultas' => 'FKIP',    'urutan' => 3, 'nama' => 'Fakultas Keguruan dan Ilmu Pendidikan'],
-            ['fakultas' => 'FKOM',    'urutan' => 1, 'nama' => 'Fakultas Komputer'],
-            ['fakultas' => 'FTEK',    'urutan' => 5, 'nama' => 'Fakultas Teknik'],
+            ['kode' => 'FAPERTA', 'urutan' => 4, 'nama' => 'Fakultas Pertanian'],
+            ['kode' => 'FEBI',    'urutan' => 2, 'nama' => 'Fakultas Ekonomi dan Bisnis Syariah'],
+            ['kode' => 'FKIP',    'urutan' => 3, 'nama' => 'Fakultas Keguruan dan Ilmu Pendidikan'],
+            ['kode' => 'FKOM',    'urutan' => 1, 'nama' => 'Fakultas Komputer'],
+            ['kode' => 'FTEK',    'urutan' => 5, 'nama' => 'Fakultas Teknik'],
         ];
 
         foreach ($data as $row) {
             DB::table('fakultas')->updateOrInsert(
-                ['fakultas' => $row['fakultas']],
+                ['kode' => $row['kode']], // gunakan field kode sebagai unique identifier
                 [
                     'urutan' => $row['urutan'],
                     'nama'   => $row['nama'],

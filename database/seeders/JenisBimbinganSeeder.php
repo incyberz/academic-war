@@ -9,26 +9,37 @@ class JenisBimbinganSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('jenis_bimbingan')->upsert(
+        // Pastikan tabel ada
+        if (!DB::getSchemaBuilder()->hasTable('jenis_bimbingan')) {
+            return;
+        }
+
+        $data = [
             [
-                [
-                    'jenis_bimbingan' => 'pkl',
-                    'nama' => 'Pembimbingan PKL',
-                    'deskripsi' => 'Pembimbingan untuk kegiatan Praktik Kerja Lapangan.',
-                ],
-                [
-                    'jenis_bimbingan' => 'skripsi',
-                    'nama' => 'Pembimbingan Skripsi',
-                    'deskripsi' => 'Pembimbingan untuk penyusunan skripsi mahasiswa.',
-                ],
-                [
-                    'jenis_bimbingan' => 'kkn',
-                    'nama' => 'Pembimbingan KKN',
-                    'deskripsi' => 'Pembimbingan untuk kegiatan Kuliah Kerja Nyata.',
-                ],
+                'kode' => 'pkl',
+                'nama' => 'Pembimbingan PKL',
+                'deskripsi' => 'Pembimbingan untuk kegiatan Praktik Kerja Lapangan.',
             ],
-            ['jenis_bimbingan'], // primary key
-            ['nama', 'deskripsi'] // update fields if exists
-        );
+            [
+                'kode' => 'skripsi',
+                'nama' => 'Pembimbingan Skripsi',
+                'deskripsi' => 'Pembimbingan untuk penyusunan skripsi mahasiswa.',
+            ],
+            [
+                'kode' => 'kkn',
+                'nama' => 'Pembimbingan KKN',
+                'deskripsi' => 'Pembimbingan untuk kegiatan Kuliah Kerja Nyata.',
+            ],
+        ];
+
+        foreach ($data as $row) {
+            DB::table('jenis_bimbingan')->updateOrInsert(
+                ['kode' => $row['kode']], // identifier unik
+                [
+                    'nama' => $row['nama'],
+                    'deskripsi' => $row['deskripsi'],
+                ]
+            );
+        }
     }
 }

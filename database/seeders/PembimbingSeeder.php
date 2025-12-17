@@ -11,44 +11,38 @@ class PembimbingSeeder extends Seeder
 {
     public function run(): void
     {
-        /** ----------------------------
-         *  Pembimbing: iin
-         * ----------------------------*/
-        $userIin = User::where('username', 'iin')->first();
-        if ($userIin) {
-            $dosenIin = Dosen::where('user_id', $userIin->id)->first();
+        $pembimbingData = [
+            'iin' => 'skripsi',
+            'topan' => 'skripsi',
+        ];
 
-            if ($dosenIin) {
-                Pembimbing::create([
-                    'dosen_id'       => $dosenIin->id,
-                    'jenis_bimbingan' => 'skripsi',
-                    'nomor_surat'    => null,
-                    'file_surat'     => null,
-                    'tanggal_surat'  => null,
-                    'catatan'        => 'Pembimbing aktif.',
-                    'is_active'      => true,
-                ]);
+        foreach ($pembimbingData as $username => $jenisBimbingan) {
+            $user = User::where('username', $username)->first();
+
+            if (! $user) {
+                continue; // skip jika user tidak ditemukan
             }
-        }
 
-        /** ----------------------------
-         *  Pembimbing: topan
-         * ----------------------------*/
-        $userTopan = User::where('username', 'topan')->first();
-        if ($userTopan) {
-            $dosenTopan = Dosen::where('user_id', $userTopan->id)->first();
+            $dosen = Dosen::where('user_id', $user->id)->first();
 
-            if ($dosenTopan) {
-                Pembimbing::create([
-                    'dosen_id'       => $dosenTopan->id,
-                    'jenis_bimbingan' => 'skripsi',
-                    'nomor_surat'    => null,
-                    'file_surat'     => null,
-                    'tanggal_surat'  => null,
-                    'catatan'        => 'Pembimbing aktif.',
-                    'is_active'      => true,
-                ]);
+            if (! $dosen) {
+                continue; // skip jika dosen tidak ditemukan
             }
+
+            // Cek jika sudah ada agar tidak duplikasi
+            Pembimbing::updateOrCreate(
+                [
+                    'dosen_id' => $dosen->id,
+                    'jenis_bimbingan' => $jenisBimbingan,
+                ],
+                [
+                    'nomor_surat'   => null,
+                    'file_surat'    => null,
+                    'tanggal_surat' => null,
+                    'catatan'       => 'Pembimbing aktif.',
+                    'is_active'     => true,
+                ]
+            );
         }
     }
 }

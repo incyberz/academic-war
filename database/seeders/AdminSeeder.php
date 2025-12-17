@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Admin;
+use App\Models\Fakultas;
+use App\Models\Prodi;
 
 class AdminSeeder extends Seeder
 {
@@ -50,9 +52,26 @@ class AdminSeeder extends Seeder
         ];
 
         foreach ($admins as $a) {
+            // Ambil ID fakultas sesuai kode fakultas
+            $fakultas_id = Fakultas::where('fakultas', $a['fakultas'])->value('id');
+            $prodi_id = null;
+            if ($a['prodi']) {
+                $prodi_id = Prodi::where('prodi', $a['prodi'])->value('id');
+            }
+
             Admin::firstOrCreate(
-                ['username' => $a['username']],  // Cegah duplikasi jika seeder dijalankan berulang
-                $a
+                ['username' => $a['username']],  // Cegah duplikasi
+                [
+                    'password' => $a['password'],
+                    'email' => $a['email'],
+                    'name' => $a['name'],
+                    'gender' => $a['gender'],
+                    'fakultas_id' => $fakultas_id,
+                    'prodi_id' => $prodi_id,
+                    'whatsapp' => $a['whatsapp'],
+                    'whatsapp_verified_at' => $a['whatsapp_verified_at'],
+                    'jabatan' => $a['jabatan'],
+                ]
             );
         }
     }

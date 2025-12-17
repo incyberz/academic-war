@@ -6,15 +6,16 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Dosen;
+use Illuminate\Support\Facades\DB;
 
 class UsersDosenSeeder extends Seeder
 {
     public function run(): void
     {
         // ==========================
-        // 1. User + Dosen: insho
+        // 1. User + Dosen: iin
         // ==========================
-        $insho = User::updateOrCreate(
+        $iinUser = User::updateOrCreate(
             ['username' => 'iin'], // cek berdasarkan username
             [
                 'email' => 'iin@gmail.com',
@@ -25,18 +26,18 @@ class UsersDosenSeeder extends Seeder
         );
 
         Dosen::updateOrCreate(
-            ['user_id' => $insho->id], // cek dosen berdasarkan user_id
+            ['user_id' => $iinUser->id], // cek dosen berdasarkan user_id
             [
                 'nama' => 'Iin Sholihin',
-                'prodi' => 'KA',
+                'prodi' => DB::table('prodi')->where('prodi', 'KA')->value('id'), // FK ke prodi by id
             ]
         );
 
         // ==========================
         // 2. User + Dosen: topan
         // ==========================
-        $topan = User::updateOrCreate(
-            ['username' => 'topan'], // cek based on username
+        $topanUser = User::updateOrCreate(
+            ['username' => 'topan'],
             [
                 'email' => 'topan@gmail.com',
                 'name' => 'Topan Trianto',
@@ -46,10 +47,10 @@ class UsersDosenSeeder extends Seeder
         );
 
         Dosen::updateOrCreate(
-            ['user_id' => $topan->id],
+            ['user_id' => $topanUser->id],
             [
                 'nama' => 'Topan Trianto',
-                'prodi' => 'BD',
+                'prodi' => DB::table('prodi')->where('prodi', 'BD')->value('id'), // FK ke prodi by id
             ]
         );
     }

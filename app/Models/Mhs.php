@@ -20,34 +20,21 @@ class Mhs extends Model
         'status',
     ];
 
-    /**
-     * Relasi ke User
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Relasi ke Prodi
-     */
     public function prodi()
     {
-        return $this->belongsTo(Prodi::class);
+        return $this->belongsTo(Prodi::class, 'prodi', 'prodi');
     }
 
-    /**
-     * Mahasiswa bisa beberapa kali menjadi peserta bimbingan.
-     * Contoh: PKL, Skripsi, KKN, dll.
-     */
     public function pesertaBimbingan()
     {
         return $this->hasMany(PesertaBimbingan::class, 'mhs_id');
     }
 
-    /**
-     * Riwayat bimbingan detail (jika tabel bimbingan nanti dibuat)
-     */
     public function bimbingan()
     {
         return $this->hasMany(Bimbingan::class, 'mhs_id');

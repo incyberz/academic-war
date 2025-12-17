@@ -12,7 +12,7 @@ class PesertaBimbinganSeeder extends Seeder
 {
     public function run(): void
     {
-        // Pastikan user 'insho' ada
+        // Pastikan user 'insho' ada (super admin)
         $insho = User::firstOrCreate(
             ['username' => 'insho'],
             [
@@ -25,36 +25,16 @@ class PesertaBimbinganSeeder extends Seeder
             ]
         );
 
-        $data = [
-            [
-                'username' => 'ahmad',
-                'nama' => 'Ahmad Firdaus',
-                'email' => 'ahmad@gmail.com',
-                'angkatan' => 2022,
-            ],
-            [
-                'username' => 'salwa',
-                'nama' => 'Salwa Fatimah',
-                'email' => 'salwa@gmail.com',
-                'angkatan' => 2022,
-            ],
-            [
-                'username' => 'yusuf',
-                'nama' => 'Yusuf Ammar',
-                'email' => 'yusuf@gmail.com',
-                'angkatan' => 2022,
-            ],
-            [
-                'username' => 'khalid',
-                'nama' => 'Khalid Ibrahim',
-                'email' => 'khalid@gmail.com',
-                'angkatan' => 2022,
-            ],
+        $mahasiswaData = [
+            ['username' => 'ahmad', 'nama' => 'Ahmad Firdaus', 'email' => 'ahmad@gmail.com', 'angkatan' => 2022],
+            ['username' => 'salwa', 'nama' => 'Salwa Fatimah', 'email' => 'salwa@gmail.com', 'angkatan' => 2022],
+            ['username' => 'yusuf', 'nama' => 'Yusuf Ammar', 'email' => 'yusuf@gmail.com', 'angkatan' => 2022],
+            ['username' => 'khalid', 'nama' => 'Khalid Ibrahim', 'email' => 'khalid@gmail.com', 'angkatan' => 2022],
         ];
 
-        foreach ($data as $m) {
+        foreach ($mahasiswaData as $m) {
 
-            // 1. Insert user
+            // 1. Buat user jika belum ada
             $user = User::firstOrCreate(
                 ['username' => $m['username']],
                 [
@@ -64,22 +44,27 @@ class PesertaBimbinganSeeder extends Seeder
                 ]
             );
 
-            // 2. Insert mahasiswa
+            // 2. Buat record mahasiswa
             $mhs = Mhs::firstOrCreate(
                 ['user_id' => $user->id],
                 [
-                    'nim' => strtoupper($m['username']) . '001',
                     'nama' => $m['nama'],
+                    'nim' => strtoupper($m['username']) . '001',
                     'angkatan' => $m['angkatan'],
+                    'status_mhs_id' => 1, // default aktif
                 ]
             );
 
-            // 3. Insert peserta bimbingan
+            // 3. Buat peserta bimbingan jika belum ada
             PesertaBimbingan::firstOrCreate(
-                ['mhs_id' => $mhs->id],
+                [
+                    'mhs_id' => $mhs->id,
+                    'jenis_bimbingan' => 'pkl',
+                ],
                 [
                     'ditunjuk_oleh' => $insho->id,
-                    'jenis_bimbingan' => 'pkl',
+                    'tanggal_penunjukan' => now(),
+                    'status_peserta' => 'aktif',
                 ]
             );
         }

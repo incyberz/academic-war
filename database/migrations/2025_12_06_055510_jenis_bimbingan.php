@@ -9,14 +9,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('jenis_bimbingan', function (Blueprint $table) {
-            // PK berupa kode, misalnya: pkl, skripsi, kkn
-            $table->string('jenis_bimbingan', 20)->primary();
+            $table->id(); // primary key numeric default
 
-            // nama lengkap jenis bimbingan
-            $table->string('nama', 100);
-
-            // deskripsi opsional
-            $table->text('deskripsi')->nullable();
+            $table->string('kode', 20)->unique(); // kode jenis bimbingan, misal pkl, skripsi, kkn
+            $table->string('nama', 100);          // nama lengkap jenis bimbingan
+            $table->text('deskripsi')->nullable(); // deskripsi opsional
 
             $table->timestamps();
         });

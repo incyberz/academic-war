@@ -9,9 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('jenjang', function (Blueprint $table) {
-            $table->char('jenjang', 2)->primary();        // PK: D3, S1, S2, S3
-            $table->string('nama', 30);                   // Nama jenjang
-            $table->tinyInteger('jumlah_semester');       // Semester normal
+            $table->id(); // primary key numeric default (bigint unsigned)
+            $table->string('kode', 2)->unique(); // kode jenjang, misal D3, S1, S2, S3
+            $table->string('nama', 30);           // Nama jenjang
+            $table->tinyInteger('jumlah_semester'); // Semester normal
             $table->timestamps();
         });
     }

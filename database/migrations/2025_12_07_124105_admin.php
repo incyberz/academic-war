@@ -7,13 +7,10 @@ use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('admins', function (Blueprint $table) {
-            $table->id();
+            $table->id(); // PK numeric default
             $table->string('name');
             $table->string('email')->unique();
             $table->string('username', 20)->unique();
@@ -29,30 +26,29 @@ return new class extends Migration
 
             $table->enum('status', [1, -1])->default(1);
 
-            // relasi ke fakultas (nullable)
-            $table->string('fakultas', 10)->nullable();
-            $table->foreign('fakultas')->references('fakultas')->on('fakultas')->restrictOnDelete();
+            // relasi ke fakultas (numeric FK)
+            $table->foreignId('fakultas_id')->nullable()
+                ->constrained('fakultas')
+                ->restrictOnDelete();
 
-            $table->string('prodi', 10)->nullable();
-            $table->foreign('prodi')->references('prodi')->on('prodi')->restrictOnDelete();
+            // relasi ke prodi (numeric FK)
+            $table->foreignId('prodi_id')->nullable()
+                ->constrained('prodi')
+                ->restrictOnDelete();
 
             // jabatan admin
             $table->string('jabatan', 50)->nullable();
 
             // field khusus admin
-            $table->string('nidn', 20)->nullable(); // kalau admin kampus kadang dosen juga
-            $table->string('nik', 20)->nullable();  // opsional
+            $table->string('nidn', 20)->nullable(); // kadang admin juga dosen
+            $table->string('nik', 20)->nullable();
             $table->text('catatan')->nullable();
             $table->date('awal_bertugas')->default(DB::raw('CURRENT_DATE'));
-
 
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('admins');

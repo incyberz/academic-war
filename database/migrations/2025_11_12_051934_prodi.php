@@ -13,10 +13,13 @@ return new class extends Migration {
         }
 
         Schema::create('prodi', function (Blueprint $table) {
-            $table->string('prodi', 10)->primary();
+            $table->id(); // primary key default numeric
+            $table->string('prodi', 10)->unique(); // kode prodi, unik tapi bukan PK
             $table->tinyInteger('urutan')->nullable();
 
-            $table->string('fakultas', 10)->default('fkom');
+            // FK fakultas (numeric, asumsi tabel fakultas sudah pakai PK id)
+            $table->foreignId('fakultas_id')->default(1)->constrained('fakultas');
+
             $table->string('nama', 30);
             $table->char('jenjang', 2)->nullable();
 
@@ -24,7 +27,7 @@ return new class extends Migration {
 
             // Index sesuai SQL
             $table->index('jenjang');
-            $table->index('fakultas');
+            $table->index('fakultas_id');
         });
     }
 

@@ -13,19 +13,19 @@ return new class extends Migration {
         }
 
         Schema::create('dosen', function (Blueprint $table) {
-            $table->id(); // bigint unsigned primary key
+            $table->id(); // primary key bigint unsigned
 
             $table->string('nama', 50);
 
-            // FK ke users
+            // FK ke users (numeric)
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->cascadeOnDelete();
 
-            // FK ke prodi (nullable)
-            $table->string('prodi', 10)->nullable();
-            $table->foreign('prodi')
-                ->references('prodi')->on('prodi')
+            // FK ke prodi (numeric)
+            $table->foreignId('prodi_id')
+                ->nullable()
+                ->constrained('prodi')
                 ->restrictOnDelete();
 
             $table->char('nidn', 16)->nullable();
