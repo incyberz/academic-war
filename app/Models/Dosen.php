@@ -25,7 +25,6 @@ class Dosen extends Model
 
     /**
      * Relasi ke User
-     * 1 dosen dimiliki oleh 1 user (belongsTo)
      */
     public function user()
     {
@@ -34,7 +33,6 @@ class Dosen extends Model
 
     /**
      * Relasi ke Prodi
-     * 1 dosen berada di 1 prodi (belongsTo)
      */
     public function prodi()
     {

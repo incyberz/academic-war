@@ -13,7 +13,6 @@ class Pembimbing extends Model
 
     protected $fillable = [
         'dosen_id',
-        'jenis_bimbingan',
         'nomor_surat',
         'file_surat',
         'tanggal_surat',
@@ -27,6 +26,6 @@ class Pembimbing extends Model
      */
     public function dosen()
     {
-        return $this->belongsTo(Dosen::class);
+        return $this->belongsTo(Dosen::class, 'dosen_id');
     }
 }

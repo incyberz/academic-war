@@ -9,9 +9,10 @@
   {{-- UI untuk Bimbingan Skripsi --}}
   <div class="space-y-4">
 
-    {{-- Bimbingan PKL --}}
+    @php $nama_bimbingan = 'PKL'; @endphp
+
     <div class="p-2 md:p-3 lg:p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-      <h4 class="font-semibold text-md mb-2">📝 Bimbingan PKL</h4>
+      <h4 class="font-semibold text-md mb-2">📝 Bimbingan {{$nama_bimbingan }}</h4>
 
       @php
       $bimbinganPkl = [
@@ -70,11 +71,13 @@
       'progress' => 75,
       ],
       ];
+      $bimbinganPkl = []; // debug tidak ada peserta bimbingan PKL
       @endphp
+
+      @if(count($bimbinganPkl) > 0)
 
       <div class="space-y-2">
         <x-grid>
-
           @foreach($bimbinganPkl as $b)
           <div class="flex items-center p-2 md:p-3 rounded-lg border border-gray-200 dark:border-gray-700
                           hover:bg-gray-50 dark:hover:bg-gray-800 transition gap-3">
@@ -149,6 +152,27 @@
           @endforeach
         </x-grid>
       </div>
+
+      <div>
+        <p class="text-xs text-gray-600 dark:text-gray-400 mt-2">
+          * Klik ikon WhatsApp untuk mengirim pengingat atau pembatalan bimbingan kepada mahasiswa.
+        </p>
+      </div>
+      @else
+      <x-error>
+        Belum ada peserta bimbingan {{$nama_bimbingan }}.
+      </x-error>
+      @endif
+
+      {{-- Tambah Peserta Bimbingan --}}
+      <div class="text-end">
+        <a href="">
+          <x-btn-add>
+            Add Peserta Bimbingan {{$nama_bimbingan }}
+          </x-btn-add>
+        </a>
+      </div>
+
     </div>
 
     {{-- Bimbingan Skripsi --}}
@@ -170,6 +194,8 @@
       'status' => 'Besok',
       ],
       ];
+
+      $bimbinganSkripsi = []; // debug tidak ada peserta bimbingan skripsi
       @endphp
 
       <div class="space-y-2">
@@ -197,6 +223,44 @@
       </div>
     </div>
 
+
+    @if(1)
+    <div class="p-4 rounded-lg
+                        border border-emerald-200 dark:border-emerald-700
+                        bg-emerald-50 dark:bg-emerald-900/30">
+
+      <div>
+        <p class="text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+          Bimbingan Baru Diizinkan
+        </p>
+        <p class="text-xs text-emerald-600 dark:text-emerald-400">
+          Anda dapat menambahkan bimbingan pada TA berjalan.
+        </p>
+      </div>
+
+      <div>
+        <a href="{{ route('jenis-bimbingan.index') }}">
+          <x-btn-add>
+            Add Bimbingan Baru
+          </x-btn-add>
+        </a>
+      </div>
+    </div>
+    @else
+    <div class="p-4 rounded-lg
+                      border border-gray-300 dark:border-gray-600
+                      bg-gray-50 dark:bg-gray-800">
+
+      <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">
+        Create Bimbingan Dibatasi
+      </p>
+      <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+        Pembuatan bimbingan baru dinonaktifkan sementara untuk TA ini.
+        Silakan hubungi admin akademik jika diperlukan.
+      </p>
+    </div>
+    @endif
+
   </div>
 
   @else
@@ -205,5 +269,8 @@
     menunjuk Anda sebagai pembimbing via form bimbingan dan Anda bersedia, silahkan hubungi admin untuk penjadwalan.
   </p>
   @endif
+
+
+
 
 </x-section>

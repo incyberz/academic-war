@@ -38,6 +38,7 @@
             {{ $slot }}
         </main>
     </div>
+    <x-tahun-ajar-badge />
 </body>
 
 </html>

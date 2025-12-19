@@ -17,11 +17,6 @@ return new class extends Migration {
                     ->constrained('pembimbing')
                     ->cascadeOnDelete();
 
-                // FK ke peserta_bimbingan
-                $table->foreignId('peserta_bimbingan_id')
-                    ->constrained('peserta_bimbingan')
-                    ->cascadeOnDelete();
-
                 // FK ke jenis_bimbingan
                 $table->foreignId('jenis_bimbingan_id')
                     ->constrained('jenis_bimbingan')
@@ -34,6 +29,12 @@ return new class extends Migration {
 
                 $table->string('status', 20)->default('aktif');
                 $table->text('catatan')->nullable();
+
+                $table->string('wag')->nullable();
+                $table->text('wa_message_template')->nullable();
+                $table->string('file_surat_tugas')->nullable();
+                $table->string('nomor_surat_tugas')->nullable();
+                $table->date('akhir_masa_bimbingan')->nullable();
 
                 $table->timestamps();
             });

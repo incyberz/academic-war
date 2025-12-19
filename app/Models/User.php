@@ -19,11 +19,12 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'password',
-        'whatsapp',
         'username',
+        'role_id',
+        'whatsapp',
         'gender',
         'image',
+        'password',
         'status',
     ];
 
@@ -50,8 +51,8 @@ class User extends Authenticatable
         ];
     }
 
-    public function roleRef()
+    public function role()
     {
-        return $this->hasOne(Role::class, 'role', 'role');
+        return $this->belongsTo(Role::class, 'role_id', 'id');
     }
 }

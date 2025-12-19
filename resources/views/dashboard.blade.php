@@ -1,15 +1,18 @@
 @php
 $user = auth()->user();
-$role = $user->role;
-$role_name = $user->roleRef->nama ?? 'Mhs';
+$role_name = $user->role->role_name ?? 'mhs';
+$role_nama = $user->role->nama ?? 'Mhs';
+
 @endphp
 
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }}
+            {{ __('Dashboard') }} - TA {{ session('tahun_ajar_id') }}
         </h2>
     </x-slot>
+
+
 
     <div class="py-4">
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 space-y-6">
@@ -20,13 +23,13 @@ $role_name = $user->roleRef->nama ?? 'Mhs';
                     👋 Selamat Datang {{$user->name}}!
                 </h3>
                 <x-p class="text-sm">
-                    Anda login sebagai <span class="font-semibold">{{ $role_name }}</span>.
+                    Anda login sebagai <span class="font-semibold">{{ $role_nama }}</span>.
                     Silakan lengkapi data akademik Anda untuk mulai mengajar.
                 </x-p>
             </x-section>
 
             @php
-            $target_dashboard = "dashboard.dashboard-$role";
+            $target_dashboard = "dashboard.dashboard-$role_name";
             @endphp
 
             @if (View::exists($target_dashboard))
@@ -37,7 +40,7 @@ $role_name = $user->roleRef->nama ?? 'Mhs';
                     Dashboard belum tersedia
                 </h3>
                 <p class="text-gray-500 mt-2">
-                    Dashboard untuk role <strong>{{ $role }}</strong> belum dibuat.
+                    Dashboard untuk role <strong>{{ $role_name }}</strong> belum dibuat.
                 </p>
             </div>
             @endif

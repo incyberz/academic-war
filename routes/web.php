@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BimbinganController;
+use App\Http\Controllers\JenisBimbinganController;
+use App\Http\Controllers\TahunAjarController;
 
 Route::get('/', function () {
     // return redirect('/login');
@@ -22,8 +25,24 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // route resorces untuk model akun
+    Route::resource('bimbingan', BimbinganController::class);
+    Route::resource('jenis-bimbingan', JenisBimbinganController::class);
 
+    // Route::get('/set-tahun-ajar/{id}', function ($id) {
+    //     session(['tahun_ajar_id' => $id]);
+    //     return back();
+    // })->name('tahun-ajar.set');
 
+    Route::get(
+        '/tahun-ajar/set/{id}',
+        [TahunAjarController::class, 'set']
+    )->name('tahun-ajar.set');
+
+    // admin only
+    Route::post(
+        '/admin/tahun-ajar/aktif',
+        [TahunAjarController::class, 'setAktif']
+    )->name('tahun-ajar.set-aktif');
 });
 
 require __DIR__ . '/auth.php';

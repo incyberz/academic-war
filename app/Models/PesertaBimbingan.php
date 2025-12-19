@@ -15,7 +15,7 @@ class PesertaBimbingan extends Model
         'mhs_id',
         'ditunjuk_oleh',
         'tanggal_penunjukan',
-        'status_peserta',
+        'status_peserta_bimbingan_id',
         'keterangan',
     ];
 
@@ -26,6 +26,10 @@ class PesertaBimbingan extends Model
     {
         return $this->belongsTo(Mhs::class, 'mhs_id');
     }
+    // public function statusPesertaBimbingan()
+    // {
+    //     return $this->belongsTo(StatusPesertaBimbingan::class, 'status_peserta_bimbingan_id');
+    // }
 
     /**
      * Relasi ke User yang menunjuk mahasiswa sebagai peserta bimbingan

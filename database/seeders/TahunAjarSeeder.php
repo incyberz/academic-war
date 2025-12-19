@@ -11,51 +11,35 @@ class TahunAjarSeeder extends Seeder
     {
         $data = [
             [
-                'tahun_ajar' => 20251,
-                'aktif' => false,
-                'tanggal_mulai' => '2025-01-01',
-                'tanggal_selesai' => '2025-06-30',
+                'id' => 20251,
+                'aktif' => true, // ⬅️ set default aktif
+                'tanggal_mulai' => '2025-08-01',
+                'tanggal_selesai' => '2026-03-31',
             ],
             [
-                'tahun_ajar' => 20252,
+                'id' => 20252,
                 'aktif' => false,
-                'tanggal_mulai' => '2025-07-01',
-                'tanggal_selesai' => '2025-12-31',
+                'tanggal_mulai' => '2026-04-01',
+                'tanggal_selesai' => '2026-07-31',
             ],
             [
-                'tahun_ajar' => 20253,
+                'id' => 20261,
                 'aktif' => false,
-                'tanggal_mulai' => null,
-                'tanggal_selesai' => null,
+                'tanggal_mulai' => '2026-08-01',
+                'tanggal_selesai' => '2027-03-31',
             ],
             [
-                'tahun_ajar' => 20261,
+                'id' => 20262,
                 'aktif' => false,
-                'tanggal_mulai' => '2026-01-01',
-                'tanggal_selesai' => '2026-06-30',
-            ],
-            [
-                'tahun_ajar' => 20262,
-                'aktif' => false,
-                'tanggal_mulai' => '2026-07-01',
-                'tanggal_selesai' => '2026-12-31',
-            ],
-            [
-                'tahun_ajar' => 20263,
-                'aktif' => false,
-                'tanggal_mulai' => null,
-                'tanggal_selesai' => null,
+                'tanggal_mulai' => '2027-04-01',
+                'tanggal_selesai' => '2027-07-31',
             ],
         ];
 
         foreach ($data as $row) {
             DB::table('tahun_ajar')->updateOrInsert(
-                ['tahun_ajar' => $row['tahun_ajar']], // key unik
-                [
-                    'aktif' => $row['aktif'],
-                    'tanggal_mulai' => $row['tanggal_mulai'],
-                    'tanggal_selesai' => $row['tanggal_selesai'],
-                ]
+                ['id' => $row['id']],
+                $row
             );
         }
     }

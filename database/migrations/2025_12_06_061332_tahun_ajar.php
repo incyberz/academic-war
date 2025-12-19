@@ -8,11 +8,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('tahun_ajar', function (Blueprint $table) {
-            $table->id(); // PK numeric default
-
-            // kode tahun ajar, misal 20251 (TA 2025/1)
-            $table->smallInteger('tahun_ajar')->unique();
-
+            $table->unsignedBigInteger('id')->primary();
             // Status apakah tahun ajar sedang aktif
             $table->boolean('aktif')->default(false);
 

@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('role', function (Blueprint $table) {
             $table->id(); // primary key numeric default
-            $table->string('role', 20)->unique(); // kode role, unik tapi bukan PK
+            $table->string('role_name', 20)->unique(); // kode role, unik tapi bukan PK
             $table->string('nama', 50);
             $table->string('deskripsi', 255)->nullable();
             $table->timestamps();

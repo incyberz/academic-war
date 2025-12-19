@@ -7,19 +7,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Role extends Model
 {
-    // Karena nama tabel bukan jamak
     protected $table = 'role';
 
-    // Primary key berupa string, bukan auto increment
-    protected $primaryKey = 'role';
-
-    // PK bertipe string
-    public $incrementing = false;
-    protected $keyType = 'string';
-
-    // Kolom yang dapat diisi
     protected $fillable = [
-        'role',
+        'role_name',
         'nama',
         'deskripsi',
     ];
@@ -29,6 +20,6 @@ class Role extends Model
      */
     public function users(): HasMany
     {
-        return $this->hasMany(User::class, 'role', 'role');
+        return $this->hasMany(User::class, 'role_id', 'id');
     }
 }

@@ -9,16 +9,21 @@ class TahunAjar extends Model
 {
     protected $table = 'tahun_ajar';
 
-    // PK berupa smallint (numeric), bukan auto increment
-    protected $primaryKey = 'tahun_ajar';
+    /**
+     * Primary key bukan auto increment
+     */
     public $incrementing = false;
+
+    /**
+     * Tipe primary key
+     */
     protected $keyType = 'int';
 
-    public $timestamps = false;
-
     protected $fillable = [
-        'tahun_ajar',
-        // tambahkan field lain jika ada pada migration
+        'id',               // ⬅️ WAJIB agar bisa mass assign
+        'aktif',
+        'tanggal_mulai',
+        'tanggal_selesai',
     ];
 
     /**
@@ -26,6 +31,6 @@ class TahunAjar extends Model
      */
     public function bimbingan(): HasMany
     {
-        return $this->hasMany(Bimbingan::class, 'tahun_ajar', 'tahun_ajar');
+        return $this->hasMany(Bimbingan::class, 'tahun_ajar_id', 'id');
     }
 }

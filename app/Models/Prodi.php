@@ -14,9 +14,10 @@ class Prodi extends Model
 
 
     protected $fillable = [
+        'prodi',
+        'urutan',
         'fakultas_id',
         'nama',
-        'kode',
         'jenjang',
     ];
 
@@ -26,7 +27,7 @@ class Prodi extends Model
      */
     public function fakultas()
     {
-        return $this->belongsTo(Fakultas::class);
+        return $this->belongsTo(Fakultas::class, 'fakultas_id');
     }
 
     /**
@@ -35,12 +36,6 @@ class Prodi extends Model
      */
     public function dosen()
     {
-        return $this->hasMany(Dosen::class);
+        return $this->hasMany(Dosen::class, 'dosen_id', 'id');
     }
-
-    /**
-     * Relasi lain ke tabel lain (opsional)
-     * Misalnya ke Mahasiswa, Kurikulum, MataKuliah, dsb.
-     * Bisa ditambahkan kapan saja.
-     */
 }
