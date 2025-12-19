@@ -15,7 +15,7 @@ return new class extends Migration
 
         Schema::create('fakultas', function (Blueprint $table) {
             $table->id();              // primary key numeric default
-            $table->string('fakultas', 10)->unique(); // kode fakultas, unik tapi bukan PK
+            $table->string('kode', 10)->unique(); // kode fakultas, unik tapi bukan PK
             $table->tinyInteger('urutan')->nullable();
             $table->string('nama', 255);
             $table->timestamps();

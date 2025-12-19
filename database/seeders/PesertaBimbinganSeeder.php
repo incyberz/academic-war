@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Mhs;
 use App\Models\PesertaBimbingan;
+use Illuminate\Support\Facades\DB;
 
 class PesertaBimbinganSeeder extends Seeder
 {
@@ -18,7 +19,7 @@ class PesertaBimbinganSeeder extends Seeder
             [
                 'name' => 'Super Admin',
                 'email' => 'insho@gmail.com',
-                'role' => 'super_admin',
+                'role_id' => 1, // super admin
                 'whatsapp' => '6287729007318',
                 'whatsapp_verified_at' => now(),
                 'password' => Hash::make('insho'),
@@ -44,6 +45,33 @@ class PesertaBimbinganSeeder extends Seeder
                 ]
             );
 
+            // updateOrInsert status_mhs 
+            DB::table('status_mhs')->updateOrInsert(
+                ['kode' => 'aktif'],
+                [
+                    'nama' => 'Aktif',
+                    'keterangan' => 'Belum dinyatakan cuti atau DO',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
+
+            // updateOrInsert status_peserta_bimbingan
+            DB::table('status_peserta_bimbingan')->updateOrInsert(
+                ['kode' => 'aktif'],
+                [
+                    'nama' => 'Aktif',
+                    'keterangan' => 'Peserta bimbingan aktif',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
+
+
+            // get status_mhs_id aktif
+            $statusMhsId = DB::table('status_mhs')->where('kode', 'aktif')->first()->id;
+            $statusPesertaBimbinganId = DB::table('status_peserta_bimbingan')->where('kode', 'aktif')->first()->id;
+
             // 2. Buat record mahasiswa
             $mhs = Mhs::firstOrCreate(
                 ['user_id' => $user->id],
@@ -51,7 +79,7 @@ class PesertaBimbinganSeeder extends Seeder
                     'nama' => $m['nama'],
                     'nim' => strtoupper($m['username']) . '001',
                     'angkatan' => $m['angkatan'],
-                    'status_mhs_id' => 1, // default aktif
+                    'status_mhs_id' => $statusMhsId, // default aktif
                 ]
             );
 
@@ -64,7 +92,7 @@ class PesertaBimbinganSeeder extends Seeder
                 [
                     'ditunjuk_oleh' => $insho->id,
                     'tanggal_penunjukan' => now(),
-                    'status_peserta' => 'aktif',
+                    // 'status_peserta_bimbingan_id' => 1, // default 1
                 ]
             );
         }

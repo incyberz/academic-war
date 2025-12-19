@@ -20,7 +20,7 @@ class UsersDosenSeeder extends Seeder
             [
                 'email' => 'iin@gmail.com',
                 'name' => 'Kang Solihin',
-                'role' => 'dosen',
+                'role_id' => 5, // role dosen
                 'password' => Hash::make('iin'),
             ]
         );
@@ -29,7 +29,7 @@ class UsersDosenSeeder extends Seeder
             ['user_id' => $iinUser->id], // cek dosen berdasarkan user_id
             [
                 'nama' => 'Iin Sholihin',
-                'prodi' => DB::table('prodi')->where('prodi', 'KA')->value('id'), // FK ke prodi by id
+                'prodi_id' => DB::table('prodi')->where('prodi', 'KA')->value('id'), // FK ke prodi by id
             ]
         );
 
@@ -41,7 +41,7 @@ class UsersDosenSeeder extends Seeder
             [
                 'email' => 'topan@gmail.com',
                 'name' => 'Topan Trianto',
-                'role' => 'dosen',
+                'role_id' => 5, // role dosen
                 'password' => Hash::make('topan'),
             ]
         );
@@ -50,7 +50,7 @@ class UsersDosenSeeder extends Seeder
             ['user_id' => $topanUser->id],
             [
                 'nama' => 'Topan Trianto',
-                'prodi' => DB::table('prodi')->where('prodi', 'BD')->value('id'), // FK ke prodi by id
+                'prodi_id' => DB::table('prodi')->where('prodi', 'BD')->value('id'), // FK ke prodi by id
             ]
         );
     }

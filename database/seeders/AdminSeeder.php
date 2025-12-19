@@ -12,6 +12,11 @@ class AdminSeeder extends Seeder
 {
     public function run(): void
     {
+
+        // Ambil ID fakultas FKOM
+        $fakultasId = Fakultas::where('kode', 'FKOM')->value('id');
+        $fakultasId2 = Fakultas::where('kode', 'FTEK')->value('id');
+
         $admins = [
             [
                 'username' => 'yulis',
@@ -19,7 +24,7 @@ class AdminSeeder extends Seeder
                 'email' => 'yulis@gmail.com',
                 'name' => 'Yulistiani',
                 'gender' => 'P',
-                'fakultas' => 'FKOM',
+                'fakultas_id' => $fakultasId,
                 'prodi' => null,
                 'whatsapp' => '6287729007318',
                 'whatsapp_verified_at' => now(),
@@ -31,7 +36,7 @@ class AdminSeeder extends Seeder
                 'email' => 'wulan@gmail.com',
                 'name' => 'Wulandari',
                 'gender' => 'P',
-                'fakultas' => 'FKOM',
+                'fakultas_id' => $fakultasId,
                 'prodi' => null,
                 'whatsapp' => '6287729007318',
                 'whatsapp_verified_at' => now(),
@@ -43,7 +48,7 @@ class AdminSeeder extends Seeder
                 'email' => 'yogi@gmail.com',
                 'name' => 'Yogi',
                 'gender' => 'L',
-                'fakultas' => 'FTEK',
+                'fakultas_id' => $fakultasId2,
                 'prodi' => null,
                 'whatsapp' => '6287729007318',
                 'whatsapp_verified_at' => now(),
@@ -52,8 +57,6 @@ class AdminSeeder extends Seeder
         ];
 
         foreach ($admins as $a) {
-            // Ambil ID fakultas sesuai kode fakultas
-            $fakultas_id = Fakultas::where('fakultas', $a['fakultas'])->value('id');
             $prodi_id = null;
             if ($a['prodi']) {
                 $prodi_id = Prodi::where('prodi', $a['prodi'])->value('id');
@@ -66,7 +69,7 @@ class AdminSeeder extends Seeder
                     'email' => $a['email'],
                     'name' => $a['name'],
                     'gender' => $a['gender'],
-                    'fakultas_id' => $fakultas_id,
+                    'fakultas_id' => $a['fakultas_id'],
                     'prodi_id' => $prodi_id,
                     'whatsapp' => $a['whatsapp'],
                     'whatsapp_verified_at' => $a['whatsapp_verified_at'],

@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id(); // PK numeric default
 
             // kode tahun ajar, misal 20251 (TA 2025/1)
-            $table->smallInteger('kode')->unique();
+            $table->smallInteger('tahun_ajar')->unique();
 
             // Status apakah tahun ajar sedang aktif
             $table->boolean('aktif')->default(false);
