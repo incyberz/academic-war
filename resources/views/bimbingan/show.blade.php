@@ -1,15 +1,35 @@
 <x-app-layout>
 
-  {{-- HEADER --}}
-  <div class="mb-6">
-    <h1 class="text-xl md:text-2xl font-bold ">
-      Detail Bimbingan
-    </h1>
+  <x-page-header title="Detail Bimbingan" :subtitle="$bimbingan->jenisBimbingan->nama" />
 
-    <p class="text-sm  mt-1">
-      {{ $bimbingan->jenisBimbingan->nama }}
-    </p>
-  </div>
+  {{-- LIST PESERTA --}}
+  <x-card class="mb-6">
+
+    <x-card-header>
+      <h2 class="font-semibold text-lg">
+        Peserta Bimbingan
+      </h2>
+    </x-card-header>
+
+    <x-card-body>
+      @if ($listPeserta->isEmpty())
+      <p class="text-sm text-gray-500 dark:text-gray-400">
+        Belum ada peserta bimbingan.
+      </p>
+      @else
+      <x-grid class="space-y-3">
+
+        @foreach ($listPeserta as $peserta)
+        <x-card-peserta :avatar="$peserta['avatar']" :nama="$peserta['nama']" :nim="$peserta['nim']"
+          :progress="$peserta['progress']" :tanggal="$peserta['tanggal']" :topik="$peserta['topik']"
+          :status="$peserta['status']" :wa="$peserta['wa']" />
+        @endforeach
+      </x-grid>
+      @endif
+
+    </x-card-body>
+
+  </x-card>
 
   <div class="grid lg:grid-cols-3 gap-6">
 
@@ -67,6 +87,8 @@
         </x-card-body>
 
       </x-card>
+
+
 
       {{-- CATATAN --}}
       <x-card>

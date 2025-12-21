@@ -3,27 +3,27 @@ $roles = [
 [
 'key' => 'mhs',
 'label' => 'Mhs',
-'image' => 'img/roles/mhs.png',
+'avatar' => 'img/roles/mhs.png',
 ],
 [
 'key' => 'dosen',
 'label' => 'Dosen',
-'image' => 'img/roles/dosen.png',
+'avatar' => 'img/roles/dosen.png',
 ],
 [
 'key' => 'praktisi',
 'label' => 'Praktisi',
-'image' => 'img/roles/praktisi.png',
+'avatar' => 'img/roles/praktisi.png',
 ],
 [
 'key' => 'mitra',
 'label' => 'Mitra',
-'image' => 'img/roles/mitra.png',
+'avatar' => 'img/roles/mitra.png',
 ],
 [
 'key' => 'akademik',
 'label' => 'Akademik',
-'image' => 'img/roles/akademik.png',
+'avatar' => 'img/roles/akademik.png',
 ],
 ];
 @endphp
@@ -41,7 +41,7 @@ $roles = [
     <a href="{{ url('/login?role=' . $role['key']) }}" class="group flex-shrink-0">
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition p-4 w-36 text-center">
 
-        <img src="{{ asset($role['image']) }}" alt="{{ $role['label'] }}" class="img_role mx-auto">
+        <img src="{{ asset($role['avatar']) }}" alt="{{ $role['label'] }}" class="img_role mx-auto">
 
         <div class="font-semibold  mt-2">
           {{ $role['label'] }}

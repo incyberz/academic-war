@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('whatsapp', 15)->nullable();
             $table->timestamp('whatsapp_verified_at')->nullable();
             $table->enum('gender', ['L', 'P'])->nullable();
-            $table->string('image')->nullable();
+            $table->string('avatar')->nullable();
 
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

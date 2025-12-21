@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id(); // primary key auto increment
             $table->string('kode', 20)->unique(); // misal: AKTIF, NONAKTIF
             $table->string('nama', 50);          // nama lengkap status
+            $table->string('warna', 50)->nullable(); // warna label status      
             $table->text('keterangan')->nullable();
             $table->timestamps();
         });

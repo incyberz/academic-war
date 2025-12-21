@@ -25,6 +25,16 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'username' => ['nullable', 'string', 'max:20', 'unique:users,username,' . $this->user()->id],
+            'whatsapp' => ['nullable', 'string', 'max:14'],
+            'gender' => ['nullable', 'in:L,P'],
+            'avatar' => [
+                'nullable',
+                'image',
+                'mimetypes:image/jpeg,image/png,image/webp',
+                'max:2048',
+            ],
+
         ];
     }
 }

@@ -13,15 +13,26 @@
 @endif
 
 
-@if (session('success'))
+@if (session('success') || session('status'))
+@php
+$message = session('success')
+?? match (session('status')) {
+'profile-updated' => 'Profil berhasil diperbarui',
+default => session('status'),
+};
+@endphp
+
 <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 5000)" x-show="show" x-transition class="bg-green-100 border border-green-300 text-green-700
+           dark:bg-green-900/30 dark:border-green-700 dark:text-green-300
            px-4 py-3 rounded-lg text-sm mb-4
            flex items-start justify-between gap-3">
     <div>
-        ✅ {{ session('success') }}
+        ✅ {{ $message }}
     </div>
 
-    <button @click="show = false" class="text-green-600 hover:text-green-800 font-bold" aria-label="Close">
+    <button @click="show = false" class="text-green-600 dark:text-green-400
+               hover:text-green-800 dark:hover:text-green-200
+               font-bold" aria-label="Close">
         ✕
     </button>
 </div>

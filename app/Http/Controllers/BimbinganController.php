@@ -141,7 +141,6 @@ class BimbinganController extends Controller
      */
     public function show(Bimbingan $bimbingan)
     {
-        dd($bimbingan);
 
         if (isRole('dosen')) {
             $dosen = Dosen::where('user_id', Auth::id())->first();
@@ -156,14 +155,37 @@ class BimbinganController extends Controller
                 ->where('is_active', 1)
                 ->first();
 
-            if ($bimbingan->pembimbing_id !== $pembimbing->id) {
+            if (!$pembimbing || $bimbingan->pembimbing_id !== $pembimbing->id) {
                 return redirect()
                     ->back()
                     ->with('error', 'Anda tidak memiliki akses ke bimbingan ini.');
             }
 
-            $listPeserta = $bimbingan->pesertaBimbingan()->with('mahasiswa')->get();
+            $listPeserta = $bimbingan->pesertaBimbingan()
+                ->with([
+                    'mahasiswa.user',   // ⬅️ PENTING
+                    'status'
+                ])
+                ->get()
+                ->map(function ($peserta) {
+                    return [
+                        'avatar'   => $peserta->mahasiswa->user->avatar
+                            ?? null,
+
+                        'nama'     => $peserta->mahasiswa->nama,
+                        'nim'      => $peserta->mahasiswa->nim,
+
+                        'progress' => $peserta->progress ?? 0,
+                        'tanggal'  => $peserta->tanggal_penunjukan,
+                        'topik'    => $peserta->keterangan ?? null,
+
+                        'status'   => $peserta->status->nama ?? 'Aktif',
+
+                        'wa'       => $peserta->mahasiswa->user->whatsapp ?? null,
+                    ];
+                });
         }
+
 
         $bimbingan->load([
             'pembimbing',

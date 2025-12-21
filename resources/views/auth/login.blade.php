@@ -21,7 +21,7 @@ $role_gradient = $roles[$role]['gradient'] ?? 'bg-gray-600';
 
         {{-- Role Image --}}
         <div class="flex justify-center mb-6">
-            <img src="{{ asset('img/roles/'.$role.'.png')}}" alt="role image"
+            <img src="{{ asset('img/roles/'.$role.'.png')}}" alt="role avatar"
                 class="w-24 h-24 object-cover rounded-full shadow-md">
         </div>
 

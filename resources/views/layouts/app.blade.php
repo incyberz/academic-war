@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Academic War') }}</title>
+    <title>
+        {{ $title ?? config('app.name') }}
+    </title>
 
     <!-- Fonts -->
     {{--
@@ -18,10 +20,22 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="{{asset('js/jquery.min.js')}}"></script>
+
+    <script>
+        (() => {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+        if (prefersDark) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
 </head>
 
 <body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200 ">
+    <div class="min-h-screen
+              bg-gray-100 dark:bg-slate-900
+              text-gray-700 dark:text-slate-200">
         @include('layouts.navigation')
 
         <!-- Page Heading -->

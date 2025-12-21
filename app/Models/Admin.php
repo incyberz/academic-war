@@ -19,7 +19,7 @@ class Admin extends Authenticatable
         'username',
         'whatsapp',
         'gender',
-        'image',
+        'avatar',
         'password',
         'status',
         'fakultas_id',

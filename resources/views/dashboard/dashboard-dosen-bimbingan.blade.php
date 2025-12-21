@@ -71,7 +71,7 @@
       'progress' => 75,
       ],
       ];
-      $bimbinganPkl = []; // debug tidak ada peserta bimbingan PKL
+      // $bimbinganPkl = []; // debug tidak ada peserta bimbingan PKL
       @endphp
 
       @if(count($bimbinganPkl) > 0)
@@ -79,76 +79,9 @@
       <div class="space-y-2">
         <x-grid>
           @foreach($bimbinganPkl as $b)
-          <div class="flex items-center p-2 md:p-3 rounded-lg border border-gray-200 dark:border-gray-700
-                          hover:bg-gray-50 dark:hover:bg-gray-800 transition gap-3">
+          <x-card-peserta :avatar="$b['avatar']" :nama="$b['mahasiswa']" :progress="$b['progress']"
+            :tanggal="$b['tanggal']" :topik="$b['topik']" :status="$b['status']" :wa="$b['wa']" class="mb-2" />
 
-            {{-- Avatar --}}
-            <img src="{{ asset('img/mhs/' . $b['avatar']) }}" alt="{{ $b['mahasiswa'] }}"
-              class="w-12 h-12 rounded-full border border-gray-300 dark:border-gray-600 object-cover">
-
-            {{-- Info tengah --}}
-            <div class="flex-1">
-              <p class="text-sm font-semibold">{{ $b['mahasiswa'] }}</p>
-
-              {{-- progress bimbingan dalam persen --}}
-              <div class="my-1">
-                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                  <div class="h-2 rounded-full bg-indigo-600 dark:bg-indigo-500" style="width: {{ $b['progress'] }}%">
-                  </div>
-                </div>
-                <p class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ $b['progress'] }}% completed
-                </p>
-
-              </div>
-
-              <p class="text-xs text-gray-500 dark:text-gray-400">
-                {{ \Carbon\Carbon::parse($b['tanggal'])->format('l, d M Y H:i') }} • {{ $b['topik'] }}
-              </p>
-
-              <div class="mt-2">
-                @if($b['status'] == 'Selesai')
-                <span
-                  class="text-green-600 text-xs px-2 py-1 rounded bg-green-100 dark:bg-green-900 dark:text-green-300">
-                  Selesai
-                </span>
-                @elseif($b['status'] == 'Hari Ini')
-                <span class="text-indigo-600 text-xs px-2 py-1 rounded bg-indigo-100 dark:bg-indigo-900/30">
-                  Hari Ini
-                </span>
-                @else
-                <span class="text-yellow-600 text-xs px-2 py-1 rounded bg-yellow-100 dark:bg-yellow-900/30">
-                  {{ $b['status'] }}
-                </span>
-                @endif
-              </div>
-            </div>
-
-            {{-- Status badge --}}
-            <div class="flex flex-col items-center gap-2">
-
-
-              {{-- Tombol WhatsApp Reminder ke Mhs | Deal Bimbingan --}}
-              <a href="https://wa.me/{{ $b['wa'] }}" target="_blank"
-                class="text-green-600 hover:text-green-700 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path
-                    d="M20.52 3.48a11.25 11.25 0 00-15.92 15.92L2 22l4.58-1.52a11.25 11.25 0 0013.94-16.96zM12 21a9 9 0 01-4.87-1.44l-.35-.21-2.7.89.89-2.63-.23-.36A9 9 0 1112 21zm5.14-7.64c-.25-.13-1.46-.72-1.69-.8-.23-.08-.4-.12-.57.13-.17.25-.67.8-.82.96-.15.17-.3.19-.55.06-.25-.13-1.05-.39-2-1.24-.74-.66-1.24-1.48-1.39-1.73-.15-.25-.02-.38.11-.5.11-.11.25-.3.38-.45.13-.15.17-.25.25-.42.08-.17.04-.32-.02-.45-.06-.13-.57-1.37-.78-1.87-.2-.5-.41-.43-.57-.44-.15-.01-.32-.01-.49-.01-.17 0-.45.06-.68.32s-.89.87-.89 2.12c0 1.25.91 2.46 1.03 2.63.13.17 1.78 2.72 4.32 3.81 3.19 1.43 3.19 0 3.77-.11.58-.11 1.88-.77 2.14-1.52.26-.75.26-1.39.18-1.52-.07-.13-.26-.21-.52-.34z" />
-                </svg>
-              </a>
-
-              {{-- Tombol Whatsapp Pembatalan Bimbingan --}}
-              @if($b['status'] != 'Selesai')
-              <a href="https://wa.me/{{ $b['wa'] }}" target="_blank" class="text-red-600 hover:text-red-700 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path
-                    d="M20.52 3.48a11.25 11.25 0 00-15.92 15.92L2 22l4.58-1.52a11.25 11.25 0 0013.94-16.96zM12 21a9 9 0 01-4.87-1.44l-.35-.21-2.7.89.89-2.63-.23-.36A9 9 0 1112 21zm5.14-7.64c-.25-.13-1.46-.72-1.69-.8-.23-.08-.4-.12-.57.13-.17.25-.67.8-.82.96-.15.17-.3.19-.55.06-.25-.13-1.05-.39-2-1.24-.74-.66-1.24-1.48-1.39-1.73-.15-.25-.02-.38.11-.5.11-.11.25-.3.38-.45.13-.15.17-.25.25-.42.08-.17.04-.32-.02-.45-.06-.13-.57-1.37-.78-1.87-.2-.5-.41-.43-.57-.44-.15-.01-.32-.01-.49-.01-.17 0-.45.06-.68.32s-.89.87-.89 2.12c0 1.25.91 2.46 1.03 2.63.13.17 1.78 2.72 4.32 3.81 3.19 1.43 3.19 0 3.77-.11.58-.11 1.88-.77 2.14-1.52.26-.75.26-1.39.18-1.52-.07-.13-.26-.21-.52-.34z" />
-                </svg>
-              </a>
-              @endif
-
-            </div>
-          </div>
           @endforeach
         </x-grid>
       </div>
