@@ -16,6 +16,11 @@ return new class extends Migration
                 ->constrained('mhs')
                 ->cascadeOnDelete();
 
+            // FK ke bimbingan
+            $table->foreignId('bimbingan_id')
+                ->constrained('bimbingan')
+                ->cascadeOnDelete();
+
             // siapa yang menunjuk mahasiswa ini sebagai peserta bimbingan
             $table->foreignId('ditunjuk_oleh')
                 ->nullable()

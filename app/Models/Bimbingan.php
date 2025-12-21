@@ -56,11 +56,14 @@ class Bimbingan extends Model
 
     /**
      * Relasi ke Peserta Bimbingan
-     * bimbingan.peserta_bimbingan_id → peserta_bimbingan.id
      */
     public function pesertaBimbingan()
     {
-        return $this->belongsTo(PesertaBimbingan::class);
+        return $this->hasMany(
+            PesertaBimbingan::class,
+            'bimbingan_id', // FK di tabel peserta_bimbingan
+            'id'            // PK di tabel bimbingan
+        );
     }
 
     /**

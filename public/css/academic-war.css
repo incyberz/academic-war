@@ -1,3 +1,23 @@
+/* resources/css/forms.css */
+input[required],
+select[required],
+textarea[required] {
+  border-color: #6366f1;
+  /* indigo-500 */
+  background-color: #eef2ff;
+  /* indigo-50 */
+}
+
+input[required]:focus {
+  box-shadow: 0 0 0 1px #6366f1;
+}
+
+label.required::after {
+  content: " *";
+  color: red;
+}
+
+
 .debug {
   background: red;
   font-family: consolas, 'Courier New', Courier, monospace;

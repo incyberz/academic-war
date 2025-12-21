@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('kode', 20)->unique(); // kode jenis bimbingan, misal pkl, skripsi, kkn
             $table->string('nama', 100);          // nama lengkap jenis bimbingan
             $table->text('deskripsi')->nullable(); // deskripsi opsional
+            $table->tinyInteger('status')->default(1);
 
             $table->timestamps();
         });

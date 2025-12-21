@@ -13,6 +13,7 @@ class JenisBimbingan extends Model
         'kode',
         'nama',       // jika Anda menambahkan field deskriptif, opsional
         'deskripsi',  // opsional
+        'status',
     ];
 
     /**

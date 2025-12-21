@@ -9,7 +9,7 @@
     <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 flex items-center gap-2">
       <span
         class="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300 px-2 py-0.5 rounded-full text-xs">TA
-        2025/1</span>
+        {{$tahunAjarAktif }}/{{$semesterAktif}}</span>
       Hari ini <span class="font-semibold text-indigo-600">Rabu, 17 Des 2025</span>
     </p>
 

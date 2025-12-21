@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\JenisBimbingan;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Dosen;
+use App\Models\Pembimbing;
+use App\Models\Bimbingan;
 
 class JenisBimbinganController extends Controller
 {
@@ -13,15 +17,39 @@ class JenisBimbinganController extends Controller
      */
     public function index()
     {
-        $role_name = auth()->user()->role->role_name;
-
         $jenisBimbingan = JenisBimbingan::withCount('bimbingan')
-            ->orderBy('nama')->get();
+            ->orderBy('status', 'desc')
+            ->orderBy('nama')
+            ->get();
 
-        // dd($jenisBimbingan->get());
+        $myBimbingan = collect();
 
-        return view('jenis-bimbingan.index', compact('jenisBimbingan', 'role_name'));
+        // cek role dosen
+        if (isRole('dosen')) {
+
+            $dosenId = Dosen::where('user_id', Auth::id())->value('id');
+            $pembimbingId = Pembimbing::where('dosen_id', $dosenId)->value('id');
+
+            foreach ($jenisBimbingan as $jenis) {
+
+                // ambil bimbingan milik dosen pada jenis ini
+                $bimbinganSaya = Bimbingan::where('pembimbing_id', $pembimbingId)
+                    ->where('jenis_bimbingan_id', $jenis->id)
+                    ->withCount('pesertaBimbingan')
+                    ->get();
+
+                if ($bimbinganSaya->isNotEmpty()) {
+                    $myBimbingan->push([
+                        'jenis_bimbingan' => $jenis,
+                        'jumlah_peserta' => $bimbinganSaya->sum('peserta_bimbingan_count'),
+                    ]);
+                }
+            }
+        }
+
+        return view('jenis-bimbingan.index', compact('jenisBimbingan', 'myBimbingan'));
     }
+
 
     /**
      * Show the form for creating a new resource.

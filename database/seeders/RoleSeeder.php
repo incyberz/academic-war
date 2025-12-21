@@ -16,12 +16,12 @@ class RoleSeeder extends Seeder
             ['role' => 'akademik',    'nama' => 'Akademik', 'deskripsi' => 'Pengelola data akademik'],
             ['role' => 'kaprodi',     'nama' => 'Kaprodi', 'deskripsi' => 'Ketua Program Studi'],
             ['role' => 'dosen',       'nama' => 'Dosen', 'deskripsi' => 'Tenaga pendidik dan pembimbing'],
-            ['role' => 'mahasiswa',   'nama' => 'Mahasiswa', 'deskripsi' => 'Peserta pendidikan'],
+            ['role' => 'mhs',         'nama' => 'Mahasiswa', 'deskripsi' => 'Peserta pendidikan'],
         ];
 
         foreach ($roles as $role) {
             DB::table('role')->updateOrInsert(
-                ['role' => $role['role']], // gunakan role sebagai key unik
+                ['role_name' => $role['role']], // gunakan role sebagai key unik
                 [
                     'nama' => $role['nama'],
                     'deskripsi' => $role['deskripsi'],

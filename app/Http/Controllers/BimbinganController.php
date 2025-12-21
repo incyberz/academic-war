@@ -6,7 +6,10 @@ use App\Models\Bimbingan;
 use App\Models\Pembimbing;
 use App\Models\JenisBimbingan;
 use App\Models\TahunAjar;
+use App\Models\Dosen;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class BimbinganController extends Controller
 {
@@ -24,64 +27,151 @@ class BimbinganController extends Controller
         return view('bimbingan.index', compact('bimbingan'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+
+    public function create(Request $request)
     {
-        return view('bimbingan.create', [
-            'pembimbing'     => Pembimbing::all(),
-            'jenisBimbingan' => JenisBimbingan::all(),
-            'tahunAjar'      => TahunAjar::all(),
-        ]);
-    }
+        /*
+    |--------------------------------------------------------------------------
+    | 1. Ambil parameter wajib
+    |--------------------------------------------------------------------------
+    */
+        $jenis_bimbingan_id = $request->query('jenis_bimbingan_id');
+        $tahun_ajar_id = $request->session()->get('tahun_ajar_id');
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'pembimbing_id'         => 'required|exists:pembimbing,id',
-            'jenis_bimbingan_id'    => 'required|exists:jenis_bimbingan,id',
-            'tahun_ajar_id'         => 'required|exists:tahun_ajar,id',
-            'status'                => 'required|string|max:20',
-            'catatan'               => 'nullable|string',
-
-            'wag'                   => 'nullable|string|max:255',
-            'wa_message_template'   => 'nullable|string',
-            'hari_availables'       => 'nullable|string',
-            'nomor_surat_tugas'     => 'nullable|string|max:100',
-            'akhir_masa_bimbingan'  => 'nullable|date',
-
-            'file_surat_tugas'      => 'nullable|file|mimes:pdf|max:2048',
-        ]);
-
-        if ($request->hasFile('file_surat_tugas')) {
-            $validated['file_surat_tugas'] =
-                $request->file('file_surat_tugas')
-                ->store('surat-tugas', 'public');
+        if (!$jenis_bimbingan_id || !$tahun_ajar_id) {
+            return redirect()
+                ->route('jenis-bimbingan.index')
+                ->with('error', 'Jenis bimbingan atau tahun ajar tidak valid.');
         }
 
-        Bimbingan::create($validated);
+        /*
+    |--------------------------------------------------------------------------
+    | 2. Validasi tahun ajar aktif
+    |--------------------------------------------------------------------------
+    */
+        $tahunAjar = TahunAjar::where('id', $tahun_ajar_id)
+            ->where('aktif', true)
+            ->first();
 
+        if (!$tahunAjar) {
+            return redirect()
+                ->back()
+                ->with('error', 'Tahun ajar tidak aktif.');
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | 3. Validasi jenis bimbingan
+    |--------------------------------------------------------------------------
+    */
+        $jenisBimbingan = JenisBimbingan::find($jenis_bimbingan_id);
+
+        if (!$jenisBimbingan) {
+            return redirect()
+                ->back()
+                ->with('error', 'Jenis bimbingan tidak ditemukan.');
+        }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | 4. Ambil pembimbing aktif berdasarkan user login
+    |--------------------------------------------------------------------------
+    */
+        $dosen = Dosen::where('user_id', Auth::id())->first();
+
+        if (!$dosen) {
+            return redirect()
+                ->back()
+                ->with('error', 'Akun Anda tidak terdaftar sebagai dosen.');
+        }
+
+        $pembimbing = Pembimbing::where('dosen_id', $dosen->id)
+            ->where('is_active', 1)
+            ->first();
+
+        if (!$pembimbing) {
+            return redirect()
+                ->back()
+                ->with('error', 'Anda tidak terdaftar sebagai pembimbing aktif.');
+        }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | 5. Cegah duplikasi bimbingan
+    |--------------------------------------------------------------------------
+    */
+        $existing = Bimbingan::where('pembimbing_id', $pembimbing->id)
+            ->where('jenis_bimbingan_id', $jenis_bimbingan_id)
+            ->where('tahun_ajar_id', $tahun_ajar_id)
+            ->first();
+
+        if ($existing) {
+            return redirect()
+                ->route('bimbingan.edit', $existing->id)
+                ->with('info', 'Bimbingan sudah ada, diarahkan ke halaman edit.');
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | 6. Auto insert bimbingan
+    |--------------------------------------------------------------------------
+    */
+        $bimbingan = Bimbingan::create([
+            'pembimbing_id'      => $pembimbing->id,
+            'jenis_bimbingan_id' => $jenis_bimbingan_id,
+            'tahun_ajar_id'      => $tahun_ajar_id,
+            'status'             => 'aktif',
+        ]);
+
+        /*
+    |--------------------------------------------------------------------------
+    | 7. Redirect ke edit
+    |--------------------------------------------------------------------------
+    */
         return redirect()
-            ->route('bimbingan.index')
-            ->with('success', 'Data bimbingan berhasil ditambahkan.');
+            ->route('bimbingan.edit', $bimbingan->id)
+            ->with('success', 'Bimbingan berhasil dibuat.');
     }
+
 
     /**
      * Display the specified resource.
      */
     public function show(Bimbingan $bimbingan)
     {
+        dd($bimbingan);
+
+        if (isRole('dosen')) {
+            $dosen = Dosen::where('user_id', Auth::id())->first();
+
+            if (!$dosen) {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Akun Anda tidak terdaftar sebagai dosen.');
+            }
+
+            $pembimbing = Pembimbing::where('dosen_id', $dosen->id)
+                ->where('is_active', 1)
+                ->first();
+
+            if ($bimbingan->pembimbing_id !== $pembimbing->id) {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Anda tidak memiliki akses ke bimbingan ini.');
+            }
+
+            $listPeserta = $bimbingan->pesertaBimbingan()->with('mahasiswa')->get();
+        }
+
         $bimbingan->load([
             'pembimbing',
             'jenisBimbingan',
             'tahunAjar',
         ]);
 
-        return view('bimbingan.show', compact('bimbingan'));
+        return view('bimbingan.show', compact('bimbingan', 'dosen', 'pembimbing', 'listPeserta'));
     }
 
     /**
@@ -102,20 +192,19 @@ class BimbinganController extends Controller
      */
     public function update(Request $request, Bimbingan $bimbingan)
     {
+
+        // dd($request->all());
         $validated = $request->validate([
-            'pembimbing_id'         => 'required|exists:pembimbing,id',
-            'jenis_bimbingan_id'    => 'required|exists:jenis_bimbingan,id',
-            'tahun_ajar_id'         => 'required|exists:tahun_ajar,id',
             'status'                => 'required|string|max:20',
             'catatan'               => 'nullable|string',
 
             'wag'                   => 'nullable|string|max:255',
             'wa_message_template'   => 'nullable|string',
-            'hari_availables'       => 'nullable|string',
-            'nomor_surat_tugas'     => 'nullable|string|max:100',
+            'hari_availables'       => 'required|string',
+            'nomor_surat_tugas'     => 'required|string|max:100',
             'akhir_masa_bimbingan'  => 'nullable|date',
 
-            'file_surat_tugas'      => 'nullable|file|mimes:pdf|max:2048',
+            'file_surat_tugas'      => 'required|file|mimes:pdf|max:2048',
         ]);
 
         if ($request->hasFile('file_surat_tugas')) {
@@ -127,7 +216,7 @@ class BimbinganController extends Controller
         $bimbingan->update($validated);
 
         return redirect()
-            ->route('bimbingan.index')
+            ->route('jenis-bimbingan.index')
             ->with('success', 'Data bimbingan berhasil diperbarui.');
     }
 

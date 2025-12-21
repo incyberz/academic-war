@@ -13,6 +13,7 @@ class PesertaBimbingan extends Model
 
     protected $fillable = [
         'mhs_id',
+        'bimbingan_id',
         'ditunjuk_oleh',
         'tanggal_penunjukan',
         'status_peserta_bimbingan_id',

@@ -1,6 +1,6 @@
 @php
 $user = auth()->user();
-$role_name = $user->role->role_name ?? 'mhs';
+// $role = $user->role->role_name ?? 'mhs';
 $role_nama = $user->role->nama ?? 'Mhs';
 
 @endphp
@@ -29,7 +29,7 @@ $role_nama = $user->role->nama ?? 'Mhs';
             </x-section>
 
             @php
-            $target_dashboard = "dashboard.dashboard-$role_name";
+            $target_dashboard = "dashboard.dashboard-$role";
             @endphp
 
             @if (View::exists($target_dashboard))
@@ -40,7 +40,7 @@ $role_nama = $user->role->nama ?? 'Mhs';
                     Dashboard belum tersedia
                 </h3>
                 <p class="text-gray-500 mt-2">
-                    Dashboard untuk role <strong>{{ $role_name }}</strong> belum dibuat.
+                    Dashboard untuk role <strong>{{ $role }}</strong> belum dibuat.
                 </p>
             </div>
             @endif

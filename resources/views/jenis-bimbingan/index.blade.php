@@ -1,38 +1,157 @@
 <x-app-layout>
+
   <div class="max-w-7xl mx-auto py-6 px-4">
 
     <h1 class="text-2xl font-bold mb-6">
-      Jenis Bimbingan
+      My Bimbingan
     </h1>
 
     {{-- ================== ROLE: DOSEN ================== --}}
-    @if ($role_name === 'dosen')
+    @if ($role === 'dosen')
+
+    @php
+    $myBimbinganMap = collect($myBimbingan ?? [])
+    ->keyBy(fn ($item) => $item['jenis_bimbingan']->id);
+    @endphp
 
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      @foreach ($jenisBimbingan as $jenis)
-      <div class="bg-white rounded-xl shadow p-6 flex flex-col justify-between">
-        <div>
-          <h2 class="text-lg font-semibold">
-            {{ $jenis->nama }}
 
-          </h2>
-          <p class="text-sm text-gray-600 mt-2">
-            {{ $jenis->deskripsi }}
-          </p>
-        </div>
+      @foreach ($myBimbinganMap as $item)
 
-        <div class="mt-6">
-          <a href="{{ route('bimbingan.create', ['jenis_bimbingan_id' => $jenis->id]) }}"
-            class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
-            ➕ Add Bimbingan
+      <x-card>
+
+        {{-- HEADER --}}
+        <x-card-header class="flex items-start justify-between gap-2">
+          <div>
+            <h2 class="text-base md:text-lg font-semibold">
+              {{ $item['jenis_bimbingan']->nama }}
+            </h2>
+
+            <p class="text-sm text-gray-600 mt-1">
+              {{ $item['jenis_bimbingan']->deskripsi }}
+            </p>
+          </div>
+
+          <span class="text-xs px-2 py-1 rounded bg-green-100 text-green-700">
+            Aktif
+          </span>
+        </x-card-header>
+
+        {{-- BODY --}}
+        <x-card-body>
+
+          <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 text-center">
+            <div class="text-2xl font-bold text-emerald-700">
+              {{ $item['jumlah_peserta'] }}
+            </div>
+            <div class="text-sm text-emerald-600">
+              Jumlah Peserta
+            </div>
+          </div>
+
+        </x-card-body>
+
+        {{-- FOOTER --}}
+        <x-card-footer>
+
+          <a href="{{ route('bimbingan.show', $item['jenis_bimbingan']->id
+              ) }}">
+            <x-btn-primary class="text-xs md:text-sm w-full">
+              Kelola Bimbingan
+            </x-btn-primary>
           </a>
-        </div>
-      </div>
+
+        </x-card-footer>
+
+      </x-card>
+
+      @endforeach
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <hr class="my-8">
+    <h1 class="text-2xl font-bold mb-6">
+      Create Bimbingan Lainnya
+    </h1>
+    {{-- UI khusus role dosen --}}
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @foreach ($jenisBimbingan as $jenis)
+
+      @php if(isset($myBimbinganMap[$jenis->id])) continue; @endphp
+
+      <x-card>
+
+        {{-- HEADER --}}
+        <x-card-header>
+          <h2 class="text-base md:text-lg font-semibold">
+            {{ $jenis->nama }}
+          </h2>
+        </x-card-header>
+
+        {{-- BODY --}}
+        <x-card-body>
+          <p class="text-sm text-gray-600 mt-1">
+            {{ $item['jenis_bimbingan']->deskripsi }}
+          </p>
+        </x-card-body>
+
+        {{-- FOOTER --}}
+        <x-card-footer>
+
+          @if ($jenis->status == 1)
+
+          <a onclick="return confirm('Add Bimbingan ini?')"
+            href="{{ route('bimbingan.create', ['jenis_bimbingan_id' => $jenis->id]) }}">
+            <x-btn-add class="w-full">
+              Add Bimbingan
+            </x-btn-add>
+          </a>
+
+          @else
+
+          <x-btn-secondary class="w-full cursor-not-allowed opacity-60" disabled>
+            Bimbingan ini tidak aktif
+          </x-btn-secondary>
+
+          @endif
+
+        </x-card-footer>
+      </x-card>
+
       @endforeach
     </div>
 
     {{-- ================== ROLE: AKADEMIK ================== --}}
-    @elseif ($role_name === 'akademik')
+    @elseif ($role === 'akademik')
 
     <div class="overflow-x-auto bg-white rounded-xl shadow">
       <table class="min-w-full text-sm">
@@ -79,7 +198,7 @@
         Akses Ditolak
       </h2>
       <p>
-        Anda tidak berhak mengakses data Jenis Bimbingan.
+        Role Anda [{{$role}}] tidak berhak mengakses data Jenis Bimbingan.
       </p>
     </div>
 

@@ -33,6 +33,9 @@ class PesertaBimbinganSeeder extends Seeder
             ['username' => 'khalid', 'nama' => 'Khalid Ibrahim', 'email' => 'khalid@gmail.com', 'angkatan' => 2022],
         ];
 
+        // Ambil role_id untuk mahasiswa
+        $roleId = DB::table('role')->where('role_name', 'mhs')->first()->id;
+
         foreach ($mahasiswaData as $m) {
 
             // 1. Buat user jika belum ada
@@ -42,6 +45,7 @@ class PesertaBimbinganSeeder extends Seeder
                     'name' => $m['nama'],
                     'email' => $m['email'],
                     'password' => Hash::make($m['username']),
+                    'role_id' => $roleId,
                 ]
             );
 
@@ -90,6 +94,7 @@ class PesertaBimbinganSeeder extends Seeder
                     'jenis_bimbingan' => 'pkl',
                 ],
                 [
+                    'bimbingan_id' => rand(1, 4), // asumsikan ada 4 bimbingan
                     'ditunjuk_oleh' => $insho->id,
                     'tanggal_penunjukan' => now(),
                     // 'status_peserta_bimbingan_id' => 1, // default 1

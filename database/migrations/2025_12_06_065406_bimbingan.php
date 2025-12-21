@@ -31,12 +31,20 @@ return new class extends Migration {
                 $table->text('catatan')->nullable();
 
                 $table->string('wag')->nullable();
+                $table->string('hari_availables')->nullable();
                 $table->text('wa_message_template')->nullable();
                 $table->string('file_surat_tugas')->nullable();
                 $table->string('nomor_surat_tugas')->nullable();
                 $table->date('akhir_masa_bimbingan')->nullable();
 
                 $table->timestamps();
+
+                // UNIQUE COMPOSITE
+                $table->unique([
+                    'pembimbing_id',
+                    'jenis_bimbingan_id',
+                    'tahun_ajar_id'
+                ], 'bimbingan_unique_per_tahun');
             });
         }
     }
