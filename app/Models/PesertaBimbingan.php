@@ -18,6 +18,10 @@ class PesertaBimbingan extends Model
         'tanggal_penunjukan',
         'status_peserta_bimbingan_id',
         'keterangan',
+        'progress',
+        'terakhir_topik',
+        'terakhir_bimbingan',
+        'terakhir_reviewed',
     ];
 
     /**

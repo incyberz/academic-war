@@ -2,23 +2,47 @@
 'avatar',
 'nama',
 'progress' => 0,
-'tanggal',
-'topik',
-'status',
-'wa',
+'terakhir_topik'=>null,
+'terakhir_bimbingan'=>null,
+'terakhir_reviewed'=>null,
+'status'=>null,
+'wa'=>null,
+'isTelatBimbingan'=>false,
+'isKritisBimbingan'=>false,
 ])
+
+
+@php
+$isBelumBimbingan = empty($terakhir_topik);
+$cardBgRed = 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800 hover:bg-red-100
+dark:hover:bg-red-900/30';
+$cardBgYellow = 'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800 hover:bg-yellow-100
+dark:hover:bg-yellow-900/30';
+$cardBgNormal = 'bg-white dark:bg-slate-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50
+dark:hover:bg-gray-800';
+
+if($isBelumBimbingan) {
+$cardBgClass = $cardBgRed;
+} elseif ($isKritisBimbingan) {
+$cardBgClass = $cardBgRed;
+} elseif ($isTelatBimbingan) {
+$cardBgClass = $cardBgYellow;
+} else {
+$cardBgClass = $cardBgNormal;
+}
+
+@endphp
 
 <div {{ $attributes->merge([
     'class' => '
     flex items-center p-2 md:p-3
     rounded-lg
-    border border-gray-200 dark:border-gray-700
-    hover:bg-gray-50 dark:hover:bg-gray-800
+    border
     transition
     gap-3
-    '
-    ]) }}
-    >
+    ' .
+    $cardBgClass
+    ]) }}>
     {{-- Avatar --}}
     <img src="{{ $avatar
             ? asset('storage/' . $avatar)
@@ -42,10 +66,68 @@
             </p>
         </div>
 
-        <p class="text-xs text-gray-500 dark:text-gray-400">
-            {{ \Carbon\Carbon::parse($tanggal)->format('l, d M Y H:i') }}
-            {{ $topik ? " • $topik " : '' }}
-        </p>
+        {{-- Terakhir Update --}}
+        <div class="mt-2 space-y-0.5 text-xs text-gray-500 dark:text-gray-400">
+
+            @if(!$terakhir_topik)
+            <p class="truncate">
+                <span class="inline-block text-xs text-red-700 dark:text-red-300
+                                 bg-red-100 dark:bg-red-900/40
+                                 px-2 pt-1 pb-1.5 rounded">
+                    ⚠️ Belum Bimbingan
+                </span>
+            </p> @else
+            {{-- Topik terakhir --}}
+            <p class="truncate">
+                📝 <span class="font-medium text-gray-600 dark:text-gray-300 py-1">
+                    {{ $terakhir_topik }}
+                </span>
+            </p>
+
+            {{-- Kritis | Telat Bimbingan --}}
+            @if ($isKritisBimbingan)
+            <p class="truncate">
+                <span class="inline-block text-xs text-red-700 dark:text-red-300
+                                                 bg-red-100 dark:bg-red-900/40
+                                                 px-2 pt-1 pb-1.5 rounded">
+                    ⚠️ Kritis Bimbingan
+                </span>
+            </p>
+            @elseif ($isTelatBimbingan)
+            <p class="truncate">
+                <span class="inline-block text-xs text-yellow-700 dark:text-yellow-300
+                                 bg-yellow-100 dark:bg-yellow-900/40
+                                 px-2 pt-1 pb-1.5 rounded">
+                    ⏰ Telat Bimbingan
+                </span>
+            </p>
+            @endif
+
+            {{-- Terakhir bimbingan --}}
+            <p>
+                👨‍🎓 Bimbingan:
+                <span class="font-medium">
+                    {{ $terakhir_bimbingan
+                    ? \Carbon\Carbon::parse($terakhir_bimbingan)->diffForHumans()
+                    : 'Belum ada' }}
+                </span>
+            </p>
+
+            {{-- Terakhir direview --}}
+            <p>
+                👨‍🏫 Review:
+                <span class="font-medium">
+                    {{ $terakhir_reviewed
+                    ? \Carbon\Carbon::parse($terakhir_reviewed)->diffForHumans()
+                    : 'Belum direview' }}
+                </span>
+            </p>
+            @endif
+
+
+        </div>
+
+
 
         {{-- Status --}}
         <div class="mt-2">

@@ -10,6 +10,8 @@ use App\Models\Dosen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use App\Services\BimbinganRuleService;
+
 
 class BimbinganController extends Controller
 {
@@ -142,6 +144,8 @@ class BimbinganController extends Controller
     public function show(Bimbingan $bimbingan)
     {
 
+
+
         if (isRole('dosen')) {
             $dosen = Dosen::where('user_id', Auth::id())->first();
 
@@ -149,6 +153,11 @@ class BimbinganController extends Controller
                 return redirect()
                     ->back()
                     ->with('error', 'Akun Anda tidak terdaftar sebagai dosen.');
+            }
+            if (!$dosen->prodi_id) {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Dosen ini tidak punya homebase.');
             }
 
             $pembimbing = Pembimbing::where('dosen_id', $dosen->id)
@@ -158,8 +167,11 @@ class BimbinganController extends Controller
             if (!$pembimbing || $bimbingan->pembimbing_id !== $pembimbing->id) {
                 return redirect()
                     ->back()
-                    ->with('error', 'Anda tidak memiliki akses ke bimbingan ini.');
+                    ->with('error', 'Anda tidak terdaftar sebagai pembimbing aktif.');
             }
+
+            $fakultas = $dosen->prodi->fakultas;
+            $rules = new BimbinganRuleService($fakultas);
 
             $listPeserta = $bimbingan->pesertaBimbingan()
                 ->with([
@@ -175,13 +187,18 @@ class BimbinganController extends Controller
                         'nama'     => $peserta->mahasiswa->nama,
                         'nim'      => $peserta->mahasiswa->nim,
 
-                        'progress' => $peserta->progress ?? 0,
                         'tanggal'  => $peserta->tanggal_penunjukan,
                         'topik'    => $peserta->keterangan ?? null,
 
                         'status'   => $peserta->status->nama ?? 'Aktif',
 
                         'wa'       => $peserta->mahasiswa->user->whatsapp ?? null,
+
+                        'progress' => $peserta->progress ?? 0,
+                        'terakhir_topik' => $peserta->terakhir_topik ?? null,
+                        'terakhir_bimbingan' => $peserta->terakhir_bimbingan ?? null,
+                        'terakhir_reviewed' => $peserta->terakhir_reviewed ?? null,
+
                     ];
                 });
         }
@@ -193,7 +210,7 @@ class BimbinganController extends Controller
             'tahunAjar',
         ]);
 
-        return view('bimbingan.show', compact('bimbingan', 'dosen', 'pembimbing', 'listPeserta'));
+        return view('bimbingan.show', compact('bimbingan', 'dosen', 'pembimbing', 'listPeserta', 'rules'));
     }
 
     /**

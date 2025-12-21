@@ -28,7 +28,7 @@ class Dosen extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -36,6 +36,6 @@ class Dosen extends Model
      */
     public function prodi()
     {
-        return $this->belongsTo(Prodi::class);
+        return $this->belongsTo(Prodi::class, 'prodi_id');
     }
 }

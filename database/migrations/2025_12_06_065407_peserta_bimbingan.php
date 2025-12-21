@@ -39,6 +39,16 @@ return new class extends Migration
 
             // tambahan keterangan opsional
             $table->string('keterangan')->nullable();
+            $table->unsignedTinyInteger('progress')
+                ->default(0);
+
+            $table->timestamp('terakhir_topik')
+                ->nullable();
+            $table->timestamp('terakhir_bimbingan')
+                ->nullable();
+
+            $table->timestamp('terakhir_reviewed')
+                ->nullable();
 
             $table->timestamps();
         });

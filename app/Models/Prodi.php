@@ -10,7 +10,6 @@ class Prodi extends Model
     use HasFactory;
 
     protected $table = 'prodi';
-    protected $primaryKey = 'prodi';
 
 
     protected $fillable = [
@@ -36,6 +35,6 @@ class Prodi extends Model
      */
     public function dosen()
     {
-        return $this->hasMany(Dosen::class, 'dosen_id', 'id');
+        return $this->hasMany(Dosen::class, 'prodi_id');
     }
 }

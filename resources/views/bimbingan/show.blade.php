@@ -19,10 +19,16 @@
       @else
       <x-grid class="space-y-3">
 
+
         @foreach ($listPeserta as $peserta)
+        @php $isTelatBimbingan = $rules->isTelatBimbingan($peserta['terakhir_bimbingan']); @endphp
+        @php $isKritisBimbingan = $rules->isKritisBimbingan($peserta['terakhir_bimbingan']); @endphp
+
         <x-card-peserta :avatar="$peserta['avatar']" :nama="$peserta['nama']" :nim="$peserta['nim']"
-          :progress="$peserta['progress']" :tanggal="$peserta['tanggal']" :topik="$peserta['topik']"
-          :status="$peserta['status']" :wa="$peserta['wa']" />
+          :progress="$peserta['progress']" :tanggal="$peserta['tanggal']" :status="$peserta['status']"
+          :wa="$peserta['wa']" :terakhir_topik="$peserta['terakhir_topik']"
+          :terakhir_bimbingan="$peserta['terakhir_bimbingan']" :terakhir_reviewed="$peserta['terakhir_reviewed']"
+          :isTelatBimbingan="$isTelatBimbingan" :isKritisBimbingan="$isKritisBimbingan" />
         @endforeach
       </x-grid>
       @endif
