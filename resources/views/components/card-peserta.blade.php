@@ -9,6 +9,8 @@
 'wa'=>null,
 'isTelatBimbingan'=>false,
 'isKritisBimbingan'=>false,
+'tahun_ajar'=> session('tahun_ajar_id'),
+'id'=>0,
 ])
 
 
@@ -52,9 +54,17 @@ $cardBgClass = $cardBgNormal;
 
     {{-- Info --}}
     <div class="flex-1">
-        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            {{ $nama }}
-        </p>
+        <div class="flex items-center justify-between gap-2">
+            <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                {{ $nama }}
+            </span>
+
+            <span class="text-[11px] px-2 py-0 rounded-md
+                         bg-indigo-100 text-indigo-700
+                         dark:bg-indigo-900/40 dark:text-indigo-300">
+                {{ $tahun_ajar }}
+            </span>
+        </div>
 
         {{-- Progress --}}
         <div class="my-1">
@@ -69,102 +79,134 @@ $cardBgClass = $cardBgNormal;
         {{-- Terakhir Update --}}
         <div class="mt-2 space-y-0.5 text-xs text-gray-500 dark:text-gray-400">
 
-            @if(!$terakhir_topik)
-            <p class="truncate">
-                <span class="inline-block text-xs text-red-700 dark:text-red-300
-                                 bg-red-100 dark:bg-red-900/40
-                                 px-2 pt-1 pb-1.5 rounded">
-                    ⚠️ Belum Bimbingan
-                </span>
-            </p> @else
-            {{-- Topik terakhir --}}
-            <p class="truncate">
-                📝 <span class="font-medium text-gray-600 dark:text-gray-300 py-1">
-                    {{ $terakhir_topik }}
-                </span>
-            </p>
 
-            {{-- Kritis | Telat Bimbingan --}}
-            @if ($isKritisBimbingan)
-            <p class="truncate">
-                <span class="inline-block text-xs text-red-700 dark:text-red-300
-                                                 bg-red-100 dark:bg-red-900/40
-                                                 px-2 pt-1 pb-1.5 rounded">
-                    ⚠️ Kritis Bimbingan
-                </span>
-            </p>
-            @elseif ($isTelatBimbingan)
-            <p class="truncate">
-                <span class="inline-block text-xs text-yellow-700 dark:text-yellow-300
-                                 bg-yellow-100 dark:bg-yellow-900/40
-                                 px-2 pt-1 pb-1.5 rounded">
-                    ⏰ Telat Bimbingan
-                </span>
-            </p>
-            @endif
+            <div class="flex justify-between gap-2">
+                <div>
+                    @if(!$terakhir_topik)
+                    <p class="truncate">
+                        <span class="inline-block text-xs text-red-700 dark:text-red-300
+                                         bg-red-100 dark:bg-red-900/40
+                                         px-2 pt-1 pb-1.5 rounded">
+                            ⚠️ Belum Bimbingan
+                        </span>
+                    </p>
+                    @else
+                    {{-- Topik terakhir --}}
+                    <p class="truncate">
+                        📝 <span class="font-medium text-gray-600 dark:text-gray-300 py-1">
+                            {{ $terakhir_topik }}
+                        </span>
+                    </p>
 
-            {{-- Terakhir bimbingan --}}
-            <p>
-                👨‍🎓 Bimbingan:
-                <span class="font-medium">
-                    {{ $terakhir_bimbingan
-                    ? \Carbon\Carbon::parse($terakhir_bimbingan)->diffForHumans()
-                    : 'Belum ada' }}
-                </span>
-            </p>
+                    {{-- Kritis | Telat Bimbingan --}}
+                    @if ($isKritisBimbingan)
+                    <p class="truncate">
+                        <span class="inline-block text-xs text-red-700 dark:text-red-300
+                                                         bg-red-100 dark:bg-red-900/40
+                                                         px-2 pt-1 pb-1.5 rounded">
+                            ⚠️ Kritis Bimbingan
+                        </span>
+                    </p>
+                    @elseif ($isTelatBimbingan)
+                    <p class="truncate">
+                        <span class="inline-block text-xs text-yellow-700 dark:text-yellow-300
+                                         bg-yellow-100 dark:bg-yellow-900/40
+                                         px-2 pt-1 pb-1.5 rounded">
+                            ⏰ Telat Bimbingan
+                        </span>
+                    </p>
+                    @endif
 
-            {{-- Terakhir direview --}}
-            <p>
-                👨‍🏫 Review:
-                <span class="font-medium">
-                    {{ $terakhir_reviewed
-                    ? \Carbon\Carbon::parse($terakhir_reviewed)->diffForHumans()
-                    : 'Belum direview' }}
-                </span>
-            </p>
-            @endif
+                    {{-- Terakhir bimbingan --}}
+                    <p>
+                        👨‍🎓 Bimbingan:
+                        <span class="font-medium">
+                            {{ $terakhir_bimbingan
+                            ? \Carbon\Carbon::parse($terakhir_bimbingan)->diffForHumans()
+                            : 'Belum ada' }}
+                        </span>
+                    </p>
 
+                    {{-- Terakhir direview --}}
+                    <p>
+                        👨‍🏫 Review:
+                        <span class="font-medium">
+                            {{ $terakhir_reviewed
+                            ? \Carbon\Carbon::parse($terakhir_reviewed)->diffForHumans()
+                            : 'Belum direview' }}
+                        </span>
+                    </p>
+
+
+                    {{-- Status --}}
+                    <div class="mt-2">
+                        @if ($status === 'Selesai')
+                        <span class="text-green-600 text-xs px-2 py-1 rounded
+                                                 bg-green-100 dark:bg-green-900
+                                                 dark:text-green-300">
+                            Selesai
+                        </span>
+                        @elseif ($status === 'Hari Ini')
+                        <span class="text-indigo-600 text-xs px-2 py-1 rounded
+                                                 bg-indigo-100 dark:bg-indigo-900/30">
+                            Hari Ini
+                        </span>
+                        @else
+                        <span class="text-yellow-600 text-xs px-2 py-1 rounded
+                                                 bg-yellow-100 dark:bg-yellow-900/30">
+                            {{ $status }}
+                        </span>
+                        @endif
+
+                        {{-- link detail peserta bimbingan --}}
+                        <a href="#">
+                            <span class="ml-2 text-sm font-medium text-indigo-600
+                                        hover:text-indigo-800 hover:underline
+                                        dark:text-indigo-400 dark:hover:text-indigo-300">
+                                Detail →</span>
+                        </a>
+                    </div>
+                    @endif
+                </div>
+                <div>
+                    {{-- Action --}}
+                    <div class="flex flex-col items-center gap-2">
+                        {{-- WhatsApp Reminder --}}
+                        <a href="https://wa.me/{{ $wa }}" target="_blank"
+                            class="text-green-600 hover:text-green-700 transition" title="WhatsApp Reminder">
+                            @include('components.whatsapp-icon')
+                        </a>
+
+                        {{-- WhatsApp Cancel --}}
+                        @if ($status !== 'Selesai')
+                        <a href="https://wa.me/{{ $wa }}" target="_blank"
+                            class="text-red-600 hover:text-red-700 transition" title="Batalkan Bimbingan">
+                            @include('components.whatsapp-icon')
+                        </a>
+                        @endif
+
+                        <form action="{{ route('peserta-bimbingan.destroy', $id) }}" method="POST" class="inline"
+                            onsubmit="return confirm('Yakin ingin menghapus peserta bimbingan ini?')">
+                            @csrf
+                            @method('DELETE')
+
+                            <button type="submit" title="Hapus Peserta" class="text-red-600 hover:text-red-700
+               dark:text-red-400 dark:hover:text-red-300
+               transition">
+                                @include('components.trash-icon')
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
 
         </div>
 
 
 
-        {{-- Status --}}
-        <div class="mt-2">
-            @if ($status === 'Selesai')
-            <span class="text-green-600 text-xs px-2 py-1 rounded
-                             bg-green-100 dark:bg-green-900
-                             dark:text-green-300">
-                Selesai
-            </span>
-            @elseif ($status === 'Hari Ini')
-            <span class="text-indigo-600 text-xs px-2 py-1 rounded
-                             bg-indigo-100 dark:bg-indigo-900/30">
-                Hari Ini
-            </span>
-            @else
-            <span class="text-yellow-600 text-xs px-2 py-1 rounded
-                             bg-yellow-100 dark:bg-yellow-900/30">
-                {{ $status }}
-            </span>
-            @endif
-        </div>
+
     </div>
 
-    {{-- Action --}}
-    <div class="flex flex-col items-center gap-2">
-        {{-- WhatsApp Reminder --}}
-        <a href="https://wa.me/{{ $wa }}" target="_blank" class="text-green-600 hover:text-green-700 transition"
-            title="WhatsApp Reminder">
-            @include('components.whatsapp-icon')
-        </a>
 
-        {{-- WhatsApp Cancel --}}
-        @if ($status !== 'Selesai')
-        <a href="https://wa.me/{{ $wa }}" target="_blank" class="text-red-600 hover:text-red-700 transition"
-            title="Batalkan Bimbingan">
-            @include('components.whatsapp-icon')
-        </a>
-        @endif
-    </div>
 </div>

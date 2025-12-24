@@ -45,64 +45,23 @@ class Bimbingan extends Model
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * Relasi ke Pembimbing
-     * bimbingan.pembimbing_id → pembimbing.id
-     */
     public function pembimbing()
     {
-        return $this->belongsTo(Pembimbing::class);
+        return $this->belongsTo(Pembimbing::class, 'pembimbing_id');
     }
 
-    /**
-     * Relasi ke Peserta Bimbingan
-     */
     public function pesertaBimbingan()
     {
-        return $this->hasMany(
-            PesertaBimbingan::class,
-            'bimbingan_id', // FK di tabel peserta_bimbingan
-            'id'            // PK di tabel bimbingan
-        );
+        return $this->hasMany(PesertaBimbingan::class, 'bimbingan_id');
     }
 
-    /**
-     * Relasi ke Jenis Bimbingan
-     * bimbingan.jenis_bimbingan_id → jenis_bimbingan.id
-     */
     public function jenisBimbingan()
     {
-        return $this->belongsTo(JenisBimbingan::class);
+        return $this->belongsTo(JenisBimbingan::class, 'jenis_bimbingan_id');
     }
 
-    /**
-     * Relasi ke Tahun Ajar
-     * bimbingan.tahun_ajar_id → tahun_ajar.id
-     */
     public function tahunAjar()
     {
-        return $this->belongsTo(TahunAjar::class);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | SCOPES
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * Scope bimbingan aktif
-     */
-    public function scopeAktif($query)
-    {
-        return $query->where('status', 'aktif');
-    }
-
-    /**
-     * Scope bimbingan selesai
-     */
-    public function scopeSelesai($query)
-    {
-        return $query->where('status', 'selesai');
+        return $this->belongsTo(TahunAjar::class, 'tahun_ajar_id');
     }
 }

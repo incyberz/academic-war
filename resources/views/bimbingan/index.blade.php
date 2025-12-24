@@ -14,7 +14,7 @@
 
       <a href="{{ route('jenis-bimbingan.index') }}">
         <x-btn-add>
-          Tambah Bimbingan
+          Add Bimbingan
         </x-btn-add>
       </a>
     </div>

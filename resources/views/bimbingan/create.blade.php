@@ -14,7 +14,7 @@
   <div class="max-w-4xl mx-auto py-6 px-4">
 
     <h1 class="text-2xl font-bold mb-6">
-      Tambah Bimbingan
+      Add Bimbingan
     </h1>
 
     <form action="{{ route('bimbingan.store') }}" method="POST" enctype="multipart/form-data"

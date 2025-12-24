@@ -1,13 +1,16 @@
 <x-app-layout>
+  @php $namaBimbingan = $bimbingan->jenisBimbingan->nama; @endphp
 
-  <x-page-header title="Detail Bimbingan" :subtitle="$bimbingan->jenisBimbingan->nama" />
+  <x-page-header title="My Bimbingan" subtitle="Dashboard Bimbingan TA.{{$tahunAjarAktif}}/{{$semesterAktif}}" />
+  <div class="mb-3">Nav Bimbingan: Skripsi | PKL | PPL | PAL</div>
+
 
   {{-- LIST PESERTA --}}
   <x-card class="mb-6">
 
     <x-card-header>
       <h2 class="font-semibold text-lg">
-        Peserta Bimbingan
+        Peserta {{$namaBimbingan}}
       </h2>
     </x-card-header>
 
@@ -25,13 +28,17 @@
         @php $isKritisBimbingan = $rules->isKritisBimbingan($peserta['terakhir_bimbingan']); @endphp
 
         <x-card-peserta :avatar="$peserta['avatar']" :nama="$peserta['nama']" :nim="$peserta['nim']"
-          :progress="$peserta['progress']" :tanggal="$peserta['tanggal']" :status="$peserta['status']"
-          :wa="$peserta['wa']" :terakhir_topik="$peserta['terakhir_topik']"
-          :terakhir_bimbingan="$peserta['terakhir_bimbingan']" :terakhir_reviewed="$peserta['terakhir_reviewed']"
-          :isTelatBimbingan="$isTelatBimbingan" :isKritisBimbingan="$isKritisBimbingan" />
+          :progress="$peserta['progress']" :status="$peserta['status']" :wa="$peserta['wa']"
+          :terakhir_topik="$peserta['terakhir_topik']" :terakhir_bimbingan="$peserta['terakhir_bimbingan']"
+          :terakhir_reviewed="$peserta['terakhir_reviewed']" :isTelatBimbingan="$isTelatBimbingan"
+          :isKritisBimbingan="$isKritisBimbingan" :tahun_ajar="$peserta['tahun_ajar']" :id="$peserta['id']" />
         @endforeach
       </x-grid>
       @endif
+
+      <a href="{{route('peserta-bimbingan.create', ['bimbingan_id' => $bimbingan->id])}}" class="mt-4 inline-block">
+        <x-btn-add>Add Peserta {{$namaBimbingan}}</x-btn-add>
+      </a>
 
     </x-card-body>
 

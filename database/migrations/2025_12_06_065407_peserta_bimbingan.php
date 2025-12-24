@@ -27,10 +27,6 @@ return new class extends Migration
                 ->constrained('users')
                 ->nullOnDelete();
 
-            $table->dateTime('tanggal_penunjukan')->useCurrent();
-
-            $table->string('jenis_bimbingan', 30);
-
             // status peserta -> FK numeric ke tabel status_peserta_bimbingan (default 1 = aktif)
             $table->foreignId('status_peserta_bimbingan_id')
                 ->default(1)

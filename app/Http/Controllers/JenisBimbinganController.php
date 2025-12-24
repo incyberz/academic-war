@@ -23,17 +23,19 @@ class JenisBimbinganController extends Controller
             ->get();
 
         $myBimbingan = collect();
+        $dosen = collect();
+        $pembimbing = collect();
 
         // cek role dosen
         if (isRole('dosen')) {
 
-            $dosenId = Dosen::where('user_id', Auth::id())->value('id');
-            $pembimbingId = Pembimbing::where('dosen_id', $dosenId)->value('id');
+            $dosen = Dosen::where('user_id', Auth::id())->first();
+            $pembimbing = Pembimbing::where('dosen_id', $dosen->id)->first();
 
             foreach ($jenisBimbingan as $jenis) {
 
                 // ambil bimbingan milik dosen pada jenis ini
-                $bimbinganSaya = Bimbingan::where('pembimbing_id', $pembimbingId)
+                $bimbinganSaya = Bimbingan::where('pembimbing_id', $pembimbing->id)
                     ->where('jenis_bimbingan_id', $jenis->id)
                     ->withCount('pesertaBimbingan')
                     ->get();
@@ -47,7 +49,7 @@ class JenisBimbinganController extends Controller
             }
         }
 
-        return view('jenis-bimbingan.index', compact('jenisBimbingan', 'myBimbingan'));
+        return view('jenis-bimbingan.index', compact('jenisBimbingan', 'myBimbingan', 'dosen', 'pembimbing'));
     }
 
 

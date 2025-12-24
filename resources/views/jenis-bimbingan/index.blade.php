@@ -8,6 +8,16 @@
 
     {{-- ================== ROLE: DOSEN ================== --}}
     @if ($role === 'dosen')
+    @php
+    $statusPembimbingAktif = $pembimbing->count() ? $pembimbing->is_active : false;
+    @endphp
+
+    <span class="inline-flex rounded-full px-3 py-1 text-sm font-semibold mb-3
+        {{ $statusPembimbingAktif ? 'bg-green-100 text-green-700' :
+           'bg-red-100 text-red-700' }}">
+      {{ $statusPembimbingAktif ? 'Pembimbing Aktif' :
+      'Perhatian! ⚠️ Status pembimbing Anda Nonaktif' }}
+    </span>
 
     @php
     $myBimbinganMap = collect($myBimbingan ?? [])
@@ -27,14 +37,11 @@
               {{ $item['jenis_bimbingan']->nama }}
             </h2>
 
-            <p class="text-sm text-gray-600 mt-1">
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300 truncate">
               {{ $item['jenis_bimbingan']->deskripsi }}
             </p>
           </div>
 
-          <span class="text-xs px-2 py-1 rounded bg-green-100 text-green-700">
-            Aktif
-          </span>
         </x-card-header>
 
         {{-- BODY --}}
@@ -54,12 +61,18 @@
         {{-- FOOTER --}}
         <x-card-footer>
 
+          @if($statusPembimbingAktif)
           <a href="{{ route('bimbingan.show', $item['jenis_bimbingan']->id
               ) }}">
             <x-btn-primary class="text-xs md:text-sm w-full">
               Kelola Bimbingan
             </x-btn-primary>
           </a>
+          @else
+          <x-btn-secondary class="w-full cursor-not-allowed opacity-60 text-xs md:text-sm" disabled>
+            Kelola Bimbingan (Nonaktif)
+          </x-btn-secondary>
+          @endif
 
         </x-card-footer>
 
@@ -97,7 +110,7 @@
 
 
 
-
+    @if($statusPembimbingAktif)
     <hr class="my-8">
     <h1 class="text-2xl font-bold mb-6">
       Create Bimbingan Lainnya
@@ -149,6 +162,7 @@
 
       @endforeach
     </div>
+    @endif
 
     {{-- ================== ROLE: AKADEMIK ================== --}}
     @elseif ($role === 'akademik')

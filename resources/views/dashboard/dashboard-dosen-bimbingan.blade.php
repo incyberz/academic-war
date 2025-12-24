@@ -97,7 +97,6 @@
       </x-error>
       @endif
 
-      {{-- Tambah Peserta Bimbingan --}}
       <div class="text-end">
         <a href="">
           <x-btn-add>

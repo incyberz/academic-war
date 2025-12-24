@@ -17,12 +17,12 @@ class JenisBimbinganSeeder extends Seeder
         $data = [
             [
                 'kode' => 'pkl',
-                'nama' => 'Pembimbingan PKL',
-                'deskripsi' => 'Pembimbingan untuk kegiatan Praktik Kerja Lapangan.',
+                'nama' => 'Bimbingan PKL',
+                'deskripsi' => 'Bimbingan untuk kegiatan Praktik Kerja Lapangan.',
             ],
             [
                 'kode' => 'skripsi',
-                'nama' => 'Pembimbingan Skripsi',
+                'nama' => 'Bimbingan Skripsi',
                 'deskripsi' => 'Untuk mahasiswa program sarjana (S1).',
             ],
             [
@@ -33,7 +33,7 @@ class JenisBimbinganSeeder extends Seeder
             [
                 'kode' => 'kkn',
                 'nama' => 'Kuliah Kerja Nyata',
-                'deskripsi' => 'Pembimbingan kegiatan Kuliah Kerja Nyata mahasiswa.',
+                'deskripsi' => 'Bimbingan kegiatan Kuliah Kerja Nyata mahasiswa.',
             ],
             [
                 'kode' => 'pwl',
@@ -64,12 +64,12 @@ class JenisBimbinganSeeder extends Seeder
             ],
             [
                 'kode' => 'tesis',
-                'nama' => 'Pembimbingan Tesis',
+                'nama' => 'Bimbingan Tesis',
                 'deskripsi' => 'Bimbingan tesis mahasiswa program magister (S2).',
             ],
             [
                 'kode' => 'disertasi',
-                'nama' => 'Pembimbingan Disertasi',
+                'nama' => 'Bimbingan Disertasi',
                 'deskripsi' => 'Bimbingan disertasi mahasiswa program doktor (S3).',
             ],
             [

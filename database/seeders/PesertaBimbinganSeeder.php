@@ -91,12 +91,10 @@ class PesertaBimbinganSeeder extends Seeder
             PesertaBimbingan::firstOrCreate(
                 [
                     'mhs_id' => $mhs->id,
-                    'jenis_bimbingan' => 'pkl',
                 ],
                 [
                     'bimbingan_id' => rand(1, 4), // asumsikan ada 4 bimbingan
                     'ditunjuk_oleh' => $insho->id,
-                    'tanggal_penunjukan' => now(),
                     // 'status_peserta_bimbingan_id' => 1, // default 1
                 ]
             );
