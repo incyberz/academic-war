@@ -146,6 +146,7 @@ class BimbinganController extends Controller
         $tahun_ajar_id = session()->get('tahun_ajar_id');
         $dosen = collect();
         $pembimbing = collect();
+        $bimbingans = collect();
         $listPeserta = [];
         $rules = null;
 
@@ -153,35 +154,61 @@ class BimbinganController extends Controller
         if (isRole('dosen')) {
             $dosen = Dosen::where('user_id', Auth::id())->first();
             $pembimbing = Pembimbing::where('dosen_id', $dosen->id)->first();
+
+            $myJenisBimbingan = JenisBimbingan::whereHas('bimbingan', function ($q) use ($dosen) {
+                $q->whereHas('pembimbing', function ($q) use ($dosen) {
+                    $q->where('dosen_id', $dosen->id);
+                });
+            })->get();
+
             $fakultas = $dosen->prodi->fakultas;
             $rules = new BimbinganRuleService($fakultas);
-            $listPeserta = $bimbingan->pesertaBimbingan()
+
+            # ============================================================
+            # SPA DATA
+            # ============================================================
+            $bimbingans = Bimbingan::where('pembimbing_id', $pembimbing->id)
+                ->where('tahun_ajar_id', $tahun_ajar_id)
                 ->with([
-                    'mahasiswa.user',   // FKs
-                    'status', // FK status
-                    'bimbingan', // FK bimbingan
-                ])
-                ->get()
-                ->map(function ($peserta) {
-                    return [
-                        'avatar'   => $peserta->mahasiswa->user->avatar
-                            ?? null,
+                    'pembimbing',
+                    'jenisBimbingan',
+                    'tahunAjar',
+                ])->get();
 
-                        'nama'     => $peserta->mahasiswa->nama,
-                        'nim'      => $peserta->mahasiswa->nim,
+            foreach ($bimbingans as  $bimb) {
 
-                        'status'   => $peserta->status->nama ?? 'Aktif',
+                $bimbingan = Bimbingan::find($bimb->id); // replace param
 
-                        'wa'       => $peserta->mahasiswa->user->whatsapp ?? null,
+                $listPeserta[$bimb->id] = $bimbingan->pesertaBimbingan()
+                    ->with([
+                        'mahasiswa.user',   // FKs
+                        'status', // FK status
+                        'bimbingan', // FK bimbingan
+                    ])
+                    ->where('bimbingan_id', $bimb->id)
+                    ->get()
+                    ->map(function ($peserta) {
+                        return [
+                            'avatar'   => $peserta->mahasiswa->user->avatar
+                                ?? null,
 
-                        'progress' => $peserta->progress ?? 0,
-                        'terakhir_topik' => $peserta->terakhir_topik ?? null,
-                        'terakhir_bimbingan' => $peserta->terakhir_bimbingan ?? null,
-                        'terakhir_reviewed' => $peserta->terakhir_reviewed ?? null,
-                        'tahun_ajar'       => $peserta->bimbingan->tahun_ajar_id,
-                        'id'       => $peserta->id,
-                    ];
-                });
+                            'nama'     => $peserta->mahasiswa->nama,
+                            'nim'      => $peserta->mahasiswa->nim,
+
+                            'status'   => $peserta->status->nama ?? 'Aktif',
+
+                            'wa'       => $peserta->mahasiswa->user->whatsapp ?? null,
+
+                            'progress' => $peserta->progress ?? 0,
+                            'terakhir_topik' => $peserta->terakhir_topik ?? null,
+                            'terakhir_bimbingan' => $peserta->terakhir_bimbingan ?? null,
+                            'terakhir_reviewed' => $peserta->terakhir_reviewed ?? null,
+                            'tahun_ajar'       => $peserta->bimbingan->tahun_ajar_id,
+                            'id'       => $peserta->id,
+                        ];
+                    });
+                // dd($listPeserta);
+            }
         } else {
             dump("Akses untuk role selain dosen belum diimplementasi.");
         }
@@ -192,7 +219,15 @@ class BimbinganController extends Controller
             'tahunAjar',
         ]);
 
-        return view('bimbingan.show', compact('bimbingan', 'dosen', 'pembimbing', 'listPeserta', 'rules'));
+        return view('bimbingan.show', compact(
+            'bimbingan',
+            'bimbingans',
+            'dosen',
+            'pembimbing',
+            'listPeserta',
+            'rules',
+            'myJenisBimbingan'
+        ));
     }
 
     /**
