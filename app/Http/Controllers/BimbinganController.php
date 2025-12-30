@@ -7,6 +7,8 @@ use App\Models\Pembimbing;
 use App\Models\JenisBimbingan;
 use App\Models\TahunAjar;
 use App\Models\Dosen;
+use App\Models\Mhs;
+use App\Models\EligibleBimbingan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -148,6 +150,7 @@ class BimbinganController extends Controller
         $pembimbing = collect();
         $bimbingans = collect();
         $listPeserta = [];
+        $notPeserta = [];
         $rules = null;
 
 
@@ -173,42 +176,54 @@ class BimbinganController extends Controller
                     'pembimbing',
                     'jenisBimbingan',
                     'tahunAjar',
+                    'pesertaBimbingan.mahasiswa.user',
+                    'pesertaBimbingan.status',
                 ])->get();
 
-            foreach ($bimbingans as  $bimb) {
+            // ambil semua mahasiswa sekali
+            $allMahasiswa = Mhs::with('user')->get();
 
-                $bimbingan = Bimbingan::find($bimb->id); // replace param
+            $eligibleMahasiswa = EligibleBimbingan::with('mahasiswa.user')
+                ->get()
+                ->groupBy('jenis_bimbingan_id');
 
-                $listPeserta[$bimb->id] = $bimbingan->pesertaBimbingan()
-                    ->with([
-                        'mahasiswa.user',   // FKs
-                        'status', // FK status
-                        'bimbingan', // FK bimbingan
-                    ])
-                    ->where('bimbingan_id', $bimb->id)
-                    ->get()
-                    ->map(function ($peserta) {
-                        return [
-                            'avatar'   => $peserta->mahasiswa->user->avatar
-                                ?? null,
+            foreach ($bimbingans as $bimb) {
 
-                            'nama'     => $peserta->mahasiswa->nama,
-                            'nim'      => $peserta->mahasiswa->nim,
+                $pesertaCollection = $bimb->pesertaBimbingan;
+                $jenisBimbId  = $bimb->jenis_bimbingan_id;
 
-                            'status'   => $peserta->status->nama ?? 'Aktif',
+                // list peserta untuk x-card-peserta
+                $listPeserta[$bimb->jenis_bimbingan_id] = $pesertaCollection->map(function ($peserta) use ($bimb) {
+                    return [
+                        'avatar'   => optional($peserta->mahasiswa->user)->avatar,
+                        'nama'     => $peserta->mahasiswa->nama,
+                        'nim'      => $peserta->mahasiswa->nim,
+                        'status'   => optional($peserta->status)->nama ?? 'Aktif',
+                        'wa'       => optional($peserta->mahasiswa->user)->whatsapp,
+                        'progress' => $peserta->progress ?? 0,
 
-                            'wa'       => $peserta->mahasiswa->user->whatsapp ?? null,
+                        'terakhir_topik'       => $peserta->terakhir_topik,
+                        'terakhir_bimbingan'   => $peserta->terakhir_bimbingan,
+                        'terakhir_reviewed'    => $peserta->terakhir_reviewed,
 
-                            'progress' => $peserta->progress ?? 0,
-                            'terakhir_topik' => $peserta->terakhir_topik ?? null,
-                            'terakhir_bimbingan' => $peserta->terakhir_bimbingan ?? null,
-                            'terakhir_reviewed' => $peserta->terakhir_reviewed ?? null,
-                            'tahun_ajar'       => $peserta->bimbingan->tahun_ajar_id,
-                            'id'       => $peserta->id,
-                        ];
-                    });
-                // dd($listPeserta);
+                        // pakai parent, bukan relasi ulang
+                        'tahun_ajar' => $bimb->tahun_ajar_id,
+
+                        'id' => $peserta->id,
+                    ];
+                });
+
+                // ambil ID mahasiswa yang SUDAH ikut
+                $pesertaIds = $pesertaCollection->pluck('mahasiswa_id');
+
+                // mahasiswa eligible SESUAI JENIS & BELUM ikut
+                $notPeserta[$bimb->id] = ($eligibleMahasiswa[$jenisBimbId] ?? collect())
+                    ->map(fn($eligible) => $eligible->mahasiswa)
+                    ->whereNotIn('id', $pesertaIds)
+                    ->values();
             }
+
+            // dd($notPeserta);
         } else {
             dump("Akses untuk role selain dosen belum diimplementasi.");
         }
@@ -225,6 +240,7 @@ class BimbinganController extends Controller
             'dosen',
             'pembimbing',
             'listPeserta',
+            'notPeserta',
             'rules',
             'myJenisBimbingan'
         ));
@@ -284,7 +300,7 @@ class BimbinganController extends Controller
         $bimbingan->delete();
 
         return redirect()
-            ->route('bimbingan.index')
+            ->route('jenis-bimbingan.index')
             ->with('success', 'Data bimbingan berhasil dihapus.');
     }
 }

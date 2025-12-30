@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\PesertaBimbingan;
 use App\Models\Bimbingan;
 use App\Models\EligibleBimbingan;
+use App\Models\SesiBimbingan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -14,17 +15,53 @@ class PesertaBimbinganController extends Controller
 {
 
 
+
+    public function index()
+    {
+        dd('index peserta bimbingan');
+    }
+
+    public function show($peserta_bimbingan_id)
+    {
+        if (isRole('dosen')) {
+            $pesertaBimbingan = PesertaBimbingan::with([
+                'mahasiswa',
+                'bimbingan.jenisBimbingan',
+                'bimbingan.tahunAjar',
+                'status',
+                'penunjuk',
+            ])->findOrFail($peserta_bimbingan_id);
+
+            $riwayatBimbingan = SesiBimbingan::where('peserta_bimbingan_id', $peserta_bimbingan_id)
+                ->orderByDesc('created_at')
+                ->get();
+
+            $bimbinganCounts = [
+                'total_laporan' => $riwayatBimbingan->where('status_laporan_bimbingan_id', '!=', 0)->count(),
+                'perlu_review'  => $riwayatBimbingan->where('status_laporan_bimbingan_id', 1)->count(),
+                'perlu_revisi'  => $riwayatBimbingan->whereIn('status_laporan_bimbingan_id', [-1, -2])->count(),
+                'disetujui'     => $riwayatBimbingan->whereIn('status_laporan_bimbingan_id', [2, 3, 4])->count(),
+            ];
+
+
+            return view(
+                'peserta-bimbingan.show',
+                compact('pesertaBimbingan', 'riwayatBimbingan', 'bimbinganCounts')
+            );
+
+            return view('peserta-bimbingan.show', compact('pesertaBimbingan'));
+        } else {
+            dd("show peserta bimbingan, ondev untuk role selain dosen");
+        }
+    }
+
     public function store(Request $request)
     {
         $tahunAjarId = session('tahun_ajar_id');
 
-        if (! $tahunAjarId) {
-            abort(403, 'Tahun ajar belum dipilih');
-        }
-
         $validated = $request->validate([
+            'jenis_bimbingan_id' => ['required', 'exists:jenis_bimbingan,id'],
             'mhs_id' => ['required', 'exists:mhs,id'],
-            'bimbingan_id' => ['required', 'exists:bimbingan,id'],
             'ditunjuk_oleh' => ['required', 'exists:users,id'],
             'status_peserta_bimbingan_id' => ['required', 'integer'],
             'keterangan' => ['nullable', 'string'],
@@ -32,13 +69,23 @@ class PesertaBimbinganController extends Controller
             'terakhir_topik' => ['nullable', 'string', 'max:255'],
         ]);
 
+        $jenis_bimbingan_id = $request['jenis_bimbingan_id'];
+        $myBimbingan = Bimbingan::where('pembimbing_id', Auth::user()->dosen->pembimbing->id)
+            ->where('jenis_bimbingan_id', $jenis_bimbingan_id)
+            ->where('tahun_ajar_id', $tahunAjarId)
+            ->first();
+
         DB::beginTransaction();
+        // dd('store', $request->all());
+
 
         try {
             $eligible = EligibleBimbingan::where('mhs_id', $validated['mhs_id'])
                 ->where('tahun_ajar_id', $tahunAjarId)
-                ->where('jenis_bimbingan_id', $validated['bimbingan_id'])
+                ->where('jenis_bimbingan_id', $jenis_bimbingan_id)
                 ->exists();
+
+            // dd('eligible', $eligible, $validated, $myBimbingan, $jenis_bimbingan_id, $tahunAjarId);
 
             if (! $eligible) {
                 return back()
@@ -48,7 +95,7 @@ class PesertaBimbinganController extends Controller
 
             // Cegah Duplikasi Peserta
             $sudahAda = PesertaBimbingan::where('mhs_id', $validated['mhs_id'])
-                ->where('bimbingan_id', $validated['bimbingan_id'])
+                ->where('bimbingan_id', $myBimbingan->id)
                 ->exists();
 
             if ($sudahAda) {
@@ -60,7 +107,7 @@ class PesertaBimbinganController extends Controller
             // Simpan Peserta Bimbingan
             PesertaBimbingan::create([
                 'mhs_id' => $validated['mhs_id'],
-                'bimbingan_id' => $validated['bimbingan_id'],
+                'bimbingan_id' => $myBimbingan->id,
                 'ditunjuk_oleh' => $validated['ditunjuk_oleh'],
                 'status_peserta_bimbingan_id' => $validated['status_peserta_bimbingan_id'],
                 'keterangan' => $validated['keterangan'] ?? null,
@@ -73,13 +120,15 @@ class PesertaBimbinganController extends Controller
             DB::commit();
 
             return redirect()
-                ->route('bimbingan.show', $validated['bimbingan_id'])
+                ->route('bimbingan.show', $jenis_bimbingan_id)
                 ->with('success', 'Peserta bimbingan berhasil ditambahkan');
         } catch (\Throwable $e) {
 
             DB::rollBack();
 
             report($e);
+
+            dd('e', $e);
 
             return back()
                 ->withErrors('Terjadi kesalahan saat menyimpan data')
@@ -91,15 +140,19 @@ class PesertaBimbinganController extends Controller
     {
         $tahunAjarId = session('tahun_ajar_id');
         $bimbingan_id = request()->query('bimbingan_id');
-        $bimbingan = Bimbingan::with(['jenisBimbingan', 'tahunAjar'])->findOrFail($bimbingan_id);
+        $jenis_bimbingan_id = request()->query('jenis_bimbingan_id');
+        $bimbingan = Bimbingan::with(['jenisBimbingan', 'tahunAjar'])
+            ->where('jenis_bimbingan_id', $jenis_bimbingan_id)
+            ->firstOrFail();
         $eligibleBimbingans = collect();
 
         $mhsEligibles = EligibleBimbingan::with('mahasiswa')
             ->where('tahun_ajar_id', $tahunAjarId)
-            ->where('jenis_bimbingan_id', $bimbingan->id)
+            ->where('jenis_bimbingan_id', $jenis_bimbingan_id)
             ->get()
             ->pluck('mahasiswa');
 
+        // dd('create', $mhsEligibles, $bimbingan);
         // Hindari mahasiswa yang sudah jadi peserta bimbingan
         $mhsEligibles = $mhsEligibles->whereNotIn(
             'id',
@@ -108,7 +161,7 @@ class PesertaBimbinganController extends Controller
         );
         // dd('create', $mhsEligibles, $bimbingan_id, $bimbingan);
 
-        return view('peserta-bimbingan.create', compact('bimbingan', 'mhsEligibles'));
+        return view('peserta-bimbingan.create', compact('bimbingan', 'mhsEligibles', 'jenis_bimbingan_id'));
     }
 
     public function edit(int $id)

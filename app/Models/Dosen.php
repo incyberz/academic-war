@@ -38,4 +38,13 @@ class Dosen extends Model
     {
         return $this->belongsTo(Prodi::class, 'prodi_id');
     }
+
+
+    /**
+     * Relasi ke Pembimbing
+     */
+    public function pembimbing()
+    {
+        return $this->hasOne(Pembimbing::class, 'dosen_id');
+    }
 }

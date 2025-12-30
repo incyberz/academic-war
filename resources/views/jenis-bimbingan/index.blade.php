@@ -2,167 +2,158 @@
 
   <div class="max-w-7xl mx-auto py-6 px-4">
 
-    <h1 class="text-2xl font-bold mb-6">
-      My Bimbingan
-    </h1>
+    <x-page-header title="Index Jenis Bimbingan" />
 
     {{-- ================== ROLE: DOSEN ================== --}}
     @if ($role === 'dosen')
-    @php
-    $statusPembimbingAktif = $pembimbing->count() ? $pembimbing->is_active : false;
-    @endphp
+    <div>
 
-    <span class="inline-flex rounded-full px-3 py-1 text-sm font-semibold mb-3
-        {{ $statusPembimbingAktif ? 'bg-green-100 text-green-700' :
-           'bg-red-100 text-red-700' }}">
-      {{ $statusPembimbingAktif ? 'Pembimbing Aktif' :
-      'Perhatian! ⚠️ Status pembimbing Anda Nonaktif' }}
-    </span>
+      @php
+      $statusPembimbingAktif = $pembimbing->count() ? $pembimbing->is_active : false;
+      @endphp
 
-    @php
-    $myBimbinganMap = collect($myBimbingan ?? [])
-    ->keyBy(fn ($item) => $item['jenis_bimbingan']->id);
-    @endphp
+      <span class="inline-flex rounded-full px-3 py-1 text-sm font-semibold mb-3
+          {{ $statusPembimbingAktif ? 'bg-green-100 text-green-700' :
+             'bg-red-100 text-red-700' }}">
+        {{ $statusPembimbingAktif ? 'Pembimbing Aktif' :
+        'Perhatian! ⚠️ Status pembimbing Anda Nonaktif' }}
+      </span>
 
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @php
+      $myBimMap = collect($myBimbingan ?? [])
+      ->keyBy(fn ($item) => $item['jenis_bimbingan']->id);
+      @endphp
 
-      @foreach ($myBimbinganMap as $item)
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-3">
 
-      <x-card>
+        @foreach ($myBimMap as $item)
 
-        {{-- HEADER --}}
-        <x-card-header class="flex items-start justify-between gap-2">
-          <div>
-            <h2 class="text-base md:text-lg font-semibold">
-              {{ $item['jenis_bimbingan']->nama }}
-            </h2>
+        {{-- @dd($item) --}}
 
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300 truncate">
-              {{ $item['jenis_bimbingan']->deskripsi }}
-            </p>
-          </div>
+        {{-- Card My Jenis Bimbingan --}}
+        <x-card>
 
-        </x-card-header>
+          <x-card-header class="flex items-start justify-between gap-2">
+            <div>
+              <h2 class="text-base md:text-lg font-semibold">
+                {{ $item['jenis_bimbingan']->nama }}
+              </h2>
 
-        {{-- BODY --}}
-        <x-card-body>
-
-          <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 text-center">
-            <div class="text-2xl font-bold text-emerald-700">
-              {{ $item['jumlah_peserta'] }}
+              <p class="mt-1 text-sm text-gray-600 dark:text-gray-300 truncate">
+                {{ $item['jenis_bimbingan']->deskripsi }}
+              </p>
             </div>
-            <div class="text-sm text-emerald-600">
-              Jumlah Peserta
+          </x-card-header>
+
+          <x-card-body>
+            <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 text-center">
+              <div class="text-2xl font-bold text-emerald-700">
+                {{ $item['jumlah_peserta'] }}
+              </div>
+              <div class="text-sm text-emerald-600">
+                Jumlah Peserta
+              </div>
             </div>
-          </div>
+          </x-card-body>
 
-        </x-card-body>
+          <x-card-footer class="space-y-2">
 
-        {{-- FOOTER --}}
-        <x-card-footer>
+            @if($statusPembimbingAktif)
 
-          @if($statusPembimbingAktif)
-          <a href="{{ route('bimbingan.show', $item['jenis_bimbingan']->id
-              ) }}">
-            <x-btn-primary class="text-xs md:text-sm w-full">
-              Kelola Bimbingan
-            </x-btn-primary>
-          </a>
-          @else
-          <x-btn-secondary class="w-full cursor-not-allowed opacity-60 text-xs md:text-sm" disabled>
-            Kelola Bimbingan (Nonaktif)
-          </x-btn-secondary>
-          @endif
+            <div class="flex gap-2">
 
-        </x-card-footer>
+              {{-- DETAIL --}}
+              <a href="{{ route('bimbingan.show', $item['jenis_bimbingan']->id) }}" title="Detail" class="flex items-center justify-center
+                          w-10 h-10
+                          border border-gray-300 rounded-lg
+                          text-gray-700 text-lg
+                          hover:bg-gray-100 transition
+                          dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700">
+                🔍
+              </a>
 
-      </x-card>
+              {{-- EDIT --}}
+              <a href="{{ route('bimbingan.edit', $item['id']) }}" title="Edit" class="flex items-center justify-center
+                          w-10 h-10
+                          border border-gray-300 rounded-lg
+                          text-gray-700 text-lg
+                          hover:bg-gray-100 transition
+                          dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700">
+                ✏️
+              </a>
 
-      @endforeach
+              {{-- HAPUS --}}
+              @if (!$item['jumlah_peserta'])
+              <form action="{{ route('bimbingan.destroy', $item['id']) }}" method="POST" title="Hapus"
+                onsubmit="return confirm('Yakin ingin menghapus bimbingan ini?')">
+                @csrf
+                @method('DELETE')
 
+                <button type="submit" class="flex items-center justify-center
+                               w-10 h-10
+                               border border-red-300 rounded-lg
+                               text-red-600 text-lg
+                               hover:bg-red-50 transition
+                               dark:border-red-500 dark:text-red-400 dark:hover:bg-red-900/30">
+                  🗑️
+                </button>
+              </form>
+              @endif
+
+            </div>
+
+            @else
+
+            <button type="button" class="w-full px-3 py-2
+                         border border-gray-300 rounded-lg
+                         text-gray-400 text-sm
+                         cursor-not-allowed opacity-60
+                         dark:border-gray-600 dark:text-gray-500" disabled>
+              Kelola Bimbingan (Nonaktif)
+            </button>
+
+            @endif
+
+          </x-card-footer>
+
+        </x-card>
+
+        @endforeach
+
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      @if($statusPembimbingAktif)
+      @include('jenis-bimbingan.create-jenis-bimbingan-lainnya')
+      @endif
     </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    @if($statusPembimbingAktif)
-    <hr class="my-8">
-    <h1 class="text-2xl font-bold mb-6">
-      Create Bimbingan Lainnya
-    </h1>
-    {{-- UI khusus role dosen --}}
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      @foreach ($jenisBimbingan as $jenis)
-
-      @php if(isset($myBimbinganMap[$jenis->id])) continue; @endphp
-
-      <x-card>
-
-        {{-- HEADER --}}
-        <x-card-header>
-          <h2 class="text-base md:text-lg font-semibold">
-            {{ $jenis->nama }}
-          </h2>
-        </x-card-header>
-
-        {{-- BODY --}}
-        <x-card-body>
-          <p class="text-sm text-gray-600 mt-1">
-            {{ $item['jenis_bimbingan']->deskripsi }}
-          </p>
-        </x-card-body>
-
-        {{-- FOOTER --}}
-        <x-card-footer>
-
-          @if ($jenis->status == 1)
-
-          <a onclick="return confirm('Add Bimbingan ini?')"
-            href="{{ route('bimbingan.create', ['jenis_bimbingan_id' => $jenis->id]) }}">
-            <x-btn-add class="w-full">
-              Add Bimbingan
-            </x-btn-add>
-          </a>
-
-          @else
-
-          <x-btn-secondary class="w-full cursor-not-allowed opacity-60" disabled>
-            Bimbingan ini tidak aktif
-          </x-btn-secondary>
-
-          @endif
-
-        </x-card-footer>
-      </x-card>
-
-      @endforeach
-    </div>
-    @endif
 
     {{-- ================== ROLE: AKADEMIK ================== --}}
     @elseif ($role === 'akademik')

@@ -25,6 +25,10 @@ class DatabaseSeeder extends Seeder
         $this->call(BimbinganSeeder::class);
         $this->call(PesertaBimbinganSeeder::class);
         $this->call(AdminSeeder::class);
+        $this->call(StatusSesiBimbinganSeeder::class);
+        $this->call(TahapanBimbinganSeeder::class);
+        $this->call(SesiBimbinganSeeder::class);
+
 
         // User::factory()->create([
         //     'name' => 'Test User',

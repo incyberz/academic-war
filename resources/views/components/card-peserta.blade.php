@@ -159,7 +159,7 @@ $cardBgClass = $cardBgNormal;
                         @endif
 
                         {{-- link detail peserta bimbingan --}}
-                        <a href="#">
+                        <a href="{{route('peserta-bimbingan.show',$id)}}">
                             <span class="ml-2 text-sm font-medium text-indigo-600
                                         hover:text-indigo-800 hover:underline
                                         dark:text-indigo-400 dark:hover:text-indigo-300">

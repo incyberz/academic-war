@@ -48,14 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('pembimbing.aktif')->group(function () {
 
         Route::resource('bimbingan', BimbinganController::class);
-
-        Route::resource('peserta-bimbingan', PesertaBimbinganController::class)
-            ->only(['create', 'edit', 'store', 'update']);
-
-        Route::delete(
-            '/peserta-bimbingan/{peserta_bimbingan_id}',
-            [PesertaBimbinganController::class, 'destroy']
-        )->name('peserta-bimbingan.destroy');
+        Route::resource('peserta-bimbingan', PesertaBimbinganController::class);
 
 
         // kalau nanti mau ditambah:

@@ -20,6 +20,7 @@ $ditunjuk_oleh = auth()->user()->id;
 
         <form action="{{ route('peserta-bimbingan.store') }}" method="POST" class="space-y-6">
           @csrf
+          <input type="hidden" name="jenis_bimbingan_id" value="{{ $jenis_bimbingan_id }}">
 
           {{-- ================= Mahasiswa Eligible ================= --}}
           <div>

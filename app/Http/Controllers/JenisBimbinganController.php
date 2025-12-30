@@ -42,6 +42,7 @@ class JenisBimbinganController extends Controller
 
                 if ($bimbinganSaya->isNotEmpty()) {
                     $myBimbingan->push([
+                        'id' => $bimbinganSaya->first()->id,
                         'jenis_bimbingan' => $jenis,
                         'jumlah_peserta' => $bimbinganSaya->sum('peserta_bimbingan_count'),
                     ]);
