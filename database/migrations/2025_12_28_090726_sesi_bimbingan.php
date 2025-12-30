@@ -14,6 +14,10 @@ return new class extends Migration {
                 ->constrained('peserta_bimbingan')
                 ->cascadeOnDelete();
 
+            $table->foreignId('tahapan_bimbingan_id')
+                ->constrained('tahapan_bimbingan')
+                ->cascadeOnDelete();
+
             $table->integer('status_sesi_bimbingan_id')->nullable();
 
             $table->text('pesan_mhs')->nullable();

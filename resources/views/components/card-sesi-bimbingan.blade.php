@@ -1,8 +1,9 @@
-@props(['sesi'])
+@props(['sesi', 'highlight' => false])
 
 <div class="p-4 rounded-lg border
-            bg-white dark:bg-slate-800
-            border-gray-200 dark:border-gray-700">
+  {{ $highlight
+      ? 'border-red-300 bg-red-50 dark:bg-red-950/30'
+      : 'border-gray-200 bg-white dark:bg-slate-800' }}">
 
     {{-- Header --}}
     <div class="flex items-center justify-between mb-2">
@@ -11,7 +12,21 @@
         </span>
 
         @if ($sesi->status)
-        <span class="px-2 py-1 rounded text-xs font-medium {{ $sesi->status->badge_class }}">
+        @php
+        $statusId = $sesi->status_sesi_bimbingan_id;
+
+        if ($statusId == 1) {
+        $badgeClass = 'bg-rose-600 text-white';
+        } elseif (in_array($statusId, [-1, -2])) {
+        $badgeClass = 'bg-amber-500 text-white';
+        } elseif (in_array($statusId, [2, 3, 4])) {
+        $badgeClass = 'bg-emerald-600 text-white';
+        } else {
+        $badgeClass = 'bg-slate-500 text-white';
+        }
+        @endphp
+
+        <span class="px-2 py-1 rounded text-xs font-medium {{ $badgeClass }}">
             {{ $sesi->status->nama_status }}
         </span>
         @endif

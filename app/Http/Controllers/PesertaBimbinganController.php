@@ -7,6 +7,7 @@ use App\Models\PesertaBimbingan;
 use App\Models\Bimbingan;
 use App\Models\EligibleBimbingan;
 use App\Models\SesiBimbingan;
+use App\Models\TahapanBimbingan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -33,20 +34,79 @@ class PesertaBimbinganController extends Controller
             ])->findOrFail($peserta_bimbingan_id);
 
             $riwayatBimbingan = SesiBimbingan::where('peserta_bimbingan_id', $peserta_bimbingan_id)
+                ->orderByRaw("
+                        CASE
+                            WHEN status_sesi_bimbingan_id IN (1) THEN 0      -- Perlu Review
+                            WHEN status_sesi_bimbingan_id IN (-1, -2) THEN 1 -- Perlu Revisi
+                            ELSE 2
+                        END
+                    ")
                 ->orderByDesc('created_at')
                 ->get();
 
             $bimbinganCounts = [
-                'total_laporan' => $riwayatBimbingan->where('status_laporan_bimbingan_id', '!=', 0)->count(),
-                'perlu_review'  => $riwayatBimbingan->where('status_laporan_bimbingan_id', 1)->count(),
-                'perlu_revisi'  => $riwayatBimbingan->whereIn('status_laporan_bimbingan_id', [-1, -2])->count(),
-                'disetujui'     => $riwayatBimbingan->whereIn('status_laporan_bimbingan_id', [2, 3, 4])->count(),
+                'total_laporan' => $riwayatBimbingan->where('status_sesi_bimbingan_id', '!=', 0)->count(),
+                'perlu_review'  => $riwayatBimbingan->where('status_sesi_bimbingan_id', 1)->count(),
+                'perlu_revisi'  => $riwayatBimbingan->whereIn('status_sesi_bimbingan_id', [-1, -2])->count(),
+                'disetujui'     => $riwayatBimbingan->whereIn('status_sesi_bimbingan_id', [2, 3, 4])->count(),
             ];
+
+            $tahapanBimbingan = TahapanBimbingan::where(
+                'jenis_bimbingan_id',
+                $pesertaBimbingan->bimbingan->jenis_bimbingan_id
+            )
+                ->where('is_active', true)
+                ->orderBy('urutan')
+                ->get();
+            $currentTahapanId = SesiBimbingan::where('peserta_bimbingan_id', $pesertaBimbingan->id)
+                ->where('status_sesi_bimbingan_id', '>', 1) // > 1 = minimal direvisi
+                ->max('tahapan_bimbingan_id');
+
+            $currentTahapan = null;
+
+            if ($currentTahapanId) {
+                $currentTahapan = $tahapanBimbingan
+                    ->firstWhere('id', $currentTahapanId);
+            }
+
+            if (!$currentTahapan) {
+                $currentTahapan = $tahapanBimbingan->first();
+            }
+
+            $persenProgress = 0;
+            $totalTahapan = $tahapanBimbingan->count();
+            $currentUrutan = 0;
+
+            if ($currentTahapanId) {
+                $currentUrutan = TahapanBimbingan::where('id', $currentTahapanId)
+                    ->value('urutan');
+            }
+
+
+            if ($totalTahapan > 0 && $currentUrutan > 0) {
+                $persenProgress = round(($currentUrutan / $totalTahapan) * 100);
+            }
+
+            $pesertaBimbingan->update([
+                'progress' => $persenProgress,
+            ]);
+
+            // ZZZ AUTO UPDATE
+            // 'terakhir_topik'=>null, // 
+            // 'terakhir_bimbingan'=>null,
+            // 'terakhir_reviewed'=>null,
 
 
             return view(
                 'peserta-bimbingan.show',
-                compact('pesertaBimbingan', 'riwayatBimbingan', 'bimbinganCounts')
+                compact(
+                    'pesertaBimbingan',
+                    'riwayatBimbingan',
+                    'bimbinganCounts',
+                    'tahapanBimbingan',
+                    'currentTahapan',
+                    'persenProgress',
+                )
             );
 
             return view('peserta-bimbingan.show', compact('pesertaBimbingan'));

@@ -11,20 +11,26 @@ return new class extends Migration
         Schema::create('tahapan_bimbingan', function (Blueprint $table) {
             $table->id();
 
-            // urutan tahap (untuk sorting workflow)
+            // urutan workflow
             $table->unsignedSmallInteger('urutan');
 
-            // nama tahap
-            $table->string('tahap', 30);
+            // nama tahapan
+            $table->string('nama_tahapan', 30);
 
-            // FK ke jenis_bimbingan
+            // deskripsi / penjelasan tahapan
+            $table->text('keterangan')->nullable();
+
+            // status aktif / nonaktif
+            $table->boolean('is_active')->default(true);
+
+            // FK ke jenis bimbingan
             $table->foreignId('jenis_bimbingan_id')
                 ->constrained('jenis_bimbingan')
                 ->cascadeOnDelete();
 
             $table->timestamps();
 
-            // optional tapi sangat disarankan
+            // unique per jenis bimbingan
             $table->unique(['jenis_bimbingan_id', 'urutan']);
         });
     }

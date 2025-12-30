@@ -16,6 +16,9 @@ class SesiBimbinganSeeder extends Seeder
 
         $data = [];
 
+        $minTahapanId = 1;
+        $maxTahapanId = 22;
+
         for ($i = 1; $i <= 10; $i++) {
 
             $status = $statusList[array_rand($statusList)];
@@ -24,7 +27,8 @@ class SesiBimbinganSeeder extends Seeder
 
             $data[] = [
                 'peserta_bimbingan_id'       => 1,
-                'status_laporan_bimbingan_id' => $status,
+                'status_sesi_bimbingan_id' => $status,
+                'tahapan_bimbingan_id' => rand($minTahapanId, $maxTahapanId),
 
                 'pesan_mhs'   => "Pesan mahasiswa sesi ke-$i (dummy)",
                 'pesan_dosen' => "Tanggapan dosen sesi ke-$i (dummy)",

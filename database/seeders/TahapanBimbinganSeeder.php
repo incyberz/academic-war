@@ -45,7 +45,7 @@ class TahapanBimbinganSeeder extends Seeder
                 DB::table('tahapan_bimbingan')->insert([
                     'jenis_bimbingan_id' => $jenisId,
                     'urutan'             => $index + 1,
-                    'tahap'              => $namaTahap,
+                    'nama_tahapan'              => $namaTahap,
                     'created_at'         => now(),
                     'updated_at'         => now(),
                 ]);
