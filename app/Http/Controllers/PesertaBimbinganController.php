@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 // use Illuminate\Http\Request;
 use App\Models\PesertaBimbingan;
+use App\Models\Mhs;
+use App\Models\Dosen;
+use App\Models\Pembimbing;
 use App\Models\Bimbingan;
 use App\Models\EligibleBimbingan;
 use App\Models\SesiBimbingan;
@@ -24,7 +27,41 @@ class PesertaBimbinganController extends Controller
 
     public function show($peserta_bimbingan_id)
     {
-        if (isRole('dosen')) {
+        $user = Auth::user();
+
+        $isMhs = isRole('mhs');
+        $isDosen = isRole('dosen');
+        $peserta = PesertaBimbingan::where('id', $peserta_bimbingan_id)
+            ->firstOrFail();
+        $bimbinganId = $peserta->bimbingan_id;
+
+        if ($isDosen || $isMhs) {
+
+            if ($isMhs) {
+                # ============================================================
+                # Rule-mhs :: Mhs tidak boleh melihat detail bimbingan mhs lain
+                # ============================================================
+                $mhs = Mhs::where('user_id', $user->id)->firstOrFail();
+                $peserta = PesertaBimbingan::where('mhs_id', $mhs->id)
+                    ->where('bimbingan_id', $bimbinganId)
+                    ->firstOrFail();
+                // dd($bimbinganId, $mhs, $peserta);
+                if ($peserta->id != $peserta_bimbingan_id) {
+                    return back()->with('error', 'Mhs tidak berhak melihat detail bimbingan mhs lain.');
+                }
+            } elseif ($isDosen) {
+                # ============================================================
+                # Rule-dosen :: Dosen tidak boleh melihat detail bimbingan dari dosen lain
+                # ============================================================
+                $dosen = Dosen::where('user_id', $user->id)->firstOrFail();
+                $pembimbing = Pembimbing::where('dosen_id', $dosen->id)->firstOrFail();
+                if ($peserta->bimbingan->pembimbing_id != $pembimbing->id) {
+                    return back()->with('error', 'Dosen tidak berhak melihat detail bimbingan dari dosen lain.');
+                }
+            }
+
+
+
             $pesertaBimbingan = PesertaBimbingan::with([
                 'mahasiswa',
                 'bimbingan.jenisBimbingan',
@@ -36,8 +73,8 @@ class PesertaBimbinganController extends Controller
             $riwayatBimbingan = SesiBimbingan::where('peserta_bimbingan_id', $peserta_bimbingan_id)
                 ->orderByRaw("
                         CASE
-                            WHEN status_sesi_bimbingan_id IN (1) THEN 0      -- Perlu Review
-                            WHEN status_sesi_bimbingan_id IN (-1, -2) THEN 1 -- Perlu Revisi
+                            WHEN status_sesi_bimbingan IN (1) THEN 0      -- Perlu Review
+                            WHEN status_sesi_bimbingan IN (-1, -2) THEN 1 -- Perlu Revisi
                             ELSE 2
                         END
                     ")
@@ -45,10 +82,10 @@ class PesertaBimbinganController extends Controller
                 ->get();
 
             $bimbinganCounts = [
-                'total_laporan' => $riwayatBimbingan->where('status_sesi_bimbingan_id', '!=', 0)->count(),
-                'perlu_review'  => $riwayatBimbingan->where('status_sesi_bimbingan_id', 1)->count(),
-                'perlu_revisi'  => $riwayatBimbingan->whereIn('status_sesi_bimbingan_id', [-1, -2])->count(),
-                'disetujui'     => $riwayatBimbingan->whereIn('status_sesi_bimbingan_id', [2, 3, 4])->count(),
+                'total_laporan' => $riwayatBimbingan->where('status_sesi_bimbingan', '!=', 0)->count(),
+                'perlu_review'  => $riwayatBimbingan->where('status_sesi_bimbingan', 1)->count(),
+                'perlu_revisi'  => $riwayatBimbingan->whereIn('status_sesi_bimbingan', [-1, -2])->count(),
+                'disetujui'     => $riwayatBimbingan->whereIn('status_sesi_bimbingan', [2, 3, 4])->count(),
             ];
 
             $tahapanBimbingan = TahapanBimbingan::where(
@@ -59,7 +96,7 @@ class PesertaBimbinganController extends Controller
                 ->orderBy('urutan')
                 ->get();
             $currentTahapanId = SesiBimbingan::where('peserta_bimbingan_id', $pesertaBimbingan->id)
-                ->where('status_sesi_bimbingan_id', '>', 1) // > 1 = minimal direvisi
+                ->where('status_sesi_bimbingan', '>', 1) // > 1 = minimal direvisi
                 ->max('tahapan_bimbingan_id');
 
             $currentTahapan = null;
@@ -123,7 +160,7 @@ class PesertaBimbinganController extends Controller
             'jenis_bimbingan_id' => ['required', 'exists:jenis_bimbingan,id'],
             'mhs_id' => ['required', 'exists:mhs,id'],
             'ditunjuk_oleh' => ['required', 'exists:users,id'],
-            'status_peserta_bimbingan_id' => ['required', 'integer'],
+            'status_peserta_bimbingan' => ['required', 'integer'],
             'keterangan' => ['nullable', 'string'],
             'progress' => ['nullable', 'integer', 'min:0', 'max:100'],
             'terakhir_topik' => ['nullable', 'string', 'max:255'],
@@ -169,7 +206,7 @@ class PesertaBimbinganController extends Controller
                 'mhs_id' => $validated['mhs_id'],
                 'bimbingan_id' => $myBimbingan->id,
                 'ditunjuk_oleh' => $validated['ditunjuk_oleh'],
-                'status_peserta_bimbingan_id' => $validated['status_peserta_bimbingan_id'],
+                'status_peserta_bimbingan' => $validated['status_peserta_bimbingan'],
                 'keterangan' => $validated['keterangan'] ?? null,
                 'progress' => $validated['progress'] ?? 0,
                 'terakhir_topik' => $validated['terakhir_topik'] ?? null,

@@ -19,7 +19,9 @@ class SesiBimbingan extends Model
      */
     protected $fillable = [
         'peserta_bimbingan_id',
-        'status_sesi_bimbingan_id',
+        'status_sesi_bimbingan',
+        'tahapan_bimbingan_id',
+        'topik',
         'pesan_mhs',
         'pesan_dosen',
         'file_bimbingan',
@@ -47,29 +49,5 @@ class SesiBimbingan extends Model
             PesertaBimbingan::class,
             'peserta_bimbingan_id'
         );
-    }
-
-    /**
-     * Relasi ke Status Sesi / Status Sesi
-     * (nama tabel masih status_sesi_bimbingan)
-     */
-    public function status()
-    {
-        return $this->belongsTo(
-            StatusSesiBimbingan::class,
-            'status_sesi_bimbingan_id'
-        );
-    }
-
-    /* ======================
-     * ACCESSOR (OPSIONAL)
-     * ====================== */
-
-    /**
-     * Apakah sesi sudah direview dosen
-     */
-    public function getSudahDireviewAttribute(): bool
-    {
-        return !is_null($this->tanggal_review);
     }
 }

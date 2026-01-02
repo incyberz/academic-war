@@ -15,7 +15,7 @@ class PesertaBimbingan extends Model
         'mhs_id',
         'bimbingan_id',
         'ditunjuk_oleh',
-        'status_peserta_bimbingan_id',
+        'status_peserta_bimbingan',
         'keterangan',
         'progress',
         'terakhir_topik',
@@ -37,14 +37,6 @@ class PesertaBimbingan extends Model
     public function penunjuk()
     {
         return $this->belongsTo(User::class, 'ditunjuk_oleh');
-    }
-
-    public function status()
-    {
-        return $this->belongsTo(
-            StatusPesertaBimbingan::class,
-            'status_peserta_bimbingan_id'
-        );
     }
 
     public function bimbingan()

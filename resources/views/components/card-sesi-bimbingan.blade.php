@@ -13,7 +13,7 @@
 
         @if ($sesi->status)
         @php
-        $statusId = $sesi->status_sesi_bimbingan_id;
+        $statusId = $sesi->status_sesi_bimbingan;
 
         if ($statusId == 1) {
         $badgeClass = 'bg-rose-600 text-white';

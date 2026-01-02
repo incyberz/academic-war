@@ -6,9 +6,11 @@ use App\Models\JenisBimbingan;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Mhs;
 use App\Models\Dosen;
 use App\Models\Pembimbing;
 use App\Models\Bimbingan;
+use App\Models\PesertaBimbingan;
 
 class JenisBimbinganController extends Controller
 {
@@ -22,14 +24,16 @@ class JenisBimbinganController extends Controller
             ->orderBy('nama')
             ->get();
 
-        $myBimbingan = collect();
+        $myBimbingans = collect();
         $dosen = collect();
         $pembimbing = collect();
+        $user = Auth::user();
+
 
         // cek role dosen
         if (isRole('dosen')) {
 
-            $dosen = Dosen::where('user_id', Auth::id())->first();
+            $dosen = Dosen::where('user_id', $user->id)->first();
             $pembimbing = Pembimbing::where('dosen_id', $dosen->id)->first();
 
             foreach ($jenisBimbingan as $jenis) {
@@ -41,16 +45,30 @@ class JenisBimbinganController extends Controller
                     ->get();
 
                 if ($bimbinganSaya->isNotEmpty()) {
-                    $myBimbingan->push([
+                    $myBimbingans->push([
                         'id' => $bimbinganSaya->first()->id,
                         'jenis_bimbingan' => $jenis,
                         'jumlah_peserta' => $bimbinganSaya->sum('peserta_bimbingan_count'),
                     ]);
                 }
             }
+        } elseif (isRole('mhs')) {
+            $mhs = Mhs::where('user_id', $user->id)->firstOrFail();
+
+            // bimbingan yang saya ikuti
+            $myBimbingans = PesertaBimbingan::with([
+                'bimbingan'
+            ])->where('mhs_id', $mhs->id)->get();
+        } else {
+            abort(403, 'Role belum memiliki akses ke halaman ini');
         }
 
-        return view('jenis-bimbingan.index', compact('jenisBimbingan', 'myBimbingan', 'dosen', 'pembimbing'));
+        return view('jenis-bimbingan.index', compact(
+            'jenisBimbingan',
+            'myBimbingans',
+            'dosen',
+            'pembimbing'
+        ));
     }
 
 

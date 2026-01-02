@@ -5,7 +5,7 @@
 
 <input type="{{ $type }}" {{ $attributes->merge([
 'class' => '
-w-full rounded-lg
+w-full rounded-lg my-1
 bg-white dark:bg-slate-800
 text-gray-900 dark:text-gray-100
 border

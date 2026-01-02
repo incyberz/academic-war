@@ -27,11 +27,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->nullOnDelete();
 
-            // status peserta -> FK numeric ke tabel status_peserta_bimbingan (default 1 = aktif)
-            $table->foreignId('status_peserta_bimbingan_id')
-                ->default(1)
-                ->constrained('status_peserta_bimbingan')
-                ->restrictOnDelete();
+            $table->integer('status_peserta_bimbingan')->default(1);
 
             // tambahan keterangan opsional
             $table->string('keterangan')->nullable();

@@ -74,7 +74,6 @@ class PesertaBimbinganSeeder extends Seeder
 
             // get status_mhs_id aktif
             $statusMhsId = DB::table('status_mhs')->where('kode', 'aktif')->first()->id;
-            $statusPesertaBimbinganId = DB::table('status_peserta_bimbingan')->where('kode', 'aktif')->first()->id;
 
             // 2. Buat record mahasiswa
             $mhs = Mhs::firstOrCreate(
@@ -95,7 +94,6 @@ class PesertaBimbinganSeeder extends Seeder
                 [
                     'bimbingan_id' => rand(1, 4), // asumsikan ada 4 bimbingan
                     'ditunjuk_oleh' => $insho->id,
-                    // 'status_peserta_bimbingan_id' => 1, // default 1
                 ]
             );
         }

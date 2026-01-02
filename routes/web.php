@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BimbinganController;
 use App\Http\Controllers\JenisBimbinganController;
+use App\Http\Controllers\SesiBimbinganController;
 use App\Http\Controllers\PesertaBimbinganController;
 use App\Http\Controllers\TahunAjarController;
 
@@ -42,13 +43,21 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/tahun-ajar/aktif', [TahunAjarController::class, 'setAktif'])
         ->name('tahun-ajar.set-aktif');
 
+    Route::resource('peserta-bimbingan', PesertaBimbinganController::class);
+    Route::resource('sesi-bimbingan', SesiBimbinganController::class);
+    // web.php
+    // Route::get(
+    //     '/sesi-bimbingan/{pesertaBimbingan}/create',
+    //     [SesiBimbinganController::class, 'create']
+    // )->name('sesi-bimbingan.create');
+
+
     // ===================================
     // ROUTE KHUSUS PEMBIMBING AKTIF
     // ===================================
     Route::middleware('pembimbing.aktif')->group(function () {
 
         Route::resource('bimbingan', BimbinganController::class);
-        Route::resource('peserta-bimbingan', PesertaBimbinganController::class);
 
 
         // kalau nanti mau ditambah:

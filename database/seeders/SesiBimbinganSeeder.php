@@ -10,7 +10,7 @@ class SesiBimbinganSeeder extends Seeder
 {
     public function run(): void
     {
-        $statusList = [-2, -1, 0, 1, 2, 3, 4];
+        $statusList = array_keys(config('status_sesi_bimbingan'));
 
         $now = Carbon::now();
 
@@ -21,13 +21,13 @@ class SesiBimbinganSeeder extends Seeder
 
         for ($i = 1; $i <= 10; $i++) {
 
-            $status = $statusList[array_rand($statusList)];
+            $randStatus = $statusList[array_rand($statusList)];
 
             $createdAt = $now->copy()->subDays(10 - $i);
 
             $data[] = [
                 'peserta_bimbingan_id'       => 1,
-                'status_sesi_bimbingan_id' => $status,
+                'status_sesi_bimbingan' => $randStatus,
                 'tahapan_bimbingan_id' => rand($minTahapanId, $maxTahapanId),
 
                 'pesan_mhs'   => "Pesan mahasiswa sesi ke-$i (dummy)",

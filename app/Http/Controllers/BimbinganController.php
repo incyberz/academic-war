@@ -22,13 +22,43 @@ class BimbinganController extends Controller
      */
     public function index()
     {
-        $bimbingan = Bimbingan::with([
-            'pembimbing',
-            'jenisBimbingan',
-            'tahunAjar',
-        ])->latest()->paginate(10);
+        // $user = Auth::user();
+        if (isRole('dosen') || isRole('mhs')) {
+            return redirect()->route('jenis-bimbingan.index');
 
-        return view('bimbingan.index', compact('bimbingan'));
+            // $bimbingans = collect();
+
+            // if (isRole('dosen')) {
+            // $dosen = Dosen::where('user_id', $user->id)->firstOrFail();
+            // $pembimbing = Pembimbing::where('dosen_id', $dosen->id)->firstOrFail();
+            // $bimbingans = Bimbingan::with([
+            //     'pembimbing',
+            //     'jenisBimbingan',
+            //     'tahunAjar',
+            // ])
+            //     ->where('pembimbing_id', $pembimbing->id)
+            //     ->get();
+
+            //     return redirect()->route('jenis-bimbingan.index');
+            // } else { // mhs
+            //     $mhs = Mhs::where('user_id', $user->id)->firstOrFail();
+            //     $bimbingans = Bimbingan::with([
+            //         'pembimbing',
+            //         'jenisBimbingan',
+            //         'tahunAjar',
+            //     ])
+            //         ->where('mhs_id', $mhs->id)
+            //         ->get();
+            // }
+
+            // return view('bimbingan.index', compact(
+            //     'bimbingans'
+            // ));
+        } elseif (isRole('zzz')) {
+            // return redirect()->route('peserta-bimbingan.show')
+        } else {
+            dd("Belum ada fitur index bimbingan selain role dosen | mhs");
+        }
     }
 
 

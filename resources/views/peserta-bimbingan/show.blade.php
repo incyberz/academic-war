@@ -3,6 +3,20 @@
                   · {{ $pesertaBimbingan->mahasiswa->nim }}
                   · {{ $pesertaBimbingan->bimbingan->jenisBimbingan->nama }}" />
 
+  <div>Pembimbing: {{ $pesertaBimbingan->bimbingan->pembimbing->dosen->user->name }}</div>
+
+  @if (isRole('mhs'))
+  <a href="{{route('sesi-bimbingan.create', $pesertaBimbingan->id)}}">
+    <x-btn-primary>Add Sesi Bimbingan</x-btn-primary>
+  </a>
+
+  <a href="{{ route('sesi-bimbingan.create', [
+      'peserta_bimbingan_id' => $pesertaBimbingan->id
+  ]) }}">
+    <x-btn-primary>Add Sesi Bimbingan</x-btn-primary>
+  </a>
+  @endif
+
   <x-page-content>
     <div class="flex items-center gap-4 p-4 rounded-lg border
                       bg-white dark:bg-slate-800

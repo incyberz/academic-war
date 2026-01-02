@@ -14,11 +14,21 @@ return new class extends Migration {
                 ->constrained('peserta_bimbingan')
                 ->cascadeOnDelete();
 
-            $table->foreignId('tahapan_bimbingan_id')
+            $table->foreignId('tahapan_bimbingan_id') // diisi oleh sistem atau pembimbing
+                ->nullable()
                 ->constrained('tahapan_bimbingan')
                 ->cascadeOnDelete();
 
-            $table->integer('status_sesi_bimbingan_id')->nullable();
+            $table->tinyInteger('status_sesi_bimbingan')->default(0);
+            // -2 : ditolak
+            // -1 : revisi
+            //  0 : menunggu
+            //  1 : diproses
+            //  2 : disetujui
+            //  3 : selesai
+            //  4 : final
+
+            $table->string('topik', 50)->nullable();
 
             $table->text('pesan_mhs')->nullable();
             $table->text('pesan_dosen')->nullable();
@@ -26,14 +36,19 @@ return new class extends Migration {
             $table->string('file_bimbingan', 200)->nullable();
             $table->string('file_review', 200)->nullable();
 
+            $table->timestamp('tanggal_pengajuan')->nullable();
             $table->timestamp('tanggal_review')->nullable();
 
-            $table->timestamps();
+            $table->boolean('is_locked')->default(false);
 
-            $table->foreign('status_sesi_bimbingan_id')
-                ->references('id')
-                ->on('status_sesi_bimbingan')
-                ->nullOnDelete();
+            $table->unsignedSmallInteger('revisi_ke')->default(0);
+            $table->tinyInteger('nilai_dosen')->nullable();
+
+            $table->integer('xp_didapat')->default(0);
+
+            $table->string('ip_pengajuan', 45)->nullable();
+
+            $table->timestamps();
         });
     }
 

@@ -13,7 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
 
         $this->call(FakultasSeeder::class);
         $this->call(ProdiSeeder::class);
@@ -22,17 +21,11 @@ class DatabaseSeeder extends Seeder
         $this->call(PembimbingSeeder::class);
         $this->call(TahunAjarSeeder::class);
         $this->call(JenisBimbinganSeeder::class);
+        $this->call(EligibleBimbinganSeeder::class);
         $this->call(BimbinganSeeder::class);
         $this->call(PesertaBimbinganSeeder::class);
         $this->call(AdminSeeder::class);
-        $this->call(StatusSesiBimbinganSeeder::class);
         $this->call(TahapanBimbinganSeeder::class);
         $this->call(SesiBimbinganSeeder::class);
-
-
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
     }
 }

@@ -46,7 +46,7 @@ $ditunjuk_oleh = auth()->user()->id;
           {{-- ================= Hidden Fields ================= --}}
           <input type="hidden" name="bimbingan_id" value="{{ $bimbingan_id }}">
           <input type="hidden" name="ditunjuk_oleh" value="{{ $ditunjuk_oleh }}">
-          <input type="hidden" name="status_peserta_bimbingan_id" value="1">
+          <input type="hidden" name="status_peserta_bimbingan" value="1">
 
           {{-- ================= Keterangan ================= --}}
           <div>
