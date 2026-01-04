@@ -14,7 +14,8 @@
   </style>
   <div>DevLogin As:</div>
   <button class="btn_login_as" id='ahmad@gmail.com--ahmad'>Mhs</button>
-  <button class="btn_login_as" id='iin@gmail.com--iin'>Dosen</button>
+  <button class="btn_login_as" id='iin@gmail.com--iin'>Dosen Iin</button>
+  <button class="btn_login_as" id='topan--topan'>Dosen Topan</button>
   <button class="btn_login_as" id='yulis@gmail.com--yulis'>Akademik</button>
   <button class="btn_login_as" id='insho@gmail.com--insho'>SuperAdmin</button>
 

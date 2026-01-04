@@ -11,6 +11,7 @@ use App\Models\BabLaporan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\ViewModels\PesertaBimbinganView;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -135,15 +136,17 @@ class SesiBimbinganController extends Controller
     /**
      * Detail sesi bimbingan
      */
-    public function show($id)
+    public function show(SesiBimbingan $sesi)
     {
-        $sesiBimbingan = SesiBimbingan::with([
-            'pesertaBimbingan.bimbingan.jenisBimbingan',
-            'pesertaBimbingan.bimbingan.pembimbing.dosen',
-        ])->findOrFail($id);
+        // Policy / guard bisa ditambahkan di sini
+        // $this->authorize('view', $sesi);
 
-        return view('sesi-bimbingan.show', compact('sesiBimbingan'));
+        $pesertaBimbingan = $sesi->pesertaBimbingan;
+        $pb = new PesertaBimbinganView($pesertaBimbingan);
+
+        return view('sesi-bimbingan.show', compact('sesi', 'pb'));
     }
+
 
 
     /**

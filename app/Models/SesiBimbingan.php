@@ -4,23 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SesiBimbingan extends Model
 {
     use HasFactory;
 
-    /**
-     * Nama tabel (karena bukan plural default Laravel)
-     */
     protected $table = 'sesi_bimbingan';
 
-    /**
-     * Mass assignable
-     */
     protected $fillable = [
         'peserta_bimbingan_id',
-        'status_sesi_bimbingan',
-        'tahapan_bimbingan_id',
+        'bab_laporan_id',          // Bab awal, Bab I, II, dst
+        'tahapan_bimbingan_id',    // Tahapan (proposal, skripsi, dst)
+        'status_sesi_bimbingan',   // config/status_sesi_bimbingan.php
         'topik',
         'pesan_mhs',
         'nama_dokumen',
@@ -32,27 +28,50 @@ class SesiBimbingan extends Model
         'file_bimbingan',
         'file_review',
         'tanggal_review',
+        'last_reminder_at', // notif whatsapp dari mhs
+        'reminder_count', // batasan 1x per minggu
+
     ];
 
-    /**
-     * Casting field
-     */
     protected $casts = [
         'tanggal_review' => 'datetime',
+        'is_offline'     => 'boolean',
     ];
 
     /* ======================
      * RELATIONS
      * ====================== */
 
-    /**
-     * Relasi ke PesertaBimbingan
+    /** 
+     * Sesi dimiliki oleh satu peserta bimbingan
      */
-    public function pesertaBimbingan()
+    public function pesertaBimbingan(): BelongsTo
     {
         return $this->belongsTo(
             PesertaBimbingan::class,
             'peserta_bimbingan_id'
+        );
+    }
+
+    /**
+     * Bab laporan yang dibahas pada sesi ini
+     */
+    public function babLaporan(): BelongsTo
+    {
+        return $this->belongsTo(
+            BabLaporan::class,
+            'bab_laporan_id'
+        );
+    }
+
+    /**
+     * Tahapan bimbingan (proposal, skripsi, yudisium, dll)
+     */
+    public function tahapanBimbingan(): BelongsTo
+    {
+        return $this->belongsTo(
+            TahapanBimbingan::class,
+            'tahapan_bimbingan_id'
         );
     }
 }

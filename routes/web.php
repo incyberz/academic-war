@@ -7,6 +7,8 @@ use App\Http\Controllers\JenisBimbinganController;
 use App\Http\Controllers\SesiBimbinganController;
 use App\Http\Controllers\PesertaBimbinganController;
 use App\Http\Controllers\TahunAjarController;
+use App\Http\Controllers\WhatsappController;
+
 
 Route::get('/', function () {
     // return redirect('/login');
@@ -44,7 +46,14 @@ Route::middleware('auth')->group(function () {
         ->name('tahun-ajar.set-aktif');
 
     Route::resource('peserta-bimbingan', PesertaBimbinganController::class);
-    Route::resource('sesi-bimbingan', SesiBimbinganController::class);
+    Route::resource('sesi-bimbingan', SesiBimbinganController::class)->only('create');
+
+    Route::get(
+        '/sesi-bimbingan/{sesi}',
+        [SesiBimbinganController::class, 'show']
+    )->name('sesi-bimbingan.show');
+
+
     // web.php
     // Route::get(
     //     '/sesi-bimbingan/{pesertaBimbingan}/create',
@@ -64,6 +73,11 @@ Route::middleware('auth')->group(function () {
         // Route::post('/bimbingan/{id}/setujui', ...);
         // Route::post('/bimbingan/{id}/tolak', ...);
     });
+
+
+
+    Route::post('/whatsapp/send/{sesi}', [WhatsappController::class, 'send'])
+        ->name('whatsapp.send');
 });
 
 

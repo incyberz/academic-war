@@ -22,7 +22,7 @@
   @endif
 
 
-  <x-count id="disetujui" label="Laporan Disetujui" :value="$bimbinganCounts['disetujui'] ?? 0" activeBg="emerald-600"
+  <x-count id="disetujui" label="Selesai/Revised" :value="$bimbinganCounts['disetujui'] ?? 0" activeBg="emerald-600"
     :active="true" />
 
   <x-count id="total" label="Total Laporan" :value="$bimbinganCounts['total_laporan'] ?? 0" activeBg="indigo-600"

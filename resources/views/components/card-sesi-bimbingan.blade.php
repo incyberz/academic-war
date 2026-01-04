@@ -28,15 +28,18 @@ $namaDokumen = substr($namaDokumen, 0, 15).'...';
         dd("Status id [$status] belum ada di config.");
         }
 
-        if ($status == 1) {
-        $badgeClass = (isRole('dosen') ? 'bg-rose-600' : 'bg-amber-500') .' text-white';
+        if ($status == 1) { // sedang direview
+        $badgeClass = 'bg-amber-500';
+        } elseif ( 0 == $status ) { // baru diajukan
+        $badgeClass = (isRole('dosen') ? 'bg-rose-600' : 'bg-amber-500');
         } elseif ( 0 > $status ) {
-        $badgeClass = (isRole('dosen') ? 'bg-amber-500' : 'bg-rose-600') .' text-white';
+        $badgeClass = (isRole('dosen') ? 'bg-amber-500' : 'bg-rose-600');
         }elseif ($status> 1 ) {
-        $badgeClass = 'bg-emerald-600 text-white';
+        $badgeClass = 'bg-emerald-600';
         } else {
-        $badgeClass = 'bg-slate-500 text-white';
+        $badgeClass = 'bg-slate-500';
         }
+        $badgeClass .= ' text-white';
         @endphp
 
         <span class="px-2 py-1 rounded text-xs font-medium {{ $badgeClass }}">
@@ -47,7 +50,7 @@ $namaDokumen = substr($namaDokumen, 0, 15).'...';
     {{-- Info Online/Offline at ... lokasi ... --}}
     @if($sesi->is_offline)
     <div class="text-xs my-3">
-        <x-badge type="warning" text="Offline" class="mb-2" />
+        <x-badge type="warning" text="Request Offline" class="mb-2" />
 
         <div class="flex flex-col gap-0">
             <div>
@@ -127,71 +130,106 @@ $namaDokumen = substr($namaDokumen, 0, 15).'...';
 
     {{-- Tanggal Review --}}
     @if ($sesi->tanggal_review)
-    <p class="mt-2 text-xs text-gray-500">
-        Direview pada {{ $sesi->tanggal_review->format('d M Y · H:i') }}
+    <p class="mt-2 text-xs text-gray-500 right">
+        Direview pada {{ $sesi->tanggal_review->format('d M Y · H:i') }} ✅
     </p>
     @endif
 
-    <hr>
+    @if (2>$status)
 
-    @if (isRole('dosen'))
-    <div class="blok_aksi aksi_dosen flex flex-wrap gap-2 mt-3">
+    @php
+    $arrAksi = [];
 
-        @php
-        $arr_aksi = [];
+    /** =========================
+    * ROLE: DOSEN
+    * ========================= */
+    if (isRole('dosen')) {
 
-        // debug
-        $arr_aksi = [
-        'notif'=> [
-        'label'=> 'Send Notif',
-        // 'route'=> 'whatsapp.send',
-        'route'=> 'sesi-bimbingan.show',
-        'param'=> $sesi->id,
-        'icon' => '📲',
-        'color'=> 'green',
-        ],
-        ]; // debug
+    if ($status === 0) {
+    // baru diajukan → dosen perlu download & review
+    $arrAksi = [
+    'review' => [
+    'label' => '🔍 Review',
+    'route' => 'sesi-bimbingan.show',
+    'type' => 'danger',
+    ],
+    ];
+    } elseif ($status === 1) {
+    // sudah didownload → sedang direview
+    $arrAksi = [
+    'reviewing' => [
+    'label' => '🧐 Lanjut Review',
+    'route' => 'sesi-bimbingan.show',
+    'type' => 'warning',
+    ],
+    ];
+    } elseif (0 > $status) { // perlu revisi → dosen opsional beri warning $arrAksi=[ 'notif'=> [
+    $arrAksi = [
+    'reviewing' => [
+    'label' => 'Notif Revisi',
+    'route' => 'whatsapp.send',
+    ],
+    ];
+    }
 
-        if ($status == 1) { // perlu review
-        $arr_aksi = [
-        'review'=> [
-        'label'=> 'Download Dokumen',
-        'route'=> 'sesi-bimbingan.review',
-        'param'=> $sesi->id,
-        'icon' => '📥',
-        'color'=> 'blue',
-        ],
-        ];
+    /** =========================
+    * ROLE: MAHASISWA
+    * ========================= */
+    } elseif (isRole('mhs')) {
 
-        } elseif (0 > $status) { // perlu revisi
-        $arr_aksi = [
-        'notif'=> [
-        'label'=> 'Send Notif',
-        'route'=> 'whatsapp.send',
-        'param'=> $sesi->id,
-        'icon' => '📲',
-        'color'=> 'green',
-        ],
-        ];
-        }
-        // status > 1 atau lainnya → tidak ada aksi
-        @endphp
+    if ($status === 0) {
+    // sudah submit, menunggu dosen
+    $arrAksi = [
+    'wait' => [
+    'label' => '⏳ Menunggu Review',
+    'route' => 'sesi-bimbingan.show',
+    'type' => 'warning',
+    ],
+    ];
+    } elseif (1 == $status) {
+    $arrAksi = [
+    'wait' => [
+    'label' => '🔍 Sedang Direview',
+    'route' => 'sesi-bimbingan.show',
+    'type' => 'warning',
+    ],
+    ];
+    } elseif (0 > $status) { // diminta revisi $arrAksi=[ 'revisi'=> [
+    $arrAksi = [
+    'reviewing' => [
 
-        {{-- UI links aksi untuk dosen --}}
-        @forelse ($arr_aksi as $aksi)
-        <a href="{{ route($aksi['route'], $aksi['param']) }}" class="inline-flex items-center gap-2 px-3 py-2 text-sm font-semibold
-                  rounded-md shadow
-                  bg-{{ $aksi['color'] }}-600 hover:bg-{{ $aksi['color'] }}-700
-                  text-white
-                  transition">
-            <span>{{ $aksi['icon'] }}</span>
-            {{ $aksi['label'] }}
-        </a>
-        @empty
-        <span class="text-sm text-gray-500 italic">
-            Tidak ada aksi
-        </span>
-        @endforelse
+    'label' => 'Upload Revisi',
+    'route' => 'sesi-bimbingan.show',
+    'type' => 'danger',
+
+    ],
+    ];
+    }
+
+    /** =========================
+    * ROLE: AKADEMIK
+    * ========================= */
+    } elseif (isRole('akademik')) {
+
+    // akademik hanya monitoring
+    $arrAksi = [
+    'monitor' => [
+    'label' => 'Lihat Detail',
+    'route' => 'sesi-bimbingan.show',
+    'type' => 'primary',
+    ],
+    ];
+    }
+    @endphp
+    <hr class="my-3 border-gray-200 dark:border-gray-700">
+    <div class="blok_aksi mt-3 space-y-2">
+
+        {{-- UI links aksi --}}
+        @foreach ($arrAksi as $aksi)
+        @php $type = $aksi['type'] ?? 'secondary'; @endphp
+        <a href="{{ route($aksi['route'], $sesi) }}">
+            <x-button type="{{$type}}" class="w-full"> {{ $aksi['label'] }} </x-button>
+        </a> @endforeach
 
     </div>
     @endif

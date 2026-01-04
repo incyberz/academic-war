@@ -2,7 +2,7 @@
   @forelse ($riwayatBimbingan as $sesi)
   @php
   $hidden = '';
-  if(isRole('dosen') and $sesi->status_sesi_bimbingan != 1){
+  if(isRole('dosen') and ($sesi->status_sesi_bimbingan != 1 and $sesi->status_sesi_bimbingan != 0)){
   $hidden = 'hidden';
   }elseif(isRole('mhs') and intval($sesi->status_sesi_bimbingan) >=0 ){
   $hidden = 'hidden';

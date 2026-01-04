@@ -14,6 +14,11 @@ return new class extends Migration {
                 ->constrained('peserta_bimbingan')
                 ->cascadeOnDelete();
 
+            $table->foreignId('bab_laporan_id')
+                ->default(1)
+                ->constrained('bab_laporan')
+                ->cascadeOnDelete();
+
             $table->foreignId('tahapan_bimbingan_id') // diisi oleh sistem atau pembimbing
                 ->nullable()
                 ->constrained('tahapan_bimbingan')
@@ -55,6 +60,10 @@ return new class extends Migration {
             $table->integer('xp_didapat')->default(0);
 
             $table->string('ip_pengajuan', 45)->nullable();
+
+            $table->timestamp('last_reminder_at')->nullable();
+            $table->tinyInteger('reminder_count')->nullable();
+
 
             $table->timestamps();
         });
