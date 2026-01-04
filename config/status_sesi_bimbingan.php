@@ -13,13 +13,13 @@ return
       'bg' => 'danger',
     ],
     0 => [
-      'nama_status' => 'Draft',
-      'keterangan' => 'Laporan baru dibuat oleh mahasiswa, belum dikirim ke dosen',
+      'nama_status' => 'Diajukan',
+      'keterangan' => 'Laporan sudah dikirim ke dosen pembimbing',
       'bg' => 'info',
     ],
     1 => [
-      'nama_status' => 'Diajukan',
-      'keterangan' => 'Laporan sudah dikirim ke dosen pembimbing',
+      'nama_status' => 'Diproses',
+      'keterangan' => 'File Laporan sudah dibuka oleh dosen pembimbing',
       'bg' => 'warning',
     ],
     2 => [

@@ -42,7 +42,7 @@ class TahapanBimbinganSeeder extends Seeder
 
             foreach ($tahapan as $index => $namaTahap) {
 
-                DB::table('tahapan_bimbingan')->insert([
+                DB::table('tahapan_bimbingan')->insertOrIgnore([
                     'jenis_bimbingan_id' => $jenisId,
                     'urutan'             => $index + 1,
                     'nama_tahapan'              => $namaTahap,

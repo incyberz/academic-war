@@ -10,6 +10,11 @@ return new class extends Migration
     {
         Schema::create('bab_laporan', function (Blueprint $table) {
             $table->id();
+            // FK jenis_bimbingan_id
+            $table->foreignId('jenis_bimbingan_id')
+                ->default(1)
+                ->constrained('jenis_bimbingan')
+                ->cascadeOnDelete();
 
             $table->string('kode', 10); // BAB I, BAB II, dst
             $table->string('nama', 100); // Pendahuluan, Metodologi, dll

@@ -46,8 +46,10 @@ class PesertaBimbinganSeeder extends Seeder
                     'email' => $m['email'],
                     'password' => Hash::make($m['username']),
                     'role_id' => $roleId,
+                    'avatar' => 'img/mhs/mhs' . rand(1, 6) . '.jpg',
                 ]
             );
+
 
             // updateOrInsert status_mhs 
             DB::table('status_mhs')->updateOrInsert(
@@ -60,16 +62,6 @@ class PesertaBimbinganSeeder extends Seeder
                 ]
             );
 
-            // updateOrInsert status_peserta_bimbingan
-            DB::table('status_peserta_bimbingan')->updateOrInsert(
-                ['kode' => 'aktif'],
-                [
-                    'nama' => 'Aktif',
-                    'keterangan' => 'Peserta bimbingan aktif',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]
-            );
 
 
             // get status_mhs_id aktif

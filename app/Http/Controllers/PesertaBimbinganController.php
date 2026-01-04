@@ -66,14 +66,13 @@ class PesertaBimbinganController extends Controller
                 'mahasiswa',
                 'bimbingan.jenisBimbingan',
                 'bimbingan.tahunAjar',
-                'status',
                 'penunjuk',
             ])->findOrFail($peserta_bimbingan_id);
 
             $riwayatBimbingan = SesiBimbingan::where('peserta_bimbingan_id', $peserta_bimbingan_id)
                 ->orderByRaw("
                         CASE
-                            WHEN status_sesi_bimbingan IN (1) THEN 0      -- Perlu Review
+                            WHEN status_sesi_bimbingan IN (0, 1) THEN 0      -- Perlu Review
                             WHEN status_sesi_bimbingan IN (-1, -2) THEN 1 -- Perlu Revisi
                             ELSE 2
                         END
@@ -82,10 +81,10 @@ class PesertaBimbinganController extends Controller
                 ->get();
 
             $bimbinganCounts = [
-                'total_laporan' => $riwayatBimbingan->where('status_sesi_bimbingan', '!=', 0)->count(),
-                'perlu_review'  => $riwayatBimbingan->where('status_sesi_bimbingan', 1)->count(),
-                'perlu_revisi'  => $riwayatBimbingan->whereIn('status_sesi_bimbingan', [-1, -2])->count(),
-                'disetujui'     => $riwayatBimbingan->whereIn('status_sesi_bimbingan', [2, 3, 4])->count(),
+                'total_laporan' => $riwayatBimbingan->count(),
+                'perlu_review'  => $riwayatBimbingan->whereIn('status_sesi_bimbingan', [0, 1])->count(),
+                'perlu_revisi'  => $riwayatBimbingan->where('status_sesi_bimbingan', '<', 0)->count(),
+                'disetujui'     => $riwayatBimbingan->where('status_sesi_bimbingan', '>', 1)->count(),
             ];
 
             $tahapanBimbingan = TahapanBimbingan::where(
@@ -160,7 +159,7 @@ class PesertaBimbinganController extends Controller
             'jenis_bimbingan_id' => ['required', 'exists:jenis_bimbingan,id'],
             'mhs_id' => ['required', 'exists:mhs,id'],
             'ditunjuk_oleh' => ['required', 'exists:users,id'],
-            'status_peserta_bimbingan' => ['required', 'integer'],
+            '' => ['required', 'integer'],
             'keterangan' => ['nullable', 'string'],
             'progress' => ['nullable', 'integer', 'min:0', 'max:100'],
             'terakhir_topik' => ['nullable', 'string', 'max:255'],
@@ -206,7 +205,7 @@ class PesertaBimbinganController extends Controller
                 'mhs_id' => $validated['mhs_id'],
                 'bimbingan_id' => $myBimbingan->id,
                 'ditunjuk_oleh' => $validated['ditunjuk_oleh'],
-                'status_peserta_bimbingan' => $validated['status_peserta_bimbingan'],
+                '' => $validated[''],
                 'keterangan' => $validated['keterangan'] ?? null,
                 'progress' => $validated['progress'] ?? 0,
                 'terakhir_topik' => $validated['terakhir_topik'] ?? null,

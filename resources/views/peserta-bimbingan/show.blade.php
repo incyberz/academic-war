@@ -1,68 +1,55 @@
-<x-app-layout>
-  <x-page-header title="Detail Peserta Bimbingan" subtitle="{{ $pesertaBimbingan->mahasiswa->nama }}
-                  · {{ $pesertaBimbingan->mahasiswa->nim }}
-                  · {{ $pesertaBimbingan->bimbingan->jenisBimbingan->nama }}" />
+@php $statusPeserta = config('status_peserta_bimbingan') @endphp
+@php $namaBimbingan = $pesertaBimbingan->bimbingan->jenisBimbingan->nama @endphp
+@php $subtitle = $pesertaBimbingan->bimbingan->jenisBimbingan->deskripsi @endphp
+@php $namaPeserta = $pesertaBimbingan->mahasiswa->nama @endphp
+@php $namaPembimbing = $pesertaBimbingan->bimbingan->pembimbing->dosen->user->name @endphp
+@php $isMe = $pesertaBimbingan->mahasiswa->user->id == Auth::id() @endphp
 
-  <div>Pembimbing: {{ $pesertaBimbingan->bimbingan->pembimbing->dosen->user->name }}</div>
+<x-app-layout>
+  <x-page-header title="Detail Peserta {{$namaBimbingan}}" subtitle="{{ $subtitle }}" />
+
 
   @if (isRole('mhs'))
-  <a href="{{route('sesi-bimbingan.create', $pesertaBimbingan->id)}}">
-    <x-btn-primary>Add Sesi Bimbingan</x-btn-primary>
-  </a>
-
-  <a href="{{ route('sesi-bimbingan.create', [
-      'peserta_bimbingan_id' => $pesertaBimbingan->id
-  ]) }}">
-    <x-btn-primary>Add Sesi Bimbingan</x-btn-primary>
-  </a>
+  <div class="right mb-2">
+    <a href="{{ route('sesi-bimbingan.create', [
+        'peserta_bimbingan_id' => $pesertaBimbingan->id
+    ]) }}">
+      <x-button>Add Sesi Bimbingan</x-button>
+    </a>
+  </div>
   @endif
 
   <x-page-content>
-    <div class="flex items-center gap-4 p-4 rounded-lg border
-                      bg-white dark:bg-slate-800
-                      border-gray-200 dark:border-gray-700">
+    <x-card>
+      <x-card-body class="flex items-center gap-4">
 
-      <img src="{{ $pesertaBimbingan->mahasiswa->user->avatar
-                  ? asset('storage/' . $pesertaBimbingan->mahasiswa->user->avatar)
-                  : asset('img/avatar-default.png') }}" alt="{{ $pesertaBimbingan->mahasiswa->nama }}"
-        class="w-16 h-16 rounded-full border object-cover">
+        <img src="{{ $pesertaBimbingan->mahasiswa->user->avatar
+                    ? asset('storage/' . $pesertaBimbingan->mahasiswa->user->avatar)
+                    : asset('img/avatar-default.png') }}" alt="{{ $pesertaBimbingan->mahasiswa->nama }}"
+          class="w-16 h-16 rounded-full border object-cover">
 
 
-      <div class="flex-1">
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-          {{ $pesertaBimbingan->mahasiswa->nama }}
-        </h2>
+        <div class="flex-1">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            {{ $pesertaBimbingan->mahasiswa->nama }} {{ $isMe ? '(Saya)' : ''}}
+          </h2>
 
-        <p class="text-sm text-gray-500">
-          NIM {{ $pesertaBimbingan->mahasiswa->nim }}
-        </p>
-      </div>
-
-      <span class="text-xs px-3 py-1 rounded-md
-                           bg-indigo-100 text-indigo-700
-                           dark:bg-indigo-900/40 dark:text-indigo-300">
-        {{ $pesertaBimbingan->bimbingan->tahunAjar->id }}
-      </span>
-    </div>
-
-    {{-- Progress --}}
-    <div class="p-4 rounded-lg border
-                          bg-white dark:bg-slate-800
-                          border-gray-200 dark:border-gray-700">
-
-      <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-        Progress Bimbingan
-      </p>
-
-      <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-        <div class="h-3 rounded-full bg-indigo-600" style="width: {{ $pesertaBimbingan->progress }}%">
+          <p class="text-sm text-gray-500">
+            NIM {{ $pesertaBimbingan->mahasiswa->nim }}
+            <br>Pembimbing: {{$namaPembimbing}}
+          </p>
         </div>
-      </div>
 
-      <p class="text-xs text-gray-500 mt-1">
-        {{ $pesertaBimbingan->progress }}% selesai
-      </p>
-    </div>
+        <span class="text-xs px-3 py-1 rounded-md
+                             bg-indigo-100 text-indigo-700
+                             dark:bg-indigo-900/40 dark:text-indigo-300">
+          {{ $pesertaBimbingan->bimbingan->tahunAjar->id }}
+        </span>
+      </x-card-body>
+
+    </x-card>
+
+    <x-progress-bar animated label='Progress Bimbingan' value='{{$pesertaBimbingan->progress}}' />
 
     @include('peserta-bimbingan.bimbingan-counts')
 
@@ -87,10 +74,8 @@
           Status Peserta
         </h3>
 
-        <span class="inline-block px-3 py-1 text-xs rounded
-                      {{ $pesertaBimbingan->status->warna_css
-                          ?? 'bg-gray-100 text-gray-700' }}">
-          {{ $pesertaBimbingan->status->nama }}
+        <span class="inline-block px-3 py-1 text-xs rounded bg-gray-100 text-gray-700">
+          {{ $statusPeserta[$pesertaBimbingan->status]['nama_status'] }}
         </span>
 
         <p class="text-xs text-gray-500">

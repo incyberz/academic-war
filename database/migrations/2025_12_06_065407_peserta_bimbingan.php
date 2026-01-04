@@ -27,7 +27,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->nullOnDelete();
 
-            $table->integer('status_peserta_bimbingan')->default(1);
+            $table->integer('status')->default(1);
 
             // tambahan keterangan opsional
             $table->string('keterangan')->nullable();

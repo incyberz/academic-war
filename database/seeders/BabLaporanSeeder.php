@@ -16,7 +16,7 @@ class BabLaporanSeeder extends Seeder
             // ======================
 
             [
-                'kode' => 'COVER',
+                'kode' => 'cover',
                 'nama' => 'Sampul / Cover',
                 'deskripsi' => 'Halaman sampul sesuai pedoman penulisan skripsi.',
                 'is_inti' => false,
@@ -25,7 +25,7 @@ class BabLaporanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'JUDUL',
+                'kode' => 'hal_judul',
                 'nama' => 'Halaman Judul',
                 'deskripsi' => 'Halaman judul skripsi resmi.',
                 'is_inti' => false,
@@ -34,7 +34,7 @@ class BabLaporanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'PENGESAHAN',
+                'kode' => 'pengesahan',
                 'nama' => 'Lembar Pengesahan',
                 'deskripsi' => 'Lembar pengesahan dosen pembimbing dan penguji.',
                 'is_inti' => false,
@@ -43,7 +43,7 @@ class BabLaporanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'ORISINALITAS',
+                'kode' => 'hal_ori',
                 'nama' => 'Pernyataan Keaslian',
                 'deskripsi' => 'Pernyataan keaslian karya ilmiah oleh mahasiswa.',
                 'is_inti' => false,
@@ -52,7 +52,7 @@ class BabLaporanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'ABS',
+                'kode' => 'abstrak',
                 'nama' => 'Abstrak',
                 'deskripsi' => 'Ringkasan penelitian dalam bahasa Indonesia.',
                 'is_inti' => false,
@@ -61,7 +61,7 @@ class BabLaporanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'ABSTRACT',
+                'kode' => 'abstract',
                 'nama' => 'Abstract',
                 'deskripsi' => 'Ringkasan penelitian dalam bahasa Inggris.',
                 'is_inti' => false,
@@ -70,7 +70,7 @@ class BabLaporanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'PRAKATA',
+                'kode' => 'prakata',
                 'nama' => 'Kata Pengantar',
                 'deskripsi' => 'Ucapan terima kasih dan pengantar penulisan skripsi.',
                 'is_inti' => false,
@@ -79,7 +79,7 @@ class BabLaporanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'DAFTAR_ISI',
+                'kode' => 'daftar_isi',
                 'nama' => 'Daftar Isi',
                 'deskripsi' => 'Daftar isi seluruh bagian skripsi.',
                 'is_inti' => false,
@@ -88,7 +88,7 @@ class BabLaporanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'DAFTAR_TABEL',
+                'kode' => 'daftar_tbl',
                 'nama' => 'Daftar Tabel',
                 'deskripsi' => 'Daftar tabel yang digunakan dalam skripsi.',
                 'is_inti' => false,
@@ -97,7 +97,7 @@ class BabLaporanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'DAFTAR_GAMBAR',
+                'kode' => 'daftar_gbr',
                 'nama' => 'Daftar Gambar',
                 'deskripsi' => 'Daftar gambar atau diagram dalam skripsi.',
                 'is_inti' => false,
@@ -106,7 +106,7 @@ class BabLaporanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'DAFTAR_LAMPIRAN',
+                'kode' => 'daftar_lam',
                 'nama' => 'Daftar Lampiran',
                 'deskripsi' => 'Daftar dokumen lampiran.',
                 'is_inti' => false,
@@ -120,8 +120,8 @@ class BabLaporanSeeder extends Seeder
             // ======================
 
             [
-                'kode' => 'BAB I',
-                'nama' => 'Pendahuluan',
+                'kode' => 'bab1',
+                'nama' => 'Bab 1 Pendahuluan',
                 'deskripsi' => 'Latar belakang, rumusan masalah, tujuan, manfaat, dan sistematika penulisan.',
                 'is_inti' => true,
                 'urutan' => 12,
@@ -129,8 +129,8 @@ class BabLaporanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'BAB II',
-                'nama' => 'Tinjauan Pustaka',
+                'kode' => 'bab2',
+                'nama' => 'Bab 2 Tinjauan Pustaka',
                 'deskripsi' => 'Penelitian terkait, landasan teori, dan kerangka pemikiran.',
                 'is_inti' => true,
                 'urutan' => 13,
@@ -138,8 +138,8 @@ class BabLaporanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'BAB III',
-                'nama' => 'Metodologi Penelitian',
+                'kode' => 'bab3',
+                'nama' => 'Bab 3 Metodologi Penelitian',
                 'deskripsi' => 'Metode penelitian dan teknik analisis data.',
                 'is_inti' => true,
                 'urutan' => 14,
@@ -147,8 +147,8 @@ class BabLaporanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'BAB IV',
-                'nama' => 'Hasil dan Pembahasan',
+                'kode' => 'bab4',
+                'nama' => 'Bab 4 Hasil dan Pembahasan',
                 'deskripsi' => 'Hasil penelitian dan pembahasan.',
                 'is_inti' => true,
                 'urutan' => 15,
@@ -156,8 +156,8 @@ class BabLaporanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'BAB V',
-                'nama' => 'Penutup',
+                'kode' => 'bab5',
+                'nama' => 'Bab 5 Penutup',
                 'deskripsi' => 'Kesimpulan dan saran.',
                 'is_inti' => true,
                 'urutan' => 16,
@@ -170,7 +170,7 @@ class BabLaporanSeeder extends Seeder
             // ======================
 
             [
-                'kode' => 'DP',
+                'kode' => 'daftar_pus',
                 'nama' => 'Daftar Pustaka',
                 'deskripsi' => 'Referensi yang digunakan dalam penelitian.',
                 'is_inti' => false,
@@ -179,7 +179,7 @@ class BabLaporanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'kode' => 'LAMP',
+                'kode' => 'lampiran',
                 'nama' => 'Lampiran',
                 'deskripsi' => 'Dokumen pendukung penelitian.',
                 'is_inti' => false,

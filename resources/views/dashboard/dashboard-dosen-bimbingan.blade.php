@@ -98,7 +98,7 @@
       @endif
 
       <div class="text-end">
-        <a href="">
+        <a href="#">
           <x-btn-add>
             Add Peserta Bimbingan {{$nama_bimbingan }}
           </x-btn-add>

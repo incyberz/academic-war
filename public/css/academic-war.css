@@ -4,9 +4,16 @@ input[required],
 select[required],
 textarea[required] {
   border-color: #6366f1;
-  /* indigo-500 */
   background-color: #eef2ff;
-  /* indigo-50 */
+}
+
+.dark input[required],
+.dark select[required],
+.dark textarea[required] {
+  border-color: #818cf8;
+  /* indigo-400 */
+  background-color: #1e1b4b;
+  /* indigo-950-ish */
 }
 
 input[required]:focus {

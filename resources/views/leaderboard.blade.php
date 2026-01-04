@@ -24,7 +24,7 @@ $best_players = [
 
   <div class="overflow-hidden rounded-lg border border-gray-700">
     <table class="w-full text-sm">
-      <thead class="">
+      <thead>
         <tr>
           <th class="py-2 px-3">Rank</th>
           <th class="py-2 px-3 text-left">Nama</th>

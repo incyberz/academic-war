@@ -33,6 +33,7 @@ class SesiBimbinganSeeder extends Seeder
                 'pesan_mhs'   => "Pesan mahasiswa sesi ke-$i (dummy)",
                 'pesan_dosen' => "Tanggapan dosen sesi ke-$i (dummy)",
 
+                'nama_dokumen' => "Bab-{$i}",
                 'file_bimbingan' => "bab_{$i}.docx",
                 'file_review'    => "bab_{$i}_reviewed.docx",
 

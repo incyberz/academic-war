@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\BabLaporan;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -27,5 +28,6 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminSeeder::class);
         $this->call(TahapanBimbinganSeeder::class);
         $this->call(SesiBimbinganSeeder::class);
+        $this->call(BabLaporan::class);
     }
 }

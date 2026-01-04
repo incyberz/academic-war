@@ -7,6 +7,7 @@ use App\Models\Bimbingan;
 use App\Models\SesiBimbingan;
 use App\Models\PesertaBimbingan;
 use App\Models\TahapanBimbingan;
+use App\Models\BabLaporan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -47,11 +48,11 @@ class SesiBimbinganController extends Controller
             ->where('mhs_id', $mhs->id)
             ->firstOrFail(); // ← inti keamanan
 
-        $tahapanBimbingan = TahapanBimbingan::all(); // bisa dipersempit nanti
+        $babLaporan = BabLaporan::where('jenis_bimbingan_id', $pesertaBimbingan->bimbingan->jenis_bimbingan_id)->get(); // bisa dipersempit nanti
 
         return view('sesi-bimbingan.create', compact(
             'pesertaBimbingan',
-            'tahapanBimbingan'
+            'babLaporan'
         ));
     }
 
@@ -62,29 +63,74 @@ class SesiBimbinganController extends Controller
      */
     public function store(Request $request)
     {
+        // Validasi input
         $request->validate([
-            'peserta_bimbingan_id'   => 'required|exists:peserta_bimbingan,id',
-            'status_sesi_bimbingan' => 'required|exists:status_sesi_bimbingan,id',
-            'pesan_mhs'              => 'nullable|string',
-            'file_bimbingan'         => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'peserta_bimbingan_id' => 'required|exists:peserta_bimbingan,id',
+            'bab_laporan_id'       => 'required|exists:bab_laporan,id',
+            'pesan_mhs'            => 'required|string',
+            'nama_dokumen'            => 'required|string',
+            'topik'                => 'nullable|string',
+            'is_offline'           => 'required|boolean',
+            'tanggal_offline'      => 'nullable|date|required_if:is_offline,1',
+            'jam_offline'          => 'nullable|required_if:is_offline,1',
+            'lokasi_offline'       => 'nullable|string|required_if:is_offline,1',
+            'file_bimbingan'       => 'nullable|file|mimes:doc,docx,pdf|max:2048',
         ]);
 
+        // Siapkan data untuk create
         $data = $request->only([
             'peserta_bimbingan_id',
-            'status_sesi_bimbingan',
+            'bab_laporan_id',
             'pesan_mhs',
+            'nama_dokumen',
+            'topik',
+            'is_offline',
+            'tanggal_offline',
+            'jam_offline',
+            'lokasi_offline',
         ]);
 
+        $data['status_sesi_bimbingan'] = 0; // 0 = baru diajukan
+
         if ($request->hasFile('file_bimbingan')) {
-            $data['file_bimbingan'] = $request->file('file_bimbingan')
-                ->store('bimbingan/file-bimbingan', 'public');
+
+            $file = $request->file('file_bimbingan');
+
+            // ❌ stop jika bukan docx
+            if ($file->getClientOriginalExtension() !== 'docx') {
+                return back()
+                    ->withErrors(['file_bimbingan' => 'Dokumen harus berformat .docx'])
+                    ->withInput();
+            }
+
+            // normalisasi nama dokumen
+            $namaDokumen = $request->nama_dokumen;
+            $namaDokumen = strtolower($namaDokumen);
+            $namaDokumen = preg_replace('/[^a-z0-9_-]/', '', $namaDokumen);
+            $namaDokumen = preg_replace('/_+/', '_', $namaDokumen);
+            $namaDokumen = trim($namaDokumen, '_');
+
+            $data['nama_dokumen'] = $namaDokumen;
+
+            // simpan file dengan nama custom
+            $path = $file->storeAs(
+                'bimbingan/file-bimbingan',
+                $namaDokumen . '.docx'
+            );
+
+            $data['file_bimbingan'] = $path;
+        } else {
+            abort(422, 'Wajib upload dokumen bimbingan');
         }
 
+        // Simpan ke database
         SesiBimbingan::create($data);
 
-        return redirect()->back()
+        return redirect()
+            ->route('peserta-bimbingan.show', $request->peserta_bimbingan_id)
             ->with('success', 'Sesi bimbingan berhasil diajukan.');
     }
+
 
     /**
      * Detail sesi bimbingan
@@ -156,5 +202,14 @@ class SesiBimbinganController extends Controller
 
         return redirect()->back()
             ->with('success', 'Sesi bimbingan berhasil dihapus.');
+    }
+
+    public function downloadBimbingan(SesiBimbingan $sesi)
+    {
+        // Cek hak akses: hanya pembimbing atau mahasiswa yang bersangkutan
+        // $this->authorize('view', $sesi);
+        dd('download');
+
+        return response()->download(storage_path('app/' . $sesi->file_bimbingan));
     }
 }

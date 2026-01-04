@@ -18,7 +18,7 @@ $role_nama = $user->role->nama ?? 'Mhs';
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 space-y-6">
 
             {{-- Welcome Card --}}
-            <x-section class="">
+            <x-section>
                 <h3 class="text-lg font-semibold mb-1">
                     👋 Selamat Datang {{$user->name}}!
                 </h3>

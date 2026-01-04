@@ -15,7 +15,7 @@ class PesertaBimbingan extends Model
         'mhs_id',
         'bimbingan_id',
         'ditunjuk_oleh',
-        'status_peserta_bimbingan',
+        'status',
         'keterangan',
         'progress',
         'terakhir_topik',

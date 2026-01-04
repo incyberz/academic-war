@@ -25,30 +25,69 @@
           <input type="hidden" name="peserta_bimbingan_id" value="{{ $pesertaBimbingan->id }}" />
 
           <div>
-            <x-label for="tahapan_bimbingan_id">Tahapan Bimbingan</x-label>
-            <x-select required name="tahapan_bimbingan_id" id="tahapan_bimbingan_id">
+            <x-label for="bab_laporan_id">Apa yang ingin kamu bahas?</x-label>
+            <x-select required name="bab_laporan_id" id="bab_laporan_id">
               <option value="">--pilih--</option>
-              {{-- foreach $tahapanBimbingan as $tahap --}}
-              @foreach ($tahapanBimbingan as $tahap)
-              <option value="{{$tahap->id}}">{{$tahap->urutan}} - {{$tahap->tahap}}</option>
+              @foreach ($babLaporan as $bab)
+              <option value="{{$bab->id}}">{{$bab->nama}}</option>
               @endforeach
             </x-select>
           </div>
 
           <div>
-            <x-label for="topik">Topik</x-label>
+            <x-label for="topik">Topik detail / sub-bab (jika ada)</x-label>
             <x-input name="topik" id="topik" />
+          </div>
+
+          <div>
+            <x-label for="nama_dokumen">Nama Dokumen (auto/manual)</x-label>
+            <x-input required name="nama_dokumen" id="nama_dokumen" />
+            <script>
+              $(function () {
+            
+              function generateNamaDokumen() {
+                // ambil teks option bab yang dipilih
+                let nama_bab = $('#bab_laporan_id option:selected').text().toLowerCase();
+            
+                // ambil topik
+                let topik = $('#topik').val().toLowerCase();
+            
+                // normalisasi teks
+                nama_bab = nama_bab.trim().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '_');
+                topik = topik.trim().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '_');
+            
+                // timestamp otomatis (YYMMDD)
+                let now = new Date();
+                let timestamp = String(now.getFullYear()).slice(2) +
+                                String(now.getMonth() + 1).padStart(2, '0') +
+                                String(now.getDate()).padStart(2, '0');
+            
+                // gabungkan
+                let nama_dokumen = `${nama_bab}-${topik}-${timestamp}`;
+            
+                $('#nama_dokumen').val(nama_dokumen);
+              }
+            
+              // trigger saat mengetik topik
+              $('#topik').on('keyup', generateNamaDokumen);
+            
+              // trigger saat ganti bab
+              $('#bab_laporan_id').on('change', generateNamaDokumen);
+            
+            });
+            </script>
           </div>
 
           <div>
             <x-label for="is_offline">Mode Bimbingan</x-label>
             <x-select required name="is_offline" id="is_offline">
-              <option value="">Bimbingan Online</option>
-              <option value="1">Bimbingan Offline pada tanggal</option>
+              <option value="0">Cukup Bimbingan Online</option>
+              <option value="1">Saya ingin Bimbingan Offline tanggal</option>
             </x-select>
             <div id="blok_opsi_offline" class="hidden">
               <x-input class=opsi_offline type=date name="tanggal_offline" id="tanggal_offline" />
-              <x-input class=opsi_offline name="lokasi_bimbingan" id="lokasi_bimbingan"
+              <x-input class=opsi_offline type=time name="jam_offline" id="jam_offline" />
+              <x-input class=opsi_offline name="lokasi_offline" id="lokasi_offline"
                 placeholder='Lokasi bimbingan offline...' />
             </div>
             <script>
@@ -71,10 +110,8 @@
 
           {{-- pesan mahasiswa --}}
           <div>
-            <x-label for='pesan_mhs'>
-              Pesan untuk Dosen
-            </x-label>
-            <x-textarea name="pesan_mhs" id=pesan_mhs rows="4"
+            <x-label for='pesan_mhs'>Pesan untuk Dosen</x-label>
+            <x-textarea required name="pesan_mhs" id=pesan_mhs rows="4"
               placeholder="Tuliskan kendala, progres, atau pertanyaan bimbingan...">
               {{ old('pesan_mhs') }}</x-textarea>
             @error('pesan_mhs')
@@ -85,11 +122,12 @@
           {{-- file bimbingan --}}
           <div>
             <x-label for='file_bimbingan'>
-              File Bimbingan (opsional)
+              File Bimbingan
             </x-label>
-            <input type="file" name="file_bimbingan" id="file_bimbingan" class="block w-full text-sm " accept=".docx" />
+            <x-input required type="file" name="file_bimbingan" id="file_bimbingan" accept=".docx"
+              class="text-xs p-3" />
             <p class="text-xs  mt-1">
-              DOCX (maks. 5MB)
+              DOCX (maks. 2MB)
             </p>
             @error('file_bimbingan')
             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
@@ -98,14 +136,11 @@
 
           {{-- action --}}
           <div class="flex justify-end gap-3 pt-4">
-            <a href="{{ url()->previous() }}" class="px-4 py-2 rounded-lg text-sm bg-gray-100 hover:bg-gray-200">
-              Batal
+            <a href="{{ url()->previous() }}">
+              <x-btn-back>Batal</x-btn-back>
             </a>
 
-            <button type="submit" class="px-5 py-2 rounded-lg text-sm bg-blue-600 text-white hover:bg-blue-700">
-              Ajukan Bimbingan
-            </button>
-            <x-button class="bg-blue-600  hover:bg-blue-700">Ajukan Bimbingan</x-button>
+            <x-btn-primary>Ajukan</x-btn-primary>
           </div>
 
         </form>

@@ -22,7 +22,7 @@ return new class extends Migration {
             $table->tinyInteger('status_sesi_bimbingan')->default(0);
             // -2 : ditolak
             // -1 : revisi
-            //  0 : menunggu
+            //  0 : diajukan
             //  1 : diproses
             //  2 : disetujui
             //  3 : selesai
@@ -32,11 +32,19 @@ return new class extends Migration {
 
             $table->text('pesan_mhs')->nullable();
             $table->text('pesan_dosen')->nullable();
+            $table->text('nama_dokumen')->nullable();
+
+
+            $table->boolean('is_offline')->default(false); // online/offline
+            $table->date('tanggal_offline')->nullable();
+            $table->time('jam_offline')->nullable();
+            $table->string('lokasi_offline', 255)->nullable();
 
             $table->string('file_bimbingan', 200)->nullable();
             $table->string('file_review', 200)->nullable();
 
             $table->timestamp('tanggal_pengajuan')->nullable();
+            $table->timestamp('tanggal_download')->nullable();
             $table->timestamp('tanggal_review')->nullable();
 
             $table->boolean('is_locked')->default(false);
