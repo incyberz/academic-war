@@ -17,6 +17,7 @@ class SesiBimbingan extends Model
         'bab_laporan_id',          // Bab awal, Bab I, II, dst
         'tahapan_bimbingan_id',    // Tahapan (proposal, skripsi, dst)
         'status_sesi_bimbingan',   // config/status_sesi_bimbingan.php
+        'revisi_id',   // referensi revisi mengacu ke
         'topik',
         'pesan_mhs',
         'nama_dokumen',
@@ -28,6 +29,7 @@ class SesiBimbingan extends Model
         'file_bimbingan',
         'file_review',
         'tanggal_review',
+        'tanggal_revisi',
         'last_reminder_at', // notif whatsapp dari mhs
         'reminder_count', // batasan 1x per minggu
 
@@ -35,6 +37,9 @@ class SesiBimbingan extends Model
 
     protected $casts = [
         'tanggal_review' => 'datetime',
+        'tanggal_revisi' => 'datetime',
+        'tanggal_offline' => 'date',
+        'last_reminder_at' => 'datetime',
         'is_offline'     => 'boolean',
     ];
 
@@ -73,5 +78,9 @@ class SesiBimbingan extends Model
             TahapanBimbingan::class,
             'tahapan_bimbingan_id'
         );
+    }
+    public function lastReminder()
+    {
+        return $this->last_reminder_at->format('d M Y H:i');
     }
 }

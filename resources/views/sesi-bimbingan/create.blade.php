@@ -1,10 +1,18 @@
+@php $isRevisi = $revisi->count() ? 1:0; @endphp
+@php $subtitle = $isRevisi ? 'Revisi Bimbingan pada Bab yang sama' : 'Ajukan sesi bimbingan kepada dosen pembimbing'
+@endphp
+@php $revisi_id = $isRevisi ? $revisi->id : null @endphp
+@php $bab_revisi = $isRevisi ? $revisi->babLaporan->nama : null @endphp
+@php $revisi_ke = $isRevisi ? $revisi->revisi_ke + 1 : null @endphp
+@php $nama_dok_rev = $isRevisi ? $revisi->nama_dokumen .'_revisi-ke-'.$revisi_ke : null @endphp
+
 <x-app-layout>
-  <x-page-header title="Create Sesi Bimbingan" subtitle="Ajukan sesi bimbingan kepada dosen pembimbing" />
+  <x-page-header title="{{$isRevisi ? 'Revisi' :'Create Sesi'}} Bimbingan" subtitle="{{$subtitle}}" />
 
   <x-page-content>
 
     <x-card>
-      <x-card-header>Pengajuan Bimbingan</x-card-header>
+      <x-card-header>Pengajuan {{$isRevisi ? 'Revisi' : 'Bimbingan'}}</x-card-header>
       <x-card-body>
         {{-- info bimbingan --}}
         <div class="mb-6 border-b pb-4">
@@ -23,15 +31,28 @@
           @csrf
 
           <input type="hidden" name="peserta_bimbingan_id" value="{{ $pesertaBimbingan->id }}" />
+          <input type="hiddena" name="revisi_id" value="{{ $revisi_id }}" />
+          <input type="hiddena" name="revisi_ke" value="{{ $revisi_ke }}" />
 
           <div>
-            <x-label for="bab_laporan_id">Apa yang ingin kamu bahas?</x-label>
-            <x-select required name="bab_laporan_id" id="bab_laporan_id">
+            <x-label for="bab_laporan_id">{{$isRevisi ? "Revisi Bab 🔒: $bab_revisi" : 'Apa yang ingin kamu bahas?'}}
+            </x-label>
+            <x-select required name="bab_laporan_id" id="bab_laporan_id" class="hidden">
               <option value="">--pilih--</option>
               @foreach ($babLaporan as $bab)
-              <option value="{{$bab->id}}">{{$bab->nama}}</option>
+              @php $selected = $bab->id == $revisi_id ? 'selected' : '' @endphp
+              {{-- @php if($selected) dd($bab->nama) @endphp --}}
+              <option value="{{$bab->id}}" {{$selected}}>{{$bab->nama}}</option>
               @endforeach
             </x-select>
+
+            @if($isRevisi)
+            <div>
+              <x-label>Nama Dokumen Revisi 🔒: {{$nama_dok_rev}}</x-label>
+              <input type=hidden required name="nama_dokumen" id="nama_dokumen" value="{{$nama_dok_rev}}" />
+            </div>
+            @endif
+
           </div>
 
           <div>
@@ -39,6 +60,7 @@
             <x-input name="topik" id="topik" />
           </div>
 
+          @if(!$isRevisi)
           <div>
             <x-label for="nama_dokumen">Nama Dokumen (auto/manual)</x-label>
             <x-input required name="nama_dokumen" id="nama_dokumen" />
@@ -66,6 +88,8 @@
                 let nama_dokumen = `${nama_bab}-${topik}-${timestamp}`;
             
                 $('#nama_dokumen').val(nama_dokumen);
+                console.log('function generateNamaDokumen()');
+                
               }
             
               // trigger saat mengetik topik
@@ -77,6 +101,7 @@
             });
             </script>
           </div>
+          @endif
 
           <div>
             <x-label for="is_offline">Mode Bimbingan</x-label>
@@ -119,10 +144,22 @@
             @enderror
           </div>
 
+          @if($isRevisi)
+          <div>
+            <x-label>File Sebelumnya:</x-label>
+            <div class="mt-4">
+              <a href="{{ asset('storage/' . $revisi->file_bimbingan) }}" target="_blank"
+                class="text-blue-600 dark:text-blue-400 hover:underline">
+                📄 {{ $revisi->nama_dokumen }}.docx
+              </a>
+            </div>
+          </div>
+          @endif
+
           {{-- file bimbingan --}}
           <div>
             <x-label for='file_bimbingan'>
-              File Bimbingan
+              File {{$isRevisi ? 'Revisi' : 'Bimbingan'}}
             </x-label>
             <x-input required type="file" name="file_bimbingan" id="file_bimbingan" accept=".docx"
               class="text-xs p-3" />
@@ -140,7 +177,7 @@
               <x-btn-back>Batal</x-btn-back>
             </a>
 
-            <x-btn-primary>Ajukan</x-btn-primary>
+            <x-btn-primary>Ajukan {{$isRevisi ? 'Revisi' : ''}}</x-btn-primary>
           </div>
 
         </form>

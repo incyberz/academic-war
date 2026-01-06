@@ -101,8 +101,8 @@ $namaDokumen = substr($namaDokumen, 0, 15).'...';
 
         {{-- Pesan Dosen --}}
         @if($sesi->pesan_dosen)
-        <x-chat chatter='Dosen' pos='right' text='{{$sesi->pesan_dosen}}' date="{{$sesi->updated_at->format('d M, ') }}"
-            time="{{ $sesi->updated_at->format('H:i') }}" />
+        <x-chat chatter='Dosen' pos='right' text='{{$sesi->pesan_dosen}}'
+            date="{{$sesi->updated_at->format('d M Y, ') }}" time="{{ $sesi->updated_at->format('H:i') }}" />
         @endif
 
         {{-- Ubah UI ke style whatsapp-file --}}
@@ -137,90 +137,8 @@ $namaDokumen = substr($namaDokumen, 0, 15).'...';
 
     @if (2>$status)
 
-    @php
-    $arrAksi = [];
+    @php $arrAksi = \App\Services\AksiSesiService::get($role,$status); @endphp
 
-    /** =========================
-    * ROLE: DOSEN
-    * ========================= */
-    if (isRole('dosen')) {
-
-    if ($status === 0) {
-    // baru diajukan → dosen perlu download & review
-    $arrAksi = [
-    'review' => [
-    'label' => '🔍 Review',
-    'route' => 'sesi-bimbingan.show',
-    'type' => 'danger',
-    ],
-    ];
-    } elseif ($status === 1) {
-    // sudah didownload → sedang direview
-    $arrAksi = [
-    'reviewing' => [
-    'label' => '🧐 Lanjut Review',
-    'route' => 'sesi-bimbingan.show',
-    'type' => 'warning',
-    ],
-    ];
-    } elseif (0 > $status) { // perlu revisi → dosen opsional beri warning $arrAksi=[ 'notif'=> [
-    $arrAksi = [
-    'reviewing' => [
-    'label' => 'Notif Revisi',
-    'route' => 'whatsapp.send',
-    ],
-    ];
-    }
-
-    /** =========================
-    * ROLE: MAHASISWA
-    * ========================= */
-    } elseif (isRole('mhs')) {
-
-    if ($status === 0) {
-    // sudah submit, menunggu dosen
-    $arrAksi = [
-    'wait' => [
-    'label' => '⏳ Menunggu Review',
-    'route' => 'sesi-bimbingan.show',
-    'type' => 'warning',
-    ],
-    ];
-    } elseif (1 == $status) {
-    $arrAksi = [
-    'wait' => [
-    'label' => '🔍 Sedang Direview',
-    'route' => 'sesi-bimbingan.show',
-    'type' => 'warning',
-    ],
-    ];
-    } elseif (0 > $status) { // diminta revisi $arrAksi=[ 'revisi'=> [
-    $arrAksi = [
-    'reviewing' => [
-
-    'label' => 'Upload Revisi',
-    'route' => 'sesi-bimbingan.show',
-    'type' => 'danger',
-
-    ],
-    ];
-    }
-
-    /** =========================
-    * ROLE: AKADEMIK
-    * ========================= */
-    } elseif (isRole('akademik')) {
-
-    // akademik hanya monitoring
-    $arrAksi = [
-    'monitor' => [
-    'label' => 'Lihat Detail',
-    'route' => 'sesi-bimbingan.show',
-    'type' => 'primary',
-    ],
-    ];
-    }
-    @endphp
     <hr class="my-3 border-gray-200 dark:border-gray-700">
     <div class="blok_aksi mt-3 space-y-2">
 

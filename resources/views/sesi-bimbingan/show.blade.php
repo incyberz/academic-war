@@ -1,3 +1,5 @@
+@php $status = $sesi->status_sesi_bimbingan @endphp
+
 <x-app-layout>
   <x-page-header title="{{ $pb->pageTitle() }}" subtitle="{{ $pb->pageSubtitle() }}" />
 
@@ -28,7 +30,7 @@
           <div>
             <dt class="text-gray-500">Status Sesi</dt>
             <dd class="font-medium">
-              {{$sesi->status_sesi_bimbingan}} - {{ namaStatusSesiBimbingan($sesi->status_sesi_bimbingan) }}
+              {{$status}} - {{ namaStatusSesiBimbingan($status) }}
             </dd>
           </div>
 
@@ -60,9 +62,9 @@
     </x-card>
 
     @php
-    $statusConfig = config('status_sesi_bimbingan')[$sesi->status_sesi_bimbingan] ?? null;
+    $statusConfig = config('status_sesi_bimbingan')[$status] ?? null;
     $canReminder =
-    $sesi->status_sesi_bimbingan === 0 && // hanya saat Diajukan
+    $status === 0 && // hanya saat Diajukan
     1 > $sesi->reminder_count ; // max 1x reminder
     @endphp
     <x-card>
@@ -124,13 +126,16 @@
         @if ($sesi->last_reminder_at)
         <p class="text-xs text-gray-500 mt-2">
           🔔 Pengingat terakhir dikirim:
-          {{ $sesi->last_reminder_at->format('d M Y H:i') }}
+          {{ $sesi->lastReminder() }}
         </p>
         @endif
         @endif
 
       </x-card-body>
     </x-card>
+
+
+
 
 
 
@@ -148,6 +153,9 @@
       </x-card-body>
     </x-card>
     @endif
+
+    {{-- AKSI --}}
+    @include('sesi-bimbingan.show-aksi')
 
 
 

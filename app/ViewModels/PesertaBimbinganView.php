@@ -12,7 +12,7 @@ class PesertaBimbinganView
     public readonly PesertaBimbingan $peserta
   ) {}
 
-  public function statusPeserta()
+  public function configStatusPeserta()
   {
     return config('status_peserta_bimbingan');
   }

@@ -46,7 +46,7 @@ Route::middleware('auth')->group(function () {
         ->name('tahun-ajar.set-aktif');
 
     Route::resource('peserta-bimbingan', PesertaBimbinganController::class);
-    Route::resource('sesi-bimbingan', SesiBimbinganController::class)->only('create');
+    Route::resource('sesi-bimbingan', SesiBimbinganController::class)->only('create', 'store');
 
     Route::get(
         '/sesi-bimbingan/{sesi}',

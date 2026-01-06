@@ -41,6 +41,13 @@ class SesiBimbinganController extends Controller
         $pesertaBimbinganId = request('peserta_bimbingan_id');
         abort_if(!$pesertaBimbinganId, 404);
 
+        $revisi_id = request('revisi_id') ?? null;
+        $revisi = collect();
+        if ($revisi_id) {
+            $revisi = SesiBimbingan::where('id', $revisi_id)->firstOrFail();
+        }
+
+
         $user = Auth::user();
         $mhs = Mhs::where('user_id', $user->id)->firstOrFail();
 
@@ -53,7 +60,8 @@ class SesiBimbinganController extends Controller
 
         return view('sesi-bimbingan.create', compact(
             'pesertaBimbingan',
-            'babLaporan'
+            'babLaporan',
+            'revisi',
         ));
     }
 
@@ -64,23 +72,38 @@ class SesiBimbinganController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request['revisi_id'], $request['revisi_ke']);
         // Validasi input
         $request->validate([
             'peserta_bimbingan_id' => 'required|exists:peserta_bimbingan,id',
+            'revisi_id'            => 'nullable|exists:sesi_bimbingan,id',
             'bab_laporan_id'       => 'required|exists:bab_laporan,id',
             'pesan_mhs'            => 'required|string',
-            'nama_dokumen'            => 'required|string',
+            'nama_dokumen'         => 'required|string',
             'topik'                => 'nullable|string',
             'is_offline'           => 'required|boolean',
             'tanggal_offline'      => 'nullable|date|required_if:is_offline,1',
             'jam_offline'          => 'nullable|required_if:is_offline,1',
             'lokasi_offline'       => 'nullable|string|required_if:is_offline,1',
-            'file_bimbingan'       => 'nullable|file|mimes:doc,docx,pdf|max:2048',
+
+            'revisi_ke'            => 'nullable|integer',
+
+
+            'file_bimbingan' => [
+                'required',
+                'file',
+                'max:2048',
+                'mimetypes:application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            ],
         ]);
+
+        $sesi_id_sebelumnya = $request['revisi_id'];
+        $isRevisi = $sesi_id_sebelumnya ? 1 : 0;
 
         // Siapkan data untuk create
         $data = $request->only([
             'peserta_bimbingan_id',
+            'revisi_id',
             'bab_laporan_id',
             'pesan_mhs',
             'nama_dokumen',
@@ -89,9 +112,11 @@ class SesiBimbinganController extends Controller
             'tanggal_offline',
             'jam_offline',
             'lokasi_offline',
+            'revisi_ke',
         ]);
 
         $data['status_sesi_bimbingan'] = 0; // 0 = baru diajukan
+        // dd('store', $request['revisi_id'], $sesi_id_sebelumnya, $data);
 
         if ($request->hasFile('file_bimbingan')) {
 
@@ -127,6 +152,16 @@ class SesiBimbinganController extends Controller
         // Simpan ke database
         SesiBimbingan::create($data);
 
+        if ($isRevisi) { // jika revisi, update status revised pada 
+            $sesiSebelumnya = SesiBimbingan::findOrFail($sesi_id_sebelumnya);
+            $sesiSebelumnya->update([
+                'status_sesi_bimbingan' => 2, // revised
+                'updated_at' => now(),
+            ]);
+        }
+
+        dd('store', $request['revisi_id'], $sesi_id_sebelumnya, $data);
+
         return redirect()
             ->route('peserta-bimbingan.show', $request->peserta_bimbingan_id)
             ->with('success', 'Sesi bimbingan berhasil diajukan.');
@@ -143,6 +178,7 @@ class SesiBimbinganController extends Controller
 
         $pesertaBimbingan = $sesi->pesertaBimbingan;
         $pb = new PesertaBimbinganView($pesertaBimbingan);
+
 
         return view('sesi-bimbingan.show', compact('sesi', 'pb'));
     }

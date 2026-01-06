@@ -51,10 +51,13 @@ return new class extends Migration {
             $table->timestamp('tanggal_pengajuan')->nullable();
             $table->timestamp('tanggal_download')->nullable();
             $table->timestamp('tanggal_review')->nullable();
+            $table->timestamp('tanggal_revisi')->nullable();
 
             $table->boolean('is_locked')->default(false);
 
+            $table->unsignedBigInteger('revisi_id')->nullable();
             $table->unsignedSmallInteger('revisi_ke')->default(0);
+
             $table->tinyInteger('nilai_dosen')->nullable();
 
             $table->integer('xp_didapat')->default(0);

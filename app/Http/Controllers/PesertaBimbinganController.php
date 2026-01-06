@@ -14,6 +14,7 @@ use App\Models\TahapanBimbingan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\ViewModels\PesertaBimbinganView;
 
 class PesertaBimbinganController extends Controller
 {
@@ -128,6 +129,8 @@ class PesertaBimbinganController extends Controller
             ]);
 
 
+            $pb = new PesertaBimbinganView($pesertaBimbingan);
+
 
 
 
@@ -149,6 +152,7 @@ class PesertaBimbinganController extends Controller
                     'tahapanBimbingan',
                     'currentTahapan',
                     'persenProgress',
+                    'pb',
                 )
             );
 

@@ -7,6 +7,10 @@ textarea[required] {
   background-color: #eef2ff;
 }
 
+.dark input {
+  color: #555;
+}
+
 .dark input[required],
 .dark select[required],
 .dark textarea[required] {
