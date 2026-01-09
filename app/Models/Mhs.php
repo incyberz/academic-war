@@ -14,7 +14,7 @@ class Mhs extends Model
     protected $fillable = [
         'user_id',
         'prodi_id',
-        'nama',
+        'nama_lengkap',
         'nim',
         'angkatan',
         'status_mhs_id',

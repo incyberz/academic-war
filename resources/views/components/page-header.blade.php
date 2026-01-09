@@ -1,6 +1,7 @@
 @props([
 'title',
 'subtitle' => null,
+'route_parent' => null,
 ])
 
 @php
@@ -20,6 +21,9 @@ $pageTitle = $title;
 
     @if ($subtitle)
     <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">
+        @if ($route_parent)
+        <a href="{{$route_parent}}">⬅️</a>
+        @endif
         {{ $subtitle }}
     </p>
     @endif

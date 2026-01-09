@@ -9,6 +9,8 @@ use App\Models\TahunAjar;
 use App\Models\Dosen;
 use App\Models\Mhs;
 use App\Models\EligibleBimbingan;
+use App\Models\SesiBimbingan;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -178,15 +180,17 @@ class BimbinganController extends Controller
         $tahun_ajar_id = session()->get('tahun_ajar_id');
         $dosen = collect();
         $pembimbing = collect();
-        $bimbingans = collect();
+        $bimbingans = collect(); // for dosen per jenis bimbingan
         $listPeserta = [];
         $notPeserta = [];
         $rules = null;
+        $riwayatBimbingan = [];
 
 
         if (isRole('dosen')) {
             $dosen = Dosen::where('user_id', Auth::id())->first();
             $pembimbing = Pembimbing::where('dosen_id', $dosen->id)->first();
+            $pembimbing_id = $pembimbing->id;
 
             $myJenisBimbingan = JenisBimbingan::whereHas('bimbingan', function ($q) use ($dosen) {
                 $q->whereHas('pembimbing', function ($q) use ($dosen) {
@@ -207,8 +211,17 @@ class BimbinganController extends Controller
                     'jenisBimbingan',
                     'tahunAjar',
                     'pesertaBimbingan.mahasiswa.user',
-                    'pesertaBimbingan.status',
-                ])->get();
+                    'pesertaBimbingan' => function ($q) {
+                        $q->withCount([
+                            'sesiBimbingan as total_sesi',
+                            'sesiPerluReview as perlu_review',
+                            'sesiRevisi as perlu_revisi',
+                            'sesiDisetujui as disetujui',
+                        ]);
+                    },
+                ])
+                ->get();
+
 
             // ambil semua mahasiswa sekali
             $allMahasiswa = Mhs::with('user')->get();
@@ -220,40 +233,49 @@ class BimbinganController extends Controller
             foreach ($bimbingans as $bimb) {
 
                 $pesertaCollection = $bimb->pesertaBimbingan;
-                $jenisBimbId  = $bimb->jenis_bimbingan_id;
+                $jenis_bimbingan_id  = $bimb->jenis_bimbingan_id;
 
                 // list peserta untuk x-card-peserta
-                $listPeserta[$bimb->jenis_bimbingan_id] = $pesertaCollection->map(function ($peserta) use ($bimb) {
-                    return [
-                        'avatar'   => optional($peserta->mahasiswa->user)->avatar,
-                        'nama'     => $peserta->mahasiswa->nama,
-                        'nim'      => $peserta->mahasiswa->nim,
-                        'status'   => optional($peserta->status)->nama ?? 'Aktif',
-                        'wa'       => optional($peserta->mahasiswa->user)->whatsapp,
-                        'progress' => $peserta->progress ?? 0,
+                $listPeserta[$jenis_bimbingan_id] = $pesertaCollection;
+                // $listPeserta[$jenis_bimbingan_id] = $pesertaCollection->map(function ($peserta) use ($bimb) {
+                //     return [
+                //         'avatar'   => optional($peserta->mahasiswa->user)->avatar,
+                //         'nama'     => $peserta->mahasiswa->nama,
+                //         'nim'      => $peserta->mahasiswa->nim,
+                //         'status'   => optional($peserta->status)->nama ?? 'Aktif',
+                //         'wa'       => optional($peserta->mahasiswa->user)->whatsapp,
+                //         'progress' => $peserta->progress ?? 0,
 
-                        'terakhir_topik'       => $peserta->terakhir_topik,
-                        'terakhir_bimbingan'   => $peserta->terakhir_bimbingan,
-                        'terakhir_reviewed'    => $peserta->terakhir_reviewed,
+                //         'terakhir_topik'       => $peserta->terakhir_topik,
+                //         'terakhir_bimbingan'   => $peserta->terakhir_bimbingan,
+                //         'terakhir_reviewed'    => $peserta->terakhir_reviewed,
 
-                        // pakai parent, bukan relasi ulang
-                        'tahun_ajar' => $bimb->tahun_ajar_id,
+                //         // pakai parent, bukan relasi ulang
+                //         'tahun_ajar' => $bimb->tahun_ajar_id,
 
-                        'id' => $peserta->id,
-                    ];
-                });
+                //         'id' => $peserta->id,
+                //     ];
+                // });
 
                 // ambil ID mahasiswa yang SUDAH ikut
                 $pesertaIds = $pesertaCollection->pluck('mahasiswa_id');
 
                 // mahasiswa eligible SESUAI JENIS & BELUM ikut
-                $notPeserta[$bimb->id] = ($eligibleMahasiswa[$jenisBimbId] ?? collect())
+                $notPeserta[$bimb->id] = ($eligibleMahasiswa[$jenis_bimbingan_id] ?? collect())
                     ->map(fn($eligible) => $eligible->mahasiswa)
                     ->whereNotIn('id', $pesertaIds)
                     ->values();
-            }
 
-            // dd($notPeserta);
+                $riwayatBimbingan[$jenis_bimbingan_id] = SesiBimbingan::whereHas('pesertaBimbingan.bimbingan', function ($query) use (
+                    $pembimbing_id,
+                    $jenis_bimbingan_id,
+                    $tahun_ajar_id
+                ) {
+                    $query->where('pembimbing_id', $pembimbing_id)
+                        ->where('jenis_bimbingan_id', $jenis_bimbingan_id)
+                        ->where('tahun_ajar_id', $tahun_ajar_id);
+                })->get();
+            }
         } else {
             dump("Akses untuk role selain dosen belum diimplementasi.");
         }
@@ -272,7 +294,8 @@ class BimbinganController extends Controller
             'listPeserta',
             'notPeserta',
             'rules',
-            'myJenisBimbingan'
+            'myJenisBimbingan',
+            'riwayatBimbingan',
         ));
     }
 

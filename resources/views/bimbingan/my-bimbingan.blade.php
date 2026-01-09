@@ -5,8 +5,13 @@
 @php $list = $listPeserta[$jenis->id]; @endphp
 {{-- @dd($list) --}}
 @php $namaBimbingan = $jenis->nama; @endphp
+@php $jenis_bimbingan_id = $jenis->id; @endphp
 
 <div id="tab-{{ $jenis->id }}" class="tab-content {{ $jenis->id == $bimbingan->jenis_bimbingan_id ? '' : 'hidden' }}">
+
+  {{-- COUNTS BIMBINGAN PER JENIS --}}
+  @include('bimbingan.my-bimbingan-counts')
+
   {{-- LIST PESERTA --}}
   <x-card class="mb-6">
 
@@ -32,21 +37,20 @@
 
 
         @foreach ($list as $peserta)
-        @php $isTelatBimbingan = $rules->isTelatBimbingan($peserta['terakhir_bimbingan']); @endphp
-        @php $isKritisBimbingan = $rules->isKritisBimbingan($peserta['terakhir_bimbingan']); @endphp
+        @php $id = $peserta->id @endphp
+        @php $isTelat = $rules->isTelat($peserta['terakhir_bimbingan']); @endphp
+        @php $isKritis = $rules->isKritis($peserta['terakhir_bimbingan']); @endphp
 
-        <x-card-peserta :avatar="$peserta['avatar']" :nama="$peserta['nama']" :nim="$peserta['nim']"
-          :progress="$peserta['progress']" :status="$peserta['status']" :wa="$peserta['wa']"
-          :terakhir_topik="$peserta['terakhir_topik']" :terakhir_bimbingan="$peserta['terakhir_bimbingan']"
-          :terakhir_reviewed="$peserta['terakhir_reviewed']" :isTelatBimbingan="$isTelatBimbingan"
-          :isKritisBimbingan="$isKritisBimbingan" :tahun_ajar="$peserta['tahun_ajar']" :id="$peserta['id']" />
+        <div data-peserta-id="{{ $id }}" class="card-peserta-wrapper">
+          <x-card-peserta :peserta="$peserta" :isTelat="$isTelat" :isKritis="$isKritis" />
+        </div>
         @endforeach
       </x-grid>
       @endif
 
       @if(($notPeserta[$jenis->id] ?? collect())->isEmpty())
       <p class="mt-4 italic text-sm text-gray-500 dark:text-gray-400">
-        Tidak ada mhs eligible yang available untuk Add {{ $namaBimbingan }}.
+        Semua mhs eligible sudah terbimbing.
       </p>
       @else
       <a href="{{ route('peserta-bimbingan.create', ['jenis_bimbingan_id' => $jenis->id]) }}" class="mt-4 inline-block">
@@ -235,3 +239,18 @@
   </div>
 </div>
 @endforeach
+
+
+<script>
+  $(function(){
+    console.log('zzz');
+    
+    $('.clickable').click(function(){
+      $('.count_detail').hide()
+      $('#count_detail--'+$(this).prop('id')).fadeIn()
+      console.log('count_detail--'+$(this).prop('id'));
+      
+      // let id = $(this).prop('id');
+    })
+  })
+</script>

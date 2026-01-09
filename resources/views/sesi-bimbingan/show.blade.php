@@ -82,7 +82,7 @@
 
       <x-card-body>
 
-        {{-- Pesan Dosen --}}
+        {{-- Pesan Dosen untuk mhs --}}
         <p class="text-gray-700 dark:text-gray-300 whitespace-pre-line">
           {{ $sesi->pesan_dosen ?? 'Belum ada review dari dosen.' }}
         </p>
@@ -104,30 +104,35 @@
         </div>
         @endif
 
-        {{-- Divider --}}
-        <hr class="my-4 border-gray-200 dark:border-gray-700">
+        @if(isRole('mhs'))
+        <div>
 
-        {{-- Reminder Section --}}
-        @if ($canReminder)
-        <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-          ⏳ Laporan Anda belum ditanggapi pembimbing.
+          {{-- Divider --}}
+          <hr class="my-4 border-gray-200 dark:border-gray-700">
+
+          {{-- Reminder Section --}}
+          @if ($canReminder)
+          <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            ⏳ Laporan Anda belum ditanggapi pembimbing.
+          </div>
+
+          <a href="{{ route('whatsapp.send', $sesi) }}">
+            <x-button type="warning" outline class="w-full justify-center">
+              📲 Hubungi Dosen Pembimbing
+            </x-button>
+          </a>
+
+          <p class="mt-2 text-xs text-gray-500">
+            * Pengingat hanya dapat dikirim <strong>1 kali</strong> untuk menjaga etika akademik.
+          </p>
+          @else
+          @if ($sesi->last_reminder_at)
+          <p class="text-xs text-gray-500 mt-2">
+            🔔 Pengingat terakhir dikirim:
+            {{ $sesi->lastReminder() }}
+          </p>
+          @endif
         </div>
-
-        <a href="{{ route('whatsapp.send', $sesi) }}">
-          <x-button type="warning" outline class="w-full justify-center">
-            📲 Hubungi Dosen Pembimbing
-          </x-button>
-        </a>
-
-        <p class="mt-2 text-xs text-gray-500">
-          * Pengingat hanya dapat dikirim <strong>1 kali</strong> untuk menjaga etika akademik.
-        </p>
-        @else
-        @if ($sesi->last_reminder_at)
-        <p class="text-xs text-gray-500 mt-2">
-          🔔 Pengingat terakhir dikirim:
-          {{ $sesi->lastReminder() }}
-        </p>
         @endif
         @endif
 

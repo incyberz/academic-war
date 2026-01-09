@@ -39,7 +39,7 @@ class BimbinganRuleService
    * Cek apakah peserta telat bimbingan
    * $lastBimbingan: Carbon instance atau string tanggal terakhir bimbingan
    */
-  public function isTelatBimbingan($lastBimbingan): bool
+  public function isTelat($lastBimbingan): bool
   {
     if (!$lastBimbingan) return true; // belum pernah bimbingan = telat
     $last = $lastBimbingan instanceof Carbon ? $lastBimbingan : Carbon::parse($lastBimbingan);
@@ -47,7 +47,7 @@ class BimbinganRuleService
     return $diffDays > $this->fakultas->batas_telat_bimbingan;
   }
 
-  public function isKritisBimbingan($lastBimbingan): bool
+  public function isKritis($lastBimbingan): bool
   {
     if (!$lastBimbingan) return true; // belum pernah bimbingan = telat
     $last = $lastBimbingan instanceof Carbon ? $lastBimbingan : Carbon::parse($lastBimbingan);

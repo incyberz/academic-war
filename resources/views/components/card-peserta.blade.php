@@ -1,21 +1,41 @@
 @props([
-'avatar',
-'nama',
-'progress' => 0,
-'terakhir_topik'=>null,
-'terakhir_bimbingan'=>null,
-'terakhir_reviewed'=>null,
-'status'=>null,
-'wa'=>null,
-'isTelatBimbingan'=>false,
-'isKritisBimbingan'=>false,
-'tahun_ajar'=> session('tahun_ajar_id'),
-'id'=>0,
+'peserta',
+'isTelat' => false,
+'isKritis' => false,
 ])
 
-
 @php
-$isBelumBimbingan = empty($terakhir_topik);
+/**
+* Normalisasi data (single source of truth)
+*/
+$avatar = $peserta->mahasiswa->user->avatar ?? null;
+$wa = $peserta->mahasiswa->user->avatar ?? null;
+$nama = $peserta->mahasiswa->nama_lengkap ?? '-';
+$nim = $peserta->mahasiswa->nim ?? '-';
+$progress = $peserta->progress ?? 0;
+$status = $peserta->status ?? 1; // default aktif
+$status = namaStatusPesertaBimbingan($status);
+$id = $peserta->id ?? 0;
+$tahun_ajar = $peserta->tahun_ajar ?? session('tahun_ajar_id');
+
+$terakhir_topik = $peserta->terakhir_topik ?? null;
+$terakhir_bimbingan = $peserta->terakhir_bimbingan ?? null;
+$terakhir_reviewed = $peserta->terakhir_reviewed ?? null;
+
+$total_sesi_count = $peserta->total_sesi;
+$perlu_review_count = $peserta->perlu_review;
+$perlu_revisi_count = $peserta->perlu_revisi;
+$disetujui_count = $peserta->disetujui;
+
+$revisiCount = $peserta->revisiCount();
+$reviewCount = $peserta->reviewCount();
+
+// dd($peserta->total_sesi, $nama, $avatar);
+$isBelumBimbingan = $total_sesi_count ? 0 : 1;
+
+/**
+* Styling logic
+*/
 $cardBgRed = 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800 hover:bg-red-100
 dark:hover:bg-red-900/30';
 $cardBgYellow = 'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800 hover:bg-yellow-100
@@ -23,37 +43,32 @@ dark:hover:bg-yellow-900/30';
 $cardBgNormal = 'bg-white dark:bg-slate-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50
 dark:hover:bg-gray-800';
 
-if($isBelumBimbingan) {
+if ($isBelumBimbingan || $isKritis) {
 $cardBgClass = $cardBgRed;
-} elseif ($isKritisBimbingan) {
-$cardBgClass = $cardBgRed;
-} elseif ($isTelatBimbingan) {
+} elseif ($isTelat) {
 $cardBgClass = $cardBgYellow;
 } else {
 $cardBgClass = $cardBgNormal;
 }
-
 @endphp
 
-<div {{ $attributes->merge([
-    'class' => '
-    flex items-center p-2 md:p-3
-    rounded-lg
-    border
-    transition
-    gap-3
-    ' .
-    $cardBgClass
-    ]) }}>
-    {{-- Avatar --}}
-    <img src="{{ $avatar
-            ? asset('storage/' . $avatar)
-            : asset('img/roles/mhs.png') }}" alt="{{ $nama }}" class="w-12 h-12 rounded-full
-             border border-gray-300 dark:border-gray-600
-             object-cover">
 
-    {{-- Info --}}
+
+
+
+
+
+<div {{ $attributes->merge([
+    'class' => "flex items-center p-2 md:p-3 rounded-lg border transition gap-3 $cardBgClass"
+    ]) }}>
+
+    {{-- Avatar --}}
+    <img src="{{ $avatar ? asset('storage/'.$avatar) : asset('img/roles/mhs.png') }}" alt="{{ $nama }}"
+        class="w-12 h-12 rounded-full border border-gray-300 dark:border-gray-600 object-cover">
+
     <div class="flex-1">
+
+        {{-- Header --}}
         <div class="flex items-center justify-between gap-2">
             <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
                 {{ $nama }}
@@ -76,137 +91,95 @@ $cardBgClass = $cardBgNormal;
             </p>
         </div>
 
-        {{-- Terakhir Update --}}
-        <div class="mt-2 space-y-0.5 text-xs text-gray-500 dark:text-gray-400">
+        {{-- Konten --}}
+        <div class="mt-2 space-y-1 text-xs text-gray-500 dark:text-gray-400">
 
+            @if($isBelumBimbingan)
+            <span class="inline-block text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900/40 px-2 py-1 rounded">
+                ⚠️ Belum Bimbingan
+            </span>
+            @else
+            <p class="truncate">📝 <span class="font-medium">{{ $terakhir_topik }}</span></p>
 
-            <div class="flex justify-between gap-2">
-                <div>
-                    @if(!$terakhir_topik)
-                    <p class="truncate">
-                        <span class="inline-block text-xs text-red-700 dark:text-red-300
-                                         bg-red-100 dark:bg-red-900/40
-                                         px-2 pt-1 pb-1.5 rounded">
-                            ⚠️ Belum Bimbingan
-                        </span>
-                    </p>
-                    @else
-                    {{-- Topik terakhir --}}
-                    <p class="truncate">
-                        📝 <span class="font-medium text-gray-600 dark:text-gray-300 py-1">
-                            {{ $terakhir_topik }}
-                        </span>
-                    </p>
+            @if ($isKritis)
+            <span class="inline-block text-red-700 bg-red-100 dark:bg-red-900/40 px-2 py-1 rounded">
+                ⚠️ Kritis Bimbingan
+            </span>
+            @elseif ($isTelat)
+            <span class="inline-block text-yellow-700 bg-yellow-100 dark:bg-yellow-900/40 px-2 py-1 rounded">
+                ⏰ Telat Bimbingan
+            </span>
+            @endif
 
-                    {{-- Kritis | Telat Bimbingan --}}
-                    @if ($isKritisBimbingan)
-                    <p class="truncate">
-                        <span class="inline-block text-xs text-red-700 dark:text-red-300
-                                                         bg-red-100 dark:bg-red-900/40
-                                                         px-2 pt-1 pb-1.5 rounded">
-                            ⚠️ Kritis Bimbingan
-                        </span>
-                    </p>
-                    @elseif ($isTelatBimbingan)
-                    <p class="truncate">
-                        <span class="inline-block text-xs text-yellow-700 dark:text-yellow-300
-                                         bg-yellow-100 dark:bg-yellow-900/40
-                                         px-2 pt-1 pb-1.5 rounded">
-                            ⏰ Telat Bimbingan
-                        </span>
-                    </p>
+            <p>👨‍🎓 Bimbingan:
+                <span class="font-medium">
+                    {{ $terakhir_bimbingan ? \Carbon\Carbon::parse($terakhir_bimbingan)->diffForHumans() : 'Belum ada'
+                    }}
+                </span>
+            </p>
+
+            <p>👨‍🏫 Review:
+                <span class="font-medium">
+                    {{ $terakhir_reviewed ? \Carbon\Carbon::parse($terakhir_reviewed)->diffForHumans() : 'Belum
+                    direview' }}
+                </span>
+            </p>
+            @endif
+
+            {{-- Status --}}
+            <div class="mt-2">
+                <span class="text-xs px-2 py-1 rounded
+                    {{ $status === 'Selesai' ? 'text-green-600 bg-green-100 dark:bg-green-900 dark:text-green-300'
+                       : ($status === 'Hari Ini'
+                           ? 'text-indigo-600 bg-indigo-100 dark:bg-indigo-900/30'
+                           : 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30') }}">
+                    {{ $status }}
+                </span>
+
+                <div class="inline-flex items-center gap-1">
+                    @if($reviewCount > 0)
+                    <span class="inline-flex items-center justify-center 
+                     min-w-[1.25rem] h-5 px-1 
+                     text-xs font-semibold text-white
+                     bg-rose-500 rounded-full">
+                        {{ $reviewCount }}
+                    </span>
                     @endif
 
-                    {{-- Terakhir bimbingan --}}
-                    <p>
-                        👨‍🎓 Bimbingan:
-                        <span class="font-medium">
-                            {{ $terakhir_bimbingan
-                            ? \Carbon\Carbon::parse($terakhir_bimbingan)->diffForHumans()
-                            : 'Belum ada' }}
-                        </span>
-                    </p>
-
-                    {{-- Terakhir direview --}}
-                    <p>
-                        👨‍🏫 Review:
-                        <span class="font-medium">
-                            {{ $terakhir_reviewed
-                            ? \Carbon\Carbon::parse($terakhir_reviewed)->diffForHumans()
-                            : 'Belum direview' }}
-                        </span>
-                    </p>
-
-
-                    {{-- Status --}}
-                    <div class="mt-2">
-                        @if ($status === 'Selesai')
-                        <span class="text-green-600 text-xs px-2 py-1 rounded
-                                                 bg-green-100 dark:bg-green-900
-                                                 dark:text-green-300">
-                            Selesai
-                        </span>
-                        @elseif ($status === 'Hari Ini')
-                        <span class="text-indigo-600 text-xs px-2 py-1 rounded
-                                                 bg-indigo-100 dark:bg-indigo-900/30">
-                            Hari Ini
-                        </span>
-                        @else
-                        <span class="text-yellow-600 text-xs px-2 py-1 rounded
-                                                 bg-yellow-100 dark:bg-yellow-900/30">
-                            {{ $status }}
-                        </span>
-                        @endif
-
-                        {{-- link detail peserta bimbingan --}}
-                        <a href="{{route('peserta-bimbingan.show',$id)}}">
-                            <span class="ml-2 text-sm font-medium text-indigo-600
-                                        hover:text-indigo-800 hover:underline
-                                        dark:text-indigo-400 dark:hover:text-indigo-300">
-                                Detail →</span>
-                        </a>
-                    </div>
+                    @if($revisiCount > 0)
+                    <span class="inline-flex items-center justify-center 
+                     min-w-[1.25rem] h-5 px-1 
+                     text-xs font-semibold text-white
+                     bg-amber-500 rounded-full">
+                        {{ $revisiCount }}
+                    </span>
                     @endif
                 </div>
-                <div>
-                    {{-- Action --}}
-                    <div class="flex flex-col items-center gap-2">
-                        {{-- WhatsApp Reminder --}}
-                        <a href="https://wa.me/{{ $wa }}" target="_blank"
-                            class="text-green-600 hover:text-green-700 transition" title="WhatsApp Reminder">
-                            @include('components.whatsapp-icon')
-                        </a>
 
-                        {{-- WhatsApp Cancel --}}
-                        @if ($status !== 'Selesai')
-                        <a href="https://wa.me/{{ $wa }}" target="_blank"
-                            class="text-red-600 hover:text-red-700 transition" title="Batalkan Bimbingan">
-                            @include('components.whatsapp-icon')
-                        </a>
-                        @endif
-
-                        <form action="{{ route('peserta-bimbingan.destroy', $id) }}" method="POST" class="inline"
-                            onsubmit="return confirm('Yakin ingin menghapus peserta bimbingan ini?')">
-                            @csrf
-                            @method('DELETE')
-
-                            <button type="submit" title="Hapus Peserta" class="text-red-600 hover:text-red-700
-               dark:text-red-400 dark:hover:text-red-300
-               transition">
-                                @include('components.trash-icon')
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
+                <a href="{{ route('peserta-bimbingan.show', $id) }}"
+                    class="ml-2 text-sm font-medium text-indigo-600 hover:underline">
+                    Detail →
+                </a>
             </div>
-
         </div>
-
-
-
-
     </div>
 
+    {{-- Actions --}}
+    <div class="flex flex-col items-center gap-2">
+        <a href="https://wa.me/{{ $wa }}" target="_blank" title="WhatsApp">
+            @include('components.whatsapp-icon')
+        </a>
 
+        @if ($status !== 'Selesai')
+        <a href="https://wa.me/{{ $wa }}" target="_blank" class="text-red-600">
+            @include('components.whatsapp-icon')
+        </a>
+        @endif
+
+        <form action="{{ route('peserta-bimbingan.destroy', $id) }}" method="POST"
+            onsubmit="return confirm('Yakin ingin menghapus peserta bimbingan ini?')">
+            @csrf @method('DELETE')
+            <button type="submit">@include('components.trash-icon')</button>
+        </form>
+    </div>
 </div>

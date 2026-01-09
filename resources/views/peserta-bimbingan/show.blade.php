@@ -5,10 +5,12 @@
 @php $namaBimbingan = $pb->namaBimbingan() @endphp
 @php $subtitle = $pb->pageSubtitle() @endphp
 @php $statusPeserta = namaStatusPesertaBimbingan($pesertaBimbingan->status) @endphp
+@php $jenis_bimbingan_id = $pesertaBimbingan->bimbingan->jenis_bimbingan_id @endphp
 
 <x-app-layout>
   <x-page-header title="{{$pb->isMyBimbingan() ? 'My ' : ''}}Detail Peserta {{$namaBimbingan}}"
-    subtitle="{{ $isMyBimbingan ? 'Peserta bimbingan saya.' : $subtitle }}" />
+    subtitle="{{ $isMyBimbingan ? 'Peserta bimbingan saya.' : $subtitle }}"
+    route_parent="{{route('bimbingan.show',$jenis_bimbingan_id)}}" />
 
 
   @if (isRole('mhs'))

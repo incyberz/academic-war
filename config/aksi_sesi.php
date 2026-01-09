@@ -4,7 +4,8 @@ return [
   'dosen' => [
     0 => [
       'review' => [
-        'label' => '🔍 Review',
+        'label' => 'Review',
+        'icon' => '🔍',
         'route' => 'sesi-bimbingan.show',
         'type' => 'danger',
       ],
@@ -12,7 +13,8 @@ return [
 
     1 => [
       'reviewing' => [
-        'label' => '🧐 Lanjut Review',
+        'label' => 'Lanjut Review',
+        'icon' => '🧐',
         'route' => 'sesi-bimbingan.show',
         'type' => 'warning',
       ],
@@ -21,6 +23,7 @@ return [
     'negatif' => [
       'notif' => [
         'label' => 'Notif Revisi',
+        'icon' => '',
         'route' => 'whatsapp.send',
         'type' => 'danger',
       ],
@@ -30,7 +33,8 @@ return [
   'mhs' => [
     0 => [
       'wait' => [
-        'label' => '⏳ Menunggu Review',
+        'label' => 'Menunggu Review',
+        'icon' => '⏳',
         'route' => 'sesi-bimbingan.show',
         'type' => 'warning',
       ],
@@ -38,7 +42,8 @@ return [
 
     1 => [
       'wait' => [
-        'label' => '🔍 Sedang Direview',
+        'label' => 'Sedang Direview',
+        'icon' => '🔍',
         'route' => 'sesi-bimbingan.show',
         'type' => 'warning',
       ],
@@ -47,6 +52,7 @@ return [
     'negatif' => [
       'revisi' => [
         'label' => 'Upload Revisi',
+        'icon' => '',
         'route' => 'sesi-bimbingan.show',
         'type' => 'danger',
       ],
@@ -57,6 +63,7 @@ return [
     '*' => [
       'monitor' => [
         'label' => 'Lihat Detail',
+        'icon' => '',
         'route' => 'sesi-bimbingan.show',
         'type' => 'primary',
       ],

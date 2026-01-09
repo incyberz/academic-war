@@ -31,13 +31,13 @@
           @csrf
 
           <input type="hidden" name="peserta_bimbingan_id" value="{{ $pesertaBimbingan->id }}" />
-          <input type="hiddena" name="revisi_id" value="{{ $revisi_id }}" />
-          <input type="hiddena" name="revisi_ke" value="{{ $revisi_ke }}" />
+          <input type="hidden" name="revisi_id" value="{{ $revisi_id }}" />
+          <input type="hidden" name="revisi_ke" value="{{ $revisi_ke }}" />
 
           <div>
             <x-label for="bab_laporan_id">{{$isRevisi ? "Revisi Bab 🔒: $bab_revisi" : 'Apa yang ingin kamu bahas?'}}
             </x-label>
-            <x-select required name="bab_laporan_id" id="bab_laporan_id" class="hidden">
+            <x-select required name="bab_laporan_id" id="bab_laporan_id" class="{{$isRevisi ? 'hidden': ''}}">
               <option value="">--pilih--</option>
               @foreach ($babLaporan as $bab)
               @php $selected = $bab->id == $revisi_id ? 'selected' : '' @endphp

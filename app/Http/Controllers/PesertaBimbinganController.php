@@ -344,4 +344,84 @@ class PesertaBimbinganController extends Controller
                 ->withErrors('Gagal menghapus peserta bimbingan');
         }
     }
+
+
+
+
+
+
+
+
+    public function inline($peserta_bimbingan_id)
+    {
+        $user = Auth::user();
+
+        /**
+         * =========================================================
+         * RULE INLINE
+         * - HANYA DOSEN
+         * - HANYA peserta bimbingan miliknya
+         * =========================================================
+         */
+        if (!isRole('dosen')) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $dosen = Dosen::where('user_id', $user->id)->firstOrFail();
+        $pembimbing = Pembimbing::where('dosen_id', $dosen->id)->firstOrFail();
+
+        /**
+         * Ambil peserta + validasi kepemilikan bimbingan
+         */
+        $pesertaBimbingan = PesertaBimbingan::with([
+            'mahasiswa.user',
+            'bimbingan.jenisBimbingan',
+            'bimbingan.tahunAjar',
+            'penunjuk',
+        ])->findOrFail($peserta_bimbingan_id);
+
+        if ($pesertaBimbingan->bimbingan->pembimbing_id !== $pembimbing->id) {
+            abort(403, 'Dosen tidak berhak melihat peserta ini.');
+        }
+
+        /**
+         * Riwayat bimbingan (READ ONLY)
+         */
+        $riwayatBimbingan = SesiBimbingan::where('peserta_bimbingan_id', $peserta_bimbingan_id)
+            ->orderByRaw("
+            CASE
+                WHEN status_sesi_bimbingan IN (0,1) THEN 0
+                WHEN status_sesi_bimbingan < 0 THEN 1
+                ELSE 2
+            END
+        ")
+            ->orderByDesc('created_at')
+            ->get();
+
+        /**
+         * Count status (UI badge)
+         */
+        $bimbinganCounts = [
+            'total_laporan' => $riwayatBimbingan->count(),
+            'perlu_review'  => $riwayatBimbingan->whereIn('status_sesi_bimbingan', [0, 1])->count(),
+            'perlu_revisi'  => $riwayatBimbingan->where('status_sesi_bimbingan', '<', 0)->count(),
+            'disetujui'     => $riwayatBimbingan->where('status_sesi_bimbingan', '>', 1)->count(),
+        ];
+
+        $pb = new PesertaBimbinganView($pesertaBimbingan);
+
+        /**
+         * ❌ TIDAK:
+         * - update progress
+         * - hitung ulang tahapan
+         * - side effect DB
+         */
+
+        return view('peserta-bimbingan._detail', compact(
+            'pesertaBimbingan',
+            'riwayatBimbingan',
+            'bimbinganCounts',
+            'pb',
+        ));
+    }
 }

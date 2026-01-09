@@ -22,7 +22,7 @@ return new class extends Migration {
                 ->restrictOnDelete();
 
             // Data mahasiswa
-            $table->string('nama');
+            $table->string('nama_lengkap');
             $table->string('nim', 20)->nullable()->unique();
             $table->string('angkatan', 4);   // contoh: 2021
 

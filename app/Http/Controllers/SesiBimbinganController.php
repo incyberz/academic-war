@@ -8,12 +8,15 @@ use App\Models\SesiBimbingan;
 use App\Models\PesertaBimbingan;
 use App\Models\TahapanBimbingan;
 use App\Models\BabLaporan;
+use App\ViewModels\PesertaBimbinganView;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\ViewModels\PesertaBimbinganView;
+use Illuminate\Validation\Rule;
 
 use function PHPUnit\Framework\isEmpty;
+use function Symfony\Component\Clock\now;
 
 class SesiBimbinganController extends Controller
 {
@@ -160,7 +163,7 @@ class SesiBimbinganController extends Controller
             ]);
         }
 
-        dd('store', $request['revisi_id'], $sesi_id_sebelumnya, $data);
+        // dd('store', $request['revisi_id'], $sesi_id_sebelumnya, $data);
 
         return redirect()
             ->route('peserta-bimbingan.show', $request->peserta_bimbingan_id)
@@ -192,34 +195,44 @@ class SesiBimbinganController extends Controller
     {
         $sesiBimbingan = SesiBimbingan::findOrFail($id);
 
+        // ambil config status
+        $config_status = config('status_peserta_bimbingan');
+
+        // ambil KEY status (misal: -100, -1, 3, 100)
+        $allowedStatus = array_keys($config_status);
+
         $request->validate([
-            'status_sesi_bimbingan' => 'required|exists:status_sesi_bimbingan,id',
-            'pesan_dosen'              => 'nullable|string',
-            'file_review'              => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'tanggal_review'           => 'nullable|date',
+            'status_sesi_bimbingan' => [
+                'required',
+                Rule::in($allowedStatus),
+            ],
+            'pesan_dosen' => 'required|string',
+            'file_review' => 'nullable|file|mimes:docx|max:5120',
         ]);
 
-        $data = $request->only([
-            'status_sesi_bimbingan',
-            'pesan_dosen',
-            'tanggal_review',
-        ]);
+        $data = [
+            'status_sesi_bimbingan' => $request->status_sesi_bimbingan,
+            'pesan_dosen'           => $request->pesan_dosen,
+            'tanggal_review'        => now(),
+        ];
 
+        // upload file review
         if ($request->hasFile('file_review')) {
 
-            // hapus file lama jika ada
+            // hapus file lama (jika ada)
             if ($sesiBimbingan->file_review) {
-                Storage::disk('public')->delete($sesiBimbingan->file_review);
+                Storage::delete($sesiBimbingan->file_review);
             }
 
             $data['file_review'] = $request->file('file_review')
-                ->store('bimbingan/file-review', 'public');
+                ->store('bimbingan/file-review');
         }
 
         $sesiBimbingan->update($data);
 
-        return redirect()->back()
-            ->with('success', 'Review bimbingan berhasil disimpan.');
+        return redirect()
+            ->route('peserta-bimbingan.show', $sesiBimbingan->peserta_bimbingan_id)
+            ->with('success', 'Review dosen berhasil disimpan.');
     }
 
     /**
