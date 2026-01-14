@@ -48,7 +48,7 @@ return new class extends Migration {
             $table->string('file_bimbingan', 200)->nullable();
             $table->string('file_review', 200)->nullable();
 
-            $table->timestamp('tanggal_pengajuan')->nullable();
+            // $table->timestamp('tanggal_pengajuan')->nullable(); // diwakili created_at
             $table->timestamp('tanggal_download')->nullable();
             $table->timestamp('tanggal_review')->nullable();
             $table->timestamp('tanggal_revisi')->nullable();

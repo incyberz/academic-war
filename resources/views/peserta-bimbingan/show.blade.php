@@ -29,13 +29,13 @@
 
         <img src="{{ $pesertaBimbingan->mahasiswa->user->avatar
                     ? asset('storage/' . $pesertaBimbingan->mahasiswa->user->avatar)
-                    : asset('img/avatar-default.png') }}" alt="{{ $pesertaBimbingan->mahasiswa->nama }}"
+                    : asset('img/avatar-default.png') }}" alt="{{ $pesertaBimbingan->mahasiswa->nama_lengkap }}"
           class="w-16 h-16 rounded-full border object-cover">
 
 
         <div class="flex-1">
           <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {{ $pesertaBimbingan->mahasiswa->nama }} {{ $isMe ? '(Saya)' : ''}}
+            {{ $pesertaBimbingan->mahasiswa->nama_lengkap }} {{ $isMe ? '(Saya)' : ''}}
           </h2>
 
           <p class="text-sm text-gray-500">
@@ -53,8 +53,8 @@
 
     </x-card>
 
-    <x-progress-bar animated label='Progress Bimbingan' value='{{$pesertaBimbingan->progress}}' />
 
+    @include('peserta-bimbingan.bimbingan-progress')
     @include('peserta-bimbingan.bimbingan-counts')
 
     <x-card>

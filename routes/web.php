@@ -52,7 +52,7 @@ Route::middleware('auth')->group(function () {
     )->name('peserta-bimbingan.inline');
 
 
-    Route::resource('sesi-bimbingan', SesiBimbinganController::class)->only('create', 'store', 'update');
+    Route::resource('sesi-bimbingan', SesiBimbinganController::class)->only('create', 'store', 'update', 'destroy');
 
     Route::get(
         '/sesi-bimbingan/{sesi}',

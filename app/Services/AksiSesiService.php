@@ -11,14 +11,14 @@ class AksiSesiService
     if (!$config) dd("Role [$role] belum punya config aksi_sesi.");
     // if (!$config) return [];
 
-    // status negatif
-    if ($status < 0 && isset($config['negatif'])) {
-      return $config['negatif'];
-    }
-
     // status spesifik
     if (isset($config[$status])) {
       return $config[$status];
+    }
+
+    // status negatif
+    if ($status < 0 && isset($config['negatif'])) {
+      return $config['negatif'];
     }
 
     // wildcard

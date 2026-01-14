@@ -240,7 +240,7 @@ class BimbinganController extends Controller
                 // $listPeserta[$jenis_bimbingan_id] = $pesertaCollection->map(function ($peserta) use ($bimb) {
                 //     return [
                 //         'avatar'   => optional($peserta->mahasiswa->user)->avatar,
-                //         'nama'     => $peserta->mahasiswa->nama,
+                //         'nama'     => $peserta->mahasiswa->nama_lengkap,
                 //         'nim'      => $peserta->mahasiswa->nim,
                 //         'status'   => optional($peserta->status)->nama ?? 'Aktif',
                 //         'wa'       => optional($peserta->mahasiswa->user)->whatsapp,

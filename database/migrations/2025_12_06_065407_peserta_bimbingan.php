@@ -34,12 +34,15 @@ return new class extends Migration
             $table->unsignedTinyInteger('progress')
                 ->default(0);
 
-            $table->timestamp('terakhir_topik')
+            $table->string('terakhir_topik')
                 ->nullable();
             $table->timestamp('terakhir_bimbingan')
                 ->nullable();
 
             $table->timestamp('terakhir_reviewed')
+                ->nullable();
+
+            $table->integer('current_tahapan_bimbingan_id')
                 ->nullable();
 
             $table->timestamps();

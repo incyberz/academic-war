@@ -44,11 +44,12 @@
 
     $('.counts-item').on('click', function () {
 
-      let key = $(this).prop('id').split('--')[1]
+      let key = $(this).prop('id')
       let statuses = map[key]
 
       $('.card-riwayat').each(function () {
         let status = parseInt($(this).data('status'))
+        
 
         if (statuses === 'all' || statuses.includes(status)) {
           $(this).stop(true, true).slideDown()

@@ -12,10 +12,12 @@ $value = max(0, min(100, (int) $value));
 // Jika selesai 100%
 if ($value === 100) {
 $animated = false;
-$info = 'Completed ✅';
+$info_selesai = 'Completed ✅';
 } else {
-$info ??= $value . '% selesai';
+$info_selesai ??= $value . '% selesai';
 }
+
+$info = $info ? "$info_selesai - $info" : $info_selesai;
 
 $barClass = collect([
 'h-3',

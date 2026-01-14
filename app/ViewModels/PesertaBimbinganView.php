@@ -24,7 +24,7 @@ class PesertaBimbinganView
 
   public function namaPeserta()
   {
-    return $this->peserta->mahasiswa->nama;
+    return $this->peserta->mahasiswa->nama_lengkap;
   }
 
   public function namaPembimbing()

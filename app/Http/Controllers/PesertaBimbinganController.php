@@ -88,6 +88,7 @@ class PesertaBimbinganController extends Controller
                 'disetujui'     => $riwayatBimbingan->where('status_sesi_bimbingan', '>', 1)->count(),
             ];
 
+
             $tahapanBimbingan = TahapanBimbingan::where(
                 'jenis_bimbingan_id',
                 $pesertaBimbingan->bimbingan->jenis_bimbingan_id
@@ -150,7 +151,7 @@ class PesertaBimbinganController extends Controller
                     'riwayatBimbingan',
                     'bimbinganCounts',
                     'tahapanBimbingan',
-                    'currentTahapan',
+                    // 'currentTahapan',
                     'persenProgress',
                     'pb',
                 )

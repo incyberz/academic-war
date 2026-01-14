@@ -49,11 +49,19 @@ return [
       ],
     ],
 
-    'negatif' => [
+    -1 => [
       'revisi' => [
         'label' => 'Upload Revisi',
         'icon' => '',
         'route' => 'sesi-bimbingan.show',
+        'type' => 'danger',
+      ],
+    ],
+    -100 => [
+      'hapus' => [
+        'label' => 'Hapus Sesi',
+        'icon' => '',
+        'route' => 'sesi-bimbingan.destroy',
         'type' => 'danger',
       ],
     ],

@@ -19,6 +19,7 @@ class PesertaBimbingan extends Model
         'terakhir_topik',
         'terakhir_bimbingan',
         'terakhir_reviewed',
+        'current_tahapan_bimbingan_id',
     ];
 
     /* ================= RELASI ================= */
@@ -41,6 +42,11 @@ class PesertaBimbingan extends Model
     public function sesiBimbingan(): HasMany
     {
         return $this->hasMany(SesiBimbingan::class, 'peserta_bimbingan_id');
+    }
+
+    public function tahapanBimbingan()
+    {
+        return $this->belongsTo(TahapanBimbingan::class, 'current_tahapan_bimbingan_id', 'id');
     }
 
     /* ================= HELPER LOGIC ================= */

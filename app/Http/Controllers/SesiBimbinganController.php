@@ -153,7 +153,17 @@ class SesiBimbinganController extends Controller
         }
 
         // Simpan ke database
-        SesiBimbingan::create($data);
+        $sesi = SesiBimbingan::create($data);
+
+        // update terakhir_bimbingan 
+        $terakhir_topik = $sesi->topik ?? $sesi->babLaporan->nama;
+        $peserta = $sesi->pesertaBimbingan;
+        $peserta->update([
+            'terakhir_topik' => $terakhir_topik,
+            'terakhir_bimbingan' => now(),
+        ]);
+
+        dd($sesi, $peserta);
 
         if ($isRevisi) { // jika revisi, update status revised pada 
             $sesiSebelumnya = SesiBimbingan::findOrFail($sesi_id_sebelumnya);
@@ -180,10 +190,16 @@ class SesiBimbinganController extends Controller
         // $this->authorize('view', $sesi);
 
         $pesertaBimbingan = $sesi->pesertaBimbingan;
+        $jenis_bimbingan_id = $pesertaBimbingan->bimbingan->jenis_bimbingan_id;
+        $tahapanBimbingan = TahapanBimbingan::where('jenis_bimbingan_id', $jenis_bimbingan_id)
+            ->where('is_active', true)
+            ->orderBy('urutan')
+            ->get();
+
         $pb = new PesertaBimbinganView($pesertaBimbingan);
 
 
-        return view('sesi-bimbingan.show', compact('sesi', 'pb'));
+        return view('sesi-bimbingan.show', compact('sesi', 'pb', 'tahapanBimbingan'));
     }
 
 
@@ -193,10 +209,12 @@ class SesiBimbinganController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $isDosen = isRole('dosen');
+        if (!$isDosen) return back()->with('error', 'Hanya dosen yang berhak update sesi (review bimbingan)');
         $sesiBimbingan = SesiBimbingan::findOrFail($id);
 
         // ambil config status
-        $config_status = config('status_peserta_bimbingan');
+        $config_status = config('status_sesi_bimbingan');
 
         // ambil KEY status (misal: -100, -1, 3, 100)
         $allowedStatus = array_keys($config_status);
@@ -208,9 +226,11 @@ class SesiBimbinganController extends Controller
             ],
             'pesan_dosen' => 'required|string',
             'file_review' => 'nullable|file|mimes:docx|max:5120',
+            'tahapan_bimbingan_id' => 'nullable|integer|exists:tahapan_bimbingan,id',
         ]);
 
         $data = [
+            'tahapan_bimbingan_id' => $request->tahapan_bimbingan_id,
             'status_sesi_bimbingan' => $request->status_sesi_bimbingan,
             'pesan_dosen'           => $request->pesan_dosen,
             'tanggal_review'        => now(),
@@ -228,12 +248,55 @@ class SesiBimbinganController extends Controller
                 ->store('bimbingan/file-review');
         }
 
+        // update with tahapan bimbingan
+        if ($request['tahapan_bimbingan_id']) {
+            $pesertaBimbingan = $sesiBimbingan->pesertaBimbingan;
+            if ($request['tahapan_bimbingan_id'] <= $pesertaBimbingan->current_tahapan_bimbingan_id) {
+                $pesertaBimbingan->update([
+                    'terakhir_reviewed' => now(),
+                ]);
+            } else {
+                $pesertaBimbingan->update([
+                    'current_tahapan_bimbingan_id' => $request['tahapan_bimbingan_id'],
+                    'terakhir_reviewed' => now(),
+                    'progress' => progresPesertaBimbingan($sesiBimbingan, $request['tahapan_bimbingan_id']),
+
+                ]);
+            }
+        }
+
+
         $sesiBimbingan->update($data);
+        /**
+         * ============================================================
+         * UPDATE DERIVED DATA WHEN DOSEN REVIEW
+         * ============================================================
+         * - progress_mahasiswa, jumlah_sesi_disetujui, jumlah_revisi, status_kelayakan_sidang DONE
+         * - log_aktivitas_dosen, total_review, on_time_review
+         * - xp_dosen
+         * - global dashboard: total_bimbingan_direview, rata_rata_waktu_review, bimbingan_mandek
+         * - tabel notifikasi for mhs
+         * - XP / badge mhs “Aktif Bimbingan”
+         * - Reset / lanjut streak review
+         * - Reset / lanjut streak bimbingan for mhs
+         * - audit_log:
+         *    aktor = dosen
+         *    aksi = review_bimbingan
+         *    objek = sesi_bimbingan
+         *    timestamp
+         * ============================================================
+         */
+
+
+
 
         return redirect()
             ->route('peserta-bimbingan.show', $sesiBimbingan->peserta_bimbingan_id)
             ->with('success', 'Review dosen berhasil disimpan.');
     }
+
+    private function progresPesertaBimbingan(SesiBimbingan $sesiBimbingan) {}
+
 
     /**
      * Hapus sesi bimbingan
@@ -242,17 +305,22 @@ class SesiBimbinganController extends Controller
     {
         $sesiBimbingan = SesiBimbingan::findOrFail($id);
 
+        // hapus file review jika ada
         if ($sesiBimbingan->file_bimbingan) {
-            Storage::disk('public')->delete($sesiBimbingan->file_bimbingan);
+            Storage::delete($sesiBimbingan->file_bimbingan);
         }
 
         if ($sesiBimbingan->file_review) {
-            Storage::disk('public')->delete($sesiBimbingan->file_review);
+            Storage::delete($sesiBimbingan->file_review);
         }
 
+        $pesertaBimbinganId = $sesiBimbingan->peserta_bimbingan_id;
+
+        // hapus sesi bimbingan
         $sesiBimbingan->delete();
 
-        return redirect()->back()
+        return redirect()
+            ->route('peserta-bimbingan.show', $pesertaBimbinganId)
             ->with('success', 'Sesi bimbingan berhasil dihapus.');
     }
 

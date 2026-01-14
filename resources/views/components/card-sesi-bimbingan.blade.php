@@ -142,12 +142,34 @@ $namaDokumen = substr($namaDokumen, 0, 15).'...';
     <hr class="my-3 border-gray-200 dark:border-gray-700">
     <div class="blok_aksi mt-3 space-y-2">
 
+
         {{-- UI links aksi --}}
         @foreach ($arrAksi as $aksi)
+        @if(strtolower($aksi['label'])=='menunggu review')
+        <div
+            class="flex items-center justify-center space-x-2 p-4 rounded-md bg-gray-100 dark:bg-amber-900 border border-gray-300 dark:border-gray-700">
+            @php $needTimers=1; @endphp
+
+            <div class="w-5 h-5 border-2 border-gray-400 border-t-2 border-t-blue-500 rounded-full animate-spin"></div>
+
+            <span class="text-gray-700 dark:text-gray-200 font-medium">
+                Menunggu Review Dosen...
+            </span>
+
+            {{-- UI timer durasi menunggu, semisal: 0d:01:23:54, acuan $sesi->created_at, animasi detik timer pakai
+            jquery --}}
+            <span id="waiting-timer--{{$sesi->id}}"
+                class="waiting-timer text-gray-600 dark:text-gray-300 font-mono ml-2">{{$sesi->created_at}}</span>
+
+        </div>
+        @else
         @php $type = $aksi['type'] ?? 'secondary'; @endphp
         <a href="{{ route($aksi['route'], $sesi) }}">
             <x-button type="{{$type}}" class="w-full"> {{ $aksi['label'] }} </x-button>
-        </a> @endforeach
+        </a>
+        @endif
+        @endforeach
+
 
     </div>
     @endif

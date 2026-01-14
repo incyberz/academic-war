@@ -19,3 +19,37 @@
   </div>
   @endforelse
 </div>
+
+<script>
+  $(function() {
+    $('.waiting-timer').each((index, e) => {
+        let $el = $(e);
+        
+        // ambil createdAt dari innerText (ISO format misal: "2026-01-11T08:00:00")
+        let createdAt = new Date($el.text().trim());
+
+        function updateTimer() {
+            let now = new Date();
+            let diff = Math.floor((now - createdAt) / 1000); // selisih detik
+
+            let days = Math.floor(diff / 86400);
+            let hours = Math.floor((diff % 86400) / 3600);
+            let minutes = Math.floor((diff % 3600) / 60);
+            let seconds = diff % 60;
+
+            let timerText = days + "d:" +
+                            String(hours).padStart(2,'0') + ":" +
+                            String(minutes).padStart(2,'0') + ":" +
+                            String(seconds).padStart(2,'0');
+
+            $el.text(timerText);
+        }
+
+        // update segera
+        updateTimer();
+
+        // jalankan interval setiap 1 detik
+        setInterval(updateTimer, 1000);
+    });
+});
+</script>
