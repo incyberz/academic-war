@@ -71,8 +71,6 @@
 
 <script>
   $('.pbar_toggle').click(function(){
-      $('#info_tahapan').slideToggle()
-      console.log('toggle');
-      
-    })
+    $('#info_tahapan').slideToggle()
+  })
 </script>

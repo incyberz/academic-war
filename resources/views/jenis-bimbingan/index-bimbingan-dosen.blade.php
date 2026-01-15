@@ -53,7 +53,7 @@ $myBimMap = collect($myBimbingans ?? [])
       <div class="flex gap-2">
 
         {{-- DETAIL --}}
-        <a href="{{ route('bimbingan.show', $item['jenis_bimbingan']->id) }}" title="Detail" class="flex items-center justify-center
+        <a href="{{ route('bimbingan.show', $item['id']) }}" title="Detail" class="flex items-center justify-center
                           w-10 h-10
                           border border-gray-300 rounded-lg
                           text-gray-700 text-lg

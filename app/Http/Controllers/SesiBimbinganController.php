@@ -75,7 +75,9 @@ class SesiBimbinganController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request['revisi_id'], $request['revisi_ke']);
+        // dd(
+        //     $request['bab_laporan_id'],
+        // );
         // Validasi input
         $request->validate([
             'peserta_bimbingan_id' => 'required|exists:peserta_bimbingan,id',
@@ -99,6 +101,7 @@ class SesiBimbinganController extends Controller
                 'mimetypes:application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             ],
         ]);
+
 
         $sesi_id_sebelumnya = $request['revisi_id'];
         $isRevisi = $sesi_id_sebelumnya ? 1 : 0;
@@ -163,7 +166,7 @@ class SesiBimbinganController extends Controller
             'terakhir_bimbingan' => now(),
         ]);
 
-        dd($sesi, $peserta);
+        // dd($sesi, $peserta);
 
         if ($isRevisi) { // jika revisi, update status revised pada 
             $sesiSebelumnya = SesiBimbingan::findOrFail($sesi_id_sebelumnya);

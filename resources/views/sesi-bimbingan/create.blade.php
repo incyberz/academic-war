@@ -24,6 +24,16 @@
           </p>
         </div>
 
+        @if ($errors->any())
+        <div class="mb-4 p-3 rounded bg-red-100 text-red-700">
+          <ul class="list-disc pl-5">
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
+        @endif
+
 
         {{-- form --}}
         <form action="{{ route('sesi-bimbingan.store') }}" method="POST" enctype="multipart/form-data"
@@ -37,20 +47,23 @@
           <div>
             <x-label for="bab_laporan_id">{{$isRevisi ? "Revisi Bab 🔒: $bab_revisi" : 'Apa yang ingin kamu bahas?'}}
             </x-label>
-            <x-select required name="bab_laporan_id" id="bab_laporan_id" class="{{$isRevisi ? 'hidden': ''}}">
-              <option value="">--pilih--</option>
-              @foreach ($babLaporan as $bab)
-              @php $selected = $bab->id == $revisi_id ? 'selected' : '' @endphp
-              {{-- @php if($selected) dd($bab->nama) @endphp --}}
-              <option value="{{$bab->id}}" {{$selected}}>{{$bab->nama}}</option>
-              @endforeach
-            </x-select>
 
             @if($isRevisi)
             <div>
               <x-label>Nama Dokumen Revisi 🔒: {{$nama_dok_rev}}</x-label>
               <input type=hidden required name="nama_dokumen" id="nama_dokumen" value="{{$nama_dok_rev}}" />
+              <input type=hidden required name="bab_laporan_id" id="bab_laporan_id"
+                value="{{$revisi->babLaporan->id}}" />
             </div>
+            @else
+            <x-select required name="bab_laporan_id" id="bab_laporan_id">
+              <option value="">--pilih--</option>
+              @foreach ($babLaporan as $bab)
+              {{-- @php $selected = $bab->id == $revisi_id ? 'selected' : '' @endphp --}}
+              {{-- @php if($selected) dd($bab->nama) @endphp --}}
+              <option value="{{$bab->id}}">{{$bab->nama}}</option>
+              @endforeach
+            </x-select>
             @endif
 
           </div>
@@ -173,7 +186,7 @@
 
           {{-- action --}}
           <div class="flex justify-end gap-3 pt-4">
-            <a href="{{ url()->previous() }}">
+            <a href="{{ route('peserta-bimbingan.show',$revisi->peserta_bimbingan_id) }}">
               <x-btn-back>Batal</x-btn-back>
             </a>
 

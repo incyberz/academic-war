@@ -177,6 +177,7 @@ class BimbinganController extends Controller
      */
     public function show(Bimbingan $bimbingan)
     {
+        // dd($bimbingan);
         $tahun_ajar_id = session()->get('tahun_ajar_id');
         $dosen = collect();
         $pembimbing = collect();

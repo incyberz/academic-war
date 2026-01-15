@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-// use Illuminate\Http\Request;
 use App\Models\PesertaBimbingan;
+use App\Models\User;
 use App\Models\Mhs;
 use App\Models\Dosen;
 use App\Models\Pembimbing;
@@ -11,10 +11,15 @@ use App\Models\Bimbingan;
 use App\Models\EligibleBimbingan;
 use App\Models\SesiBimbingan;
 use App\Models\TahapanBimbingan;
+use App\Models\JenisBimbingan;
+use App\ViewModels\PesertaBimbinganView;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\ViewModels\PesertaBimbinganView;
+use Illuminate\Support\Facades\Hash;
+
+
 
 class PesertaBimbinganController extends Controller
 {
@@ -197,7 +202,7 @@ class PesertaBimbinganController extends Controller
 
             if (! $eligible) {
                 return back()
-                    ->withErrors('Mahasiswa tidak eligible untuk bimbingan ini')
+                    ->withErrors('Mhs tidak eligible untuk bimbingan ini')
                     ->withInput();
             }
 
@@ -208,7 +213,7 @@ class PesertaBimbinganController extends Controller
 
             if ($sudahAda) {
                 return back()
-                    ->withErrors('Mahasiswa sudah terdaftar sebagai peserta bimbingan')
+                    ->withErrors('Mhs sudah terdaftar sebagai peserta bimbingan')
                     ->withInput();
             }
 
@@ -424,5 +429,103 @@ class PesertaBimbinganController extends Controller
             'bimbinganCounts',
             'pb',
         ));
+    }
+
+    /**
+     * Super Create Peserta Bimbingan, Auto Eligible, Create Mhs, dan Create User
+     */
+    public function superCreate(
+        Request $request,
+        Bimbingan $bimbingan,
+        JenisBimbingan $jenisBimbingan
+    ) {
+        // ===== Context wajib dari session =====
+        $tahunAjarId   = session('tahun_ajar_id');
+
+        abort_if(! $tahunAjarId, 403, 'Tahun ajar belum diset');
+
+        return view('super-admin.super-create-peserta-bimbingan', [
+            'bimbingan'        => $bimbingan,
+            'bimbinganId'      => $bimbingan->id,
+            'jenisBimbingan'   => $jenisBimbingan,
+            'jenisBimbinganId' => $jenisBimbingan->id,
+            'tahunAjarId'      => $tahunAjarId,
+        ]);
+    }
+
+
+    /**
+     * Super Store User > Mhs > Eligible > Peserta Bimbingan
+     */
+    public function superStore(
+        Request $request,
+        Bimbingan $bimbingan,
+        JenisBimbingan $jenisBimbingan
+    ) {
+        $yearNow = date('Y');
+        // ================= VALIDASI =================
+        $validated = $request->validate([
+            // USER
+            'user.name'     => 'required|string|max:255',
+            'user.email'    => 'required|email|unique:users,email',
+            'user.username' => 'required|string|unique:users,username',
+            'user.role_id'  => 'required|integer',
+
+            // MAHASISWA
+            'mahasiswa.nama_lengkap' => 'required|string|max:255',
+            'mahasiswa.angkatan' => [
+                'required',
+                'integer',
+                'min:' . ($yearNow - 5),
+                'max:' . $yearNow,
+            ],
+
+            // ELIGIBLE
+            'eligible.tahun_ajar_id' => 'required|exists:tahun_ajar,id',
+
+            // PESERTA
+            'peserta.keterangan' => 'nullable|string',
+        ]);
+
+        return DB::transaction(function () use ($validated, $bimbingan, $jenisBimbingan) {
+
+            // ================= CREATE USER =================
+            $username = strtolower($validated['user']['username']);
+            $user = User::create([
+                'name'     => strtoupper($validated['user']['name']),
+                'email'    => strtolower($validated['user']['email']),
+                'username' => $username,
+                'role_id'  => $validated['user']['role_id'],
+                'password' => Hash::make($username), // nanti bisa auto-generate
+            ]);
+
+            // ================= CREATE MAHASISWA =================
+            $mahasiswa = Mhs::create([
+                'user_id'      => $user->id,
+                'nama_lengkap' => strtoupper($validated['mahasiswa']['nama_lengkap']),
+                'angkatan'     => $validated['mahasiswa']['angkatan'],
+            ]);
+
+            // ================= ELIGIBLE BIMBINGAN =================
+            EligibleBimbingan::create([
+                'tahun_ajar_id'       => $validated['eligible']['tahun_ajar_id'],
+                'jenis_bimbingan_id'  => $jenisBimbingan->id,
+                'mhs_id'              => $mahasiswa->id,
+                'assign_by'           => Auth::id(),
+            ]);
+
+            // ================= PESERTA BIMBINGAN =================
+            PesertaBimbingan::create([
+                'mhs_id'         => $mahasiswa->id,
+                'bimbingan_id'   => $bimbingan->id,
+                'ditunjuk_oleh'  => Auth::id(),
+                'keterangan'     => $validated['peserta']['keterangan']
+                    ?? 'Create by Super Admin at ' . now(),
+            ]);
+
+            return redirect()
+                ->route('bimbingan.show', $bimbingan->id)
+                ->with('success', 'Super Create Peserta bimbingan berhasil.');
+        });
     }
 }

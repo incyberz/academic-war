@@ -83,13 +83,19 @@
       <x-card-body>
 
         {{-- Pesan Dosen untuk mhs --}}
+
+        @if($sesi->pesan_dosen)
+        <x-chat chatter='Dosen' pos='right' text='{{$sesi->pesan_dosen}}'
+          date="{{$sesi->tanggal_review->format('d M, ') }}" time="{{ $sesi->tanggal_review->format('H:i') }}" />
+        @else
         <p class="text-gray-700 dark:text-gray-300 whitespace-pre-line">
-          {{ $sesi->pesan_dosen ?? 'Belum ada review dari dosen.' }}
+          Belum ada review dari dosen.
         </p>
+        @endif
 
         {{-- File Review --}}
         @if ($sesi->file_review)
-        <div class="mt-4">
+        <div class="mt-4 text-right">
           <a href="{{ asset('storage/' . $sesi->file_review) }}" target="_blank"
             class="text-green-600 dark:text-green-400 hover:underline">
             ✅ {{ $sesi->nama_dokumen }}_reviewed.docx
@@ -99,7 +105,7 @@
 
         {{-- Waktu Review --}}
         @if ($sesi->tanggal_review)
-        <div class="text-xs text-gray-500 mt-2">
+        <div class="text-xs text-gray-500 text-right mt-2">
           Direview pada: {{ $sesi->tanggal_review->format('d M Y H:i') }}
         </div>
         @endif
@@ -151,7 +157,7 @@
       <x-card-header>🏫 Info Offline</x-card-header>
       <x-card-body>
         <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-          <li>Tanggal: {{ $sesi->tanggal_offline }}</li>
+          <li>Tanggal: {{ $sesi->tanggal_offline->format('d M Y H:i') }}</li>
           <li>Jam: {{ $sesi->jam_offline }}</li>
           <li>Lokasi: {{ $sesi->lokasi_offline }}</li>
         </ul>

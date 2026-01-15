@@ -45,40 +45,53 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/tahun-ajar/aktif', [TahunAjarController::class, 'setAktif'])
         ->name('tahun-ajar.set-aktif');
 
-    Route::resource('peserta-bimbingan', PesertaBimbinganController::class);
-    Route::get(
-        '/peserta-bimbingan/{id}/inline',
-        [PesertaBimbinganController::class, 'inline']
-    )->name('peserta-bimbingan.inline');
 
 
-    Route::resource('sesi-bimbingan', SesiBimbinganController::class)->only('create', 'store', 'update', 'destroy');
 
-    Route::get(
-        '/sesi-bimbingan/{sesi}',
-        [SesiBimbinganController::class, 'show']
-    )->name('sesi-bimbingan.show');
-
-
-    // web.php
-    // Route::get(
-    //     '/sesi-bimbingan/{pesertaBimbingan}/create',
-    //     [SesiBimbinganController::class, 'create']
-    // )->name('sesi-bimbingan.create');
-
-
-    // ===================================
-    // ROUTE KHUSUS PEMBIMBING AKTIF
-    // ===================================
+    # ============================================================
+    # ROUTE KHUSUS PEMBIMBING AKTIF
+    # ============================================================
     Route::middleware('pembimbing.aktif')->group(function () {
 
         Route::resource('bimbingan', BimbinganController::class);
 
+        // rute ke peserta bimbingan @superCreate
+        Route::get(
+            '/peserta-bimbingan/{bimbingan}/jenis/{jenisBimbingan}/super-create',
+            [PesertaBimbinganController::class, 'superCreate']
+        )->name('peserta-bimbingan.super-create');
 
-        // kalau nanti mau ditambah:
-        // Route::post('/bimbingan/{id}/setujui', ...);
-        // Route::post('/bimbingan/{id}/tolak', ...);
+
+        // rute ke peserta bimbingan @superCreate
+        Route::post(
+            '/peserta-bimbingan/{bimbingan}/jenis/{jenisBimbingan}/super-store',
+            [PesertaBimbinganController::class, 'superStore']
+        )->name('peserta-bimbingan.super-store');
     });
+
+
+    # ============================================================
+    # RUTE UMUM BIMBINGAN
+    # ============================================================
+    Route::resource('peserta-bimbingan', PesertaBimbinganController::class);
+    Route::resource('sesi-bimbingan', SesiBimbinganController::class); //->only('create', 'store', 'update', 'destroy');
+
+    // Route::get(
+    //     '/sesi-bimbingan/{sesi}',
+    //     [SesiBimbinganController::class, 'show']
+    // )->name('sesi-bimbingan.show');
+
+
+
+    # ============================================================
+    # GOD MODE 
+    # ============================================================
+    // dosen boleh set tahapan peserta bimbingan nya
+    Route::post(
+        '/peserta-bimbingan/{pesertaBimbingan}/set-tahapan',
+        [PesertaBimbinganController::class, 'setTahapan']
+    )->name('peserta-bimbingan.set-tahapan');
+
 
 
 

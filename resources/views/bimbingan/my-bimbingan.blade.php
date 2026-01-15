@@ -60,6 +60,19 @@
       </a>
       @endif
 
+      @php $zzz= 1 @endphp
+      @if($zzz)
+      @php $bimbinganId= $jenis->bimbingan->first()->id @endphp
+      <a href="{{ route('peserta-bimbingan.super-create', [
+              'bimbingan'      => $bimbinganId,
+              'jenisBimbingan' => $jenis->id,
+          ]) }}">
+        <x-button type="danger" class="w-full mt-4">
+          Add Peserta Eligible {{ $namaBimbingan }}
+        </x-button>
+      </a>
+      @endif
+
     </x-card-body>
 
   </x-card>
