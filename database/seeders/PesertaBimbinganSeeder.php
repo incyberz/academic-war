@@ -19,7 +19,7 @@ class PesertaBimbinganSeeder extends Seeder
             [
                 'name' => 'Super Admin',
                 'email' => 'insho@gmail.com',
-                'role_id' => 1, // super admin
+                'role_id' => 100, // super admin
                 'whatsapp' => '6287729007318',
                 'whatsapp_verified_at' => now(),
                 'password' => Hash::make('insho'),
@@ -71,7 +71,7 @@ class PesertaBimbinganSeeder extends Seeder
             $mhs = Mhs::firstOrCreate(
                 ['user_id' => $user->id],
                 [
-                    'nama' => $m['nama'],
+                    'nama_lengkap' => $m['nama'],
                     'nim' => strtoupper($m['username']) . '001',
                     'angkatan' => $m['angkatan'],
                     'status_mhs_id' => $statusMhsId, // default aktif

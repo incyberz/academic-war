@@ -12,6 +12,8 @@ class UsersDosenSeeder extends Seeder
 {
     public function run(): void
     {
+
+        $role_id_dosen = config('roles')['dosen']['id'];
         // ==========================
         // 1. User + Dosen: iin
         // ==========================
@@ -20,7 +22,7 @@ class UsersDosenSeeder extends Seeder
             [
                 'email' => 'iin@gmail.com',
                 'name' => 'Kang Solihin',
-                'role_id' => 5, // role dosen
+                'role_id' => $role_id_dosen, // role dosen
                 'password' => Hash::make('iin'),
             ]
         );
@@ -41,7 +43,7 @@ class UsersDosenSeeder extends Seeder
             [
                 'email' => 'topan@gmail.com',
                 'name' => 'Topan Trianto',
-                'role_id' => 5, // role dosen
+                'role_id' => $role_id_dosen,
                 'password' => Hash::make('topan'),
             ]
         );

@@ -176,7 +176,7 @@ class PesertaBimbinganController extends Controller
             'jenis_bimbingan_id' => ['required', 'exists:jenis_bimbingan,id'],
             'mhs_id' => ['required', 'exists:mhs,id'],
             'ditunjuk_oleh' => ['required', 'exists:users,id'],
-            '' => ['required', 'integer'],
+            'status' => ['required', 'integer'],
             'keterangan' => ['nullable', 'string'],
             'progress' => ['nullable', 'integer', 'min:0', 'max:100'],
             'terakhir_topik' => ['nullable', 'string', 'max:255'],
@@ -222,7 +222,7 @@ class PesertaBimbinganController extends Controller
                 'mhs_id' => $validated['mhs_id'],
                 'bimbingan_id' => $myBimbingan->id,
                 'ditunjuk_oleh' => $validated['ditunjuk_oleh'],
-                '' => $validated[''],
+                'status' => $validated['status'],
                 'keterangan' => $validated['keterangan'] ?? null,
                 'progress' => $validated['progress'] ?? 0,
                 'terakhir_topik' => $validated['terakhir_topik'] ?? null,
@@ -527,5 +527,56 @@ class PesertaBimbinganController extends Controller
                 ->route('bimbingan.show', $bimbingan->id)
                 ->with('success', 'Super Create Peserta bimbingan berhasil.');
         });
+    }
+
+    /**
+     * Dosen boleh update nomor whatsapp mhs bimbingannya
+     */
+    public function updateWhatsappMyBimbingan(Request $request, PesertaBimbingan $pesertaBimbingan)
+    {
+        $userDosenLoginId = Auth::id();
+
+        if (
+            $pesertaBimbingan
+            ->bimbingan
+            ->pembimbing
+            ->dosen
+            ->user_id !== $userDosenLoginId
+        ) {
+            abort(403, 'Anda bukan dosen pembimbing mahasiswa ini.');
+        }
+
+        $validated = $request->validate([
+            'whatsapp' => ['required', 'regex:/^62[0-9]{9,13}$/'],
+        ], [
+            'whatsapp.required' => 'Nomor WhatsApp wajib diisi.',
+            'whatsapp.regex' => 'Format WhatsApp harus diawali 62 dan hanya angka.',
+        ]);
+
+        $userMahasiswa = User::findOrFail(
+            $pesertaBimbingan->mahasiswa->user_id
+        );
+
+        if (! empty($userMahasiswa->whatsapp)) {
+            return redirect()
+                ->route(
+                    'bimbingan.show',
+                    $pesertaBimbingan->bimbingan->jenis_bimbingan_id
+                )
+                ->with('warning', 'Mahasiswa sudah memiliki nomor WhatsApp.');
+        }
+
+        $userMahasiswa->update([
+            'whatsapp' => $validated['whatsapp'],
+            'whatsapp_verified' => false,
+            'whatsapp_updated_by_dosen' => true,
+        ]);
+
+        return redirect()
+            ->route(
+                'bimbingan.show',
+                $pesertaBimbingan->bimbingan->jenis_bimbingan_id
+            )
+            ->with('success', 'Nomor WhatsApp mahasiswa berhasil disimpan.');
     }
 }

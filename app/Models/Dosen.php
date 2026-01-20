@@ -23,6 +23,35 @@ class Dosen extends Model
         'jabatan_fungsional',
     ];
 
+    public function namaGelar(): string
+    {
+        $nama = trim($this->nama);
+        $hasil = '';
+
+        // Gelar depan
+        if (!empty($this->gelar_depan)) {
+            $gelarDepan = trim($this->gelar_depan);
+
+            // Tambahkan titik jika belum ada
+            if (!str_ends_with($gelarDepan, '.')) {
+                $gelarDepan .= '.';
+            }
+
+            $hasil .= $gelarDepan . ' ';
+        }
+
+        // Nama wajib
+        $hasil .= $nama;
+
+        // Gelar belakang
+        if (!empty($this->gelar_belakang)) {
+            $hasil .= ', ' . trim($this->gelar_belakang);
+        }
+
+        return trim($hasil);
+    }
+
+
     /**
      * Relasi ke User
      */

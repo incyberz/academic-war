@@ -1,5 +1,5 @@
 <x-app-layout>
-  <x-page-header title="Super Create Peserta Bimbingan" subtitle="Super Admin only" />
+  <x-page-header title="Page Header" subtitle="..." />
 
   <x-page-content>
     <x-card>

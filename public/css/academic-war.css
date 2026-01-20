@@ -1,4 +1,10 @@
 /* resources/css/forms.css */
+label.required::after {
+  content: " *";
+  color: #dc2626;
+  /* merah (Tailwind red-600) */
+  font-weight: 600;
+}
 
 input[required],
 select[required],

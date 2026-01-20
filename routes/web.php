@@ -8,6 +8,8 @@ use App\Http\Controllers\SesiBimbinganController;
 use App\Http\Controllers\PesertaBimbinganController;
 use App\Http\Controllers\TahunAjarController;
 use App\Http\Controllers\WhatsappController;
+use App\Http\Controllers\NotifikasiBimbinganController;
+
 
 
 Route::get('/', function () {
@@ -67,6 +69,12 @@ Route::middleware('auth')->group(function () {
             '/peserta-bimbingan/{bimbingan}/jenis/{jenisBimbingan}/super-store',
             [PesertaBimbinganController::class, 'superStore']
         )->name('peserta-bimbingan.super-store');
+
+        // dosen boleh update whatsapp mhs bimbingannya
+        Route::put(
+            '/dosen/bimbingan/{pesertaBimbingan}/update-whatsapp',
+            [PesertaBimbinganController::class, 'updateWhatsappMyBimbingan']
+        )->name('dosen.bimbingan.update-whatsapp');
     });
 
 
@@ -95,8 +103,16 @@ Route::middleware('auth')->group(function () {
 
 
 
+    # ============================================================
+    # WHATSAPP
+    # ============================================================
     Route::post('/whatsapp/send/{sesi}', [WhatsappController::class, 'send'])
         ->name('whatsapp.send');
+
+    Route::post(
+        '/notifikasi-bimbingan',
+        [NotifikasiBimbinganController::class, 'store']
+    )->name('notifikasi-bimbingan.store');
 });
 
 

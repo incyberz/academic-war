@@ -9,9 +9,21 @@ return new class extends Migration {
     {
         Schema::create('role', function (Blueprint $table) {
             $table->id(); // primary key numeric default
-            $table->string('role_name', 20)->unique(); // kode role, unik tapi bukan PK
+
+            // kode role (mhs, dosen, kaprodi, dll)
+            $table->string('role_name', 20)->unique();
+
+            // nama tampil
             $table->string('nama', 50);
+
+            // deskripsi role
             $table->string('deskripsi', 255)->nullable();
+
+            // styling (opsional, untuk badge / card)
+            $table->string('color', 50)->nullable();     // contoh: text-white
+            $table->string('bg', 50)->nullable();        // contoh: bg-indigo-600
+            $table->string('gradient', 100)->nullable(); // contoh: bg-gradient-to-r from-indigo-500 to-indigo-700
+
             $table->timestamps();
         });
     }

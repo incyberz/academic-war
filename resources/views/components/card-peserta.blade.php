@@ -166,15 +166,21 @@ $cardBgClass = $cardBgNormal;
 
     {{-- Actions --}}
     <div class="flex flex-col items-center gap-2">
-        <a href="https://wa.me/{{ $wa }}" target="_blank" title="WhatsApp">
-            @include('components.whatsapp-icon')
-        </a>
+        <form method="POST" action="{{ route('notifikasi-bimbingan.store') }}" class="inline">
+            @csrf
 
-        @if ($status !== 'Selesai')
-        <a href="https://wa.me/{{ $wa }}" target="_blank" class="text-red-600">
-            @include('components.whatsapp-icon')
-        </a>
-        @endif
+            <input type="hidden" name="peserta_bimbingan_id" value="{{ $peserta->id }}">
+
+            <button type="submit" class="
+                    {{ $peserta->status_terakhir_bimbingan == 1
+                        ? 'text-green-700 dark:text-green-400'
+                        : 'text-red-600 hover:text-red-700'
+                    }}
+                    transition
+                " title="Kirim WhatsApp ke Mahasiswa">
+                @include('components.whatsapp-icon')
+            </button>
+        </form>
 
         <form action="{{ route('peserta-bimbingan.destroy', $id) }}" method="POST"
             onsubmit="return confirm('Yakin ingin menghapus peserta bimbingan ini?')">

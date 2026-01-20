@@ -9,22 +9,20 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        // Data role
-        $roles = [
-            ['role' => 'super_admin', 'nama' => 'Super Admin', 'deskripsi' => 'Akses penuh ke seluruh sistem'],
-            ['role' => 'admin',       'nama' => 'Admin', 'deskripsi' => 'Admin sistem dan operasional umum'],
-            ['role' => 'akademik',    'nama' => 'Akademik', 'deskripsi' => 'Pengelola data akademik'],
-            ['role' => 'kaprodi',     'nama' => 'Kaprodi', 'deskripsi' => 'Ketua Program Studi'],
-            ['role' => 'dosen',       'nama' => 'Dosen', 'deskripsi' => 'Tenaga pendidik dan pembimbing'],
-            ['role' => 'mhs',         'nama' => 'Mahasiswa', 'deskripsi' => 'Peserta pendidikan'],
-        ];
+        $roles = config('roles');
 
-        foreach ($roles as $role) {
+        foreach ($roles as $roleKey => $role) {
             DB::table('role')->updateOrInsert(
-                ['role_name' => $role['role']], // gunakan role sebagai key unik
+                ['id' => $role['id']], // gunakan ID dari config sebagai anchor utama
                 [
-                    'nama' => $role['nama'],
-                    'deskripsi' => $role['deskripsi'],
+                    'role_name' => $roleKey,
+                    'nama'      => $role['nama'],
+                    'deskripsi' => $role['deskripsi'] ?? null,
+                    'color'     => $role['color'] ?? null,
+                    'bg'        => $role['bg'] ?? null,
+                    'gradient'  => $role['gradient'] ?? null,
+                    'updated_at' => now(),
+                    'created_at' => now(),
                 ]
             );
         }
