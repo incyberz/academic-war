@@ -211,7 +211,7 @@ class BimbinganController extends Controller
                     'pembimbing',
                     'jenisBimbingan',
                     'tahunAjar',
-                    'pesertaBimbingan.mahasiswa.user',
+                    'pesertaBimbingan.mhs.user',
                     'pesertaBimbingan' => function ($q) {
                         $q->withCount([
                             'sesiBimbingan as total_sesi',
@@ -224,10 +224,10 @@ class BimbinganController extends Controller
                 ->get();
 
 
-            // ambil semua mahasiswa sekali
+            // ambil semua mhs sekali
             $allMahasiswa = Mhs::with('user')->get();
 
-            $eligibleMahasiswa = EligibleBimbingan::with('mahasiswa.user')
+            $eligibleMahasiswa = EligibleBimbingan::with('mhs.user')
                 ->get()
                 ->groupBy('jenis_bimbingan_id');
 
@@ -238,32 +238,11 @@ class BimbinganController extends Controller
 
                 // list peserta untuk x-card-peserta
                 $listPeserta[$jenis_bimbingan_id] = $pesertaCollection;
-                // $listPeserta[$jenis_bimbingan_id] = $pesertaCollection->map(function ($peserta) use ($bimb) {
-                //     return [
-                //         'avatar'   => optional($peserta->mahasiswa->user)->avatar,
-                //         'nama'     => $peserta->mahasiswa->nama_lengkap,
-                //         'nim'      => $peserta->mahasiswa->nim,
-                //         'status'   => optional($peserta->status)->nama ?? 'Aktif',
-                //         'wa'       => optional($peserta->mahasiswa->user)->whatsapp,
-                //         'progress' => $peserta->progress ?? 0,
-
-                //         'terakhir_topik'       => $peserta->terakhir_topik,
-                //         'terakhir_bimbingan'   => $peserta->terakhir_bimbingan,
-                //         'terakhir_reviewed'    => $peserta->terakhir_reviewed,
-
-                //         // pakai parent, bukan relasi ulang
-                //         'tahun_ajar' => $bimb->tahun_ajar_id,
-
-                //         'id' => $peserta->id,
-                //     ];
-                // });
-
-                // ambil ID mahasiswa yang SUDAH ikut
                 $pesertaIds = $pesertaCollection->pluck('mahasiswa_id');
 
-                // mahasiswa eligible SESUAI JENIS & BELUM ikut
+                // mhs eligible SESUAI JENIS & BELUM ikut
                 $notPeserta[$bimb->id] = ($eligibleMahasiswa[$jenis_bimbingan_id] ?? collect())
-                    ->map(fn($eligible) => $eligible->mahasiswa)
+                    ->map(fn($eligible) => $eligible->mhs)
                     ->whereNotIn('id', $pesertaIds)
                     ->values();
 

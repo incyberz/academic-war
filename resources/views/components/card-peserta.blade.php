@@ -8,10 +8,10 @@
 /**
 * Normalisasi data (single source of truth)
 */
-$avatar = $peserta->mahasiswa->user->avatar ?? null;
-$wa = $peserta->mahasiswa->user->avatar ?? null;
-$nama = $peserta->mahasiswa->nama_lengkap ?? '-';
-$nim = $peserta->mahasiswa->nim ?? '-';
+$avatar = $peserta->mhs->user->avatar ?? null;
+$wa = $peserta->mhs->user->avatar ?? null;
+$nama = $peserta->mhs->properNama() ?? '-';
+$nim = $peserta->mhs->nim ?? '-';
 $progress = $peserta->progress ?? 0;
 $status = $peserta->status ?? 1; // default aktif
 $status = namaStatusPesertaBimbingan($status);
@@ -62,13 +62,11 @@ $cardBgClass = $cardBgNormal;
     'class' => "flex items-center p-2 md:p-3 rounded-lg border transition gap-3 $cardBgClass"
     ]) }}>
 
-    {{-- Avatar --}}
-    <img src="{{ $avatar ? asset('storage/'.$avatar) : asset('img/roles/mhs.png') }}" alt="{{ $nama }}"
-        class="w-12 h-12 rounded-full border border-gray-300 dark:border-gray-600 object-cover">
+    <x-img-avatar src="{{ $peserta->mhs->user->pathAvatar() }}" alt="{{ $nama }}" w=12 />
 
     <div class="flex-1">
 
-        {{-- Header --}}
+        {{-- top of card --}}
         <div class="flex items-center justify-between gap-2">
             <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
                 {{ $nama }}
@@ -172,9 +170,15 @@ $cardBgClass = $cardBgNormal;
             <input type="hidden" name="peserta_bimbingan_id" value="{{ $peserta->id }}">
 
             <button type="submit" class="
-                    {{ $peserta->status_terakhir_bimbingan == 1
-                        ? 'text-green-700 dark:text-green-400'
-                        : 'text-red-600 hover:text-red-700'
+            {{-- tambah logic jika $peserta->mhs->user->whatsapp is null maka color danger else code dibawah --}}
+                    {{
+                    is_null($peserta->mhs->user->whatsapp)
+                    ? 'text-gray-500 hover:text-red-500'
+                    : (
+                    $peserta->status_terakhir_bimbingan == 1
+                    ? 'text-green-700 dark:text-green-400'
+                    : 'text-red-600 hover:text-red-700'
+                    )
                     }}
                     transition
                 " title="Kirim WhatsApp ke Mahasiswa">
@@ -185,7 +189,7 @@ $cardBgClass = $cardBgNormal;
         <form action="{{ route('peserta-bimbingan.destroy', $id) }}" method="POST"
             onsubmit="return confirm('Yakin ingin menghapus peserta bimbingan ini?')">
             @csrf @method('DELETE')
-            <button type="submit">@include('components.trash-icon')</button>
+            <button type="submit" class="text-red-600">@include('components.trash-icon')</button>
         </form>
     </div>
 </div>

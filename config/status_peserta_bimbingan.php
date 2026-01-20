@@ -3,7 +3,7 @@
 return [
   -100 => [
     'nama_status' => 'Dicabut',
-    'keterangan' => 'Hak bimbingan mahasiswa dicabut (pelanggaran / putus studi)',
+    'keterangan' => 'Hak bimbingan mhs dicabut (pelanggaran / putus studi)',
     'bg' => 'danger',
   ],
 

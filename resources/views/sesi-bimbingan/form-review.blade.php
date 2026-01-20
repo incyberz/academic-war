@@ -109,7 +109,7 @@
     <x-label for="pesan_dosen" value="Pesan / Review Dosen" />
     <textarea id="pesan_dosen" name="pesan_dosen" rows="4"
       class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-      placeholder="Tuliskan catatan review untuk mahasiswa..."
+      placeholder="Tuliskan catatan review untuk mhs..."
       required>{{ old('pesan_dosen', $sesi->pesan_dosen) }}</textarea>
     @error('pesan_dosen')
     <p class="text-sm text-red-600 mt-1">{{ $message }}</p>

@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -60,5 +61,30 @@ class User extends Authenticatable
     public function dosen()
     {
         return $this->hasOne(Dosen::class, 'user_id', 'id');
+    }
+
+
+    public function pathAvatar()
+    {
+        if ($this->avatar && Storage::disk('public')->exists($this->avatar)) {
+            return asset('storage/' . $this->avatar);
+        }
+
+        // auto-null jika file tidak ada
+        if ($this->avatar) {
+            $this->updateQuietly(['avatar' => null]);
+        }
+
+        return asset('img/roles/mhs.png');
+    }
+
+    public function properName()
+    {
+        return ucwords(strtolower($this->name));
+    }
+
+    public function whatsappUI(): string
+    {
+        return empty($this->whatsapp) ? '-' : '628...' . substr($this->whatsapp, -3);
     }
 }

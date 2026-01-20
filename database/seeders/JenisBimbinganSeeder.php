@@ -23,7 +23,7 @@ class JenisBimbinganSeeder extends Seeder
             [
                 'kode' => 'skripsi',
                 'nama' => 'Bimbingan Skripsi',
-                'deskripsi' => 'Untuk mahasiswa program sarjana (S1).',
+                'deskripsi' => 'Untuk mhs program sarjana (S1).',
             ],
             [
                 'kode' => 'ta',
@@ -33,7 +33,7 @@ class JenisBimbinganSeeder extends Seeder
             [
                 'kode' => 'kkn',
                 'nama' => 'Kuliah Kerja Nyata',
-                'deskripsi' => 'Bimbingan kegiatan Kuliah Kerja Nyata mahasiswa.',
+                'deskripsi' => 'Bimbingan kegiatan Kuliah Kerja Nyata mhs.',
             ],
             [
                 'kode' => 'pwl',
@@ -43,19 +43,19 @@ class JenisBimbinganSeeder extends Seeder
             [
                 'kode' => 'ppl',
                 'nama' => 'Praktik Pengenalan Lapangan',
-                'deskripsi' => 'Praktik Pengenalan Lapangan untuk mahasiswa semester awal.',
+                'deskripsi' => 'Praktik Pengenalan Lapangan untuk mhs semester awal.',
             ],
             [
                 'kode' => 'pal',
                 'nama' => 'Praktik Adaptasi Lapangan',
-                'deskripsi' => 'Praktik Adaptasi Lapangan untuk mahasiswa semester menengah.',
+                'deskripsi' => 'Praktik Adaptasi Lapangan untuk mhs semester menengah.',
             ],
 
 
             [
                 'kode' => 'kp',
                 'nama' => 'Kerja Praktik',
-                'deskripsi' => 'Bimbingan Kerja Praktik mahasiswa program sarjana.',
+                'deskripsi' => 'Bimbingan Kerja Praktik mhs program sarjana.',
             ],
             [
                 'kode' => 'mbkm',
@@ -65,22 +65,22 @@ class JenisBimbinganSeeder extends Seeder
             [
                 'kode' => 'tesis',
                 'nama' => 'Bimbingan Tesis',
-                'deskripsi' => 'Bimbingan tesis mahasiswa program magister (S2).',
+                'deskripsi' => 'Bimbingan tesis mhs program magister (S2).',
             ],
             [
                 'kode' => 'disertasi',
                 'nama' => 'Bimbingan Disertasi',
-                'deskripsi' => 'Bimbingan disertasi mahasiswa program doktor (S3).',
+                'deskripsi' => 'Bimbingan disertasi mhs program doktor (S3).',
             ],
             [
                 'kode' => 'riset',
                 'nama' => 'Bimbingan Riset',
-                'deskripsi' => 'Bimbingan penelitian dan publikasi ilmiah mahasiswa.',
+                'deskripsi' => 'Bimbingan penelitian dan publikasi ilmiah mhs.',
             ],
             [
                 'kode' => 'kompetisi',
                 'nama' => 'Bimbingan Kompetisi',
-                'deskripsi' => 'Bimbingan lomba akademik dan non-akademik mahasiswa.',
+                'deskripsi' => 'Bimbingan lomba akademik dan non-akademik mhs.',
             ],
             [
                 'kode' => 'karier',
@@ -90,12 +90,12 @@ class JenisBimbinganSeeder extends Seeder
             [
                 'kode' => 'konseling',
                 'nama' => 'Bimbingan Konseling',
-                'deskripsi' => 'Bimbingan non-akademik terkait pribadi dan sosial mahasiswa.',
+                'deskripsi' => 'Bimbingan non-akademik terkait pribadi dan sosial mhs.',
             ],
             [
                 'kode' => 'remedial',
                 'nama' => 'Bimbingan Remedial',
-                'deskripsi' => 'Bimbingan perbaikan akademik bagi mahasiswa bermasalah.',
+                'deskripsi' => 'Bimbingan perbaikan akademik bagi mhs bermasalah.',
             ],
         ];
 

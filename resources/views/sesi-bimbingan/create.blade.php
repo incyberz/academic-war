@@ -146,7 +146,7 @@
           </div>
 
 
-          {{-- pesan mahasiswa --}}
+          {{-- pesan mhs --}}
           <div>
             <x-label for='pesan_mhs'>Pesan untuk Dosen</x-label>
             <x-textarea required name="pesan_mhs" id=pesan_mhs rows="4"

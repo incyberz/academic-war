@@ -32,7 +32,7 @@
         </span>
         <div>
           <div class="font-medium">
-            Upload laporan & pesan mahasiswa
+            Upload laporan & pesan mhs
             <span class="text-xs text-gray-500">( +125 XP )</span>
           </div>
           <div class="text-xs text-gray-500 dark:text-gray-400">

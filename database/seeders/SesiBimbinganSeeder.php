@@ -30,7 +30,7 @@ class SesiBimbinganSeeder extends Seeder
                 'status_sesi_bimbingan' => $randStatus,
                 'tahapan_bimbingan_id' => rand($minTahapanId, $maxTahapanId),
 
-                'pesan_mhs'   => "Pesan mahasiswa sesi ke-$i (dummy)",
+                'pesan_mhs'   => "Pesan mhs sesi ke-$i (dummy)",
                 'pesan_dosen' => "Tanggapan dosen sesi ke-$i (dummy)",
 
                 'nama_dokumen' => "Bab-{$i}",

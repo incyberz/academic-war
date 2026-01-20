@@ -24,7 +24,7 @@ class PesertaBimbinganView
 
   public function namaPeserta()
   {
-    return $this->peserta->mahasiswa->nama_lengkap;
+    return $this->peserta->mhs->nama_lengkap;
   }
 
   public function namaPembimbing()
@@ -34,7 +34,7 @@ class PesertaBimbinganView
 
   public function isMe()
   {
-    return $this->peserta->mahasiswa->user->id === Auth::id();
+    return $this->peserta->mhs->user->id === Auth::id();
   }
 
   public function isMyBimbingan()
@@ -62,7 +62,7 @@ class PesertaBimbinganView
     }
 
     if ($this->isMyBimbingan()) {
-      return 'Pantau dan review progres bimbingan mahasiswa';
+      return 'Pantau dan review progres bimbingan mhs';
     }
 
     return 'Informasi sesi bimbingan';

@@ -1,26 +1,36 @@
 <script>
   $(function() {
+    if ($('#whatsapp').length === 0) {
+      alert('Belum ada id [whatsapp] untuk input form');
+      return;
+    }
+
+    if ($('#btn_submit').length === 0) {
+      alert('Belum ada id [btn_submit] untuk input form');
+      return;
+    }
+
     $('#whatsapp').on('input', function() {
       let val = $(this).val();
 
-      // 1️⃣ hanya angka 0-9
       val = val.replace(/[^0-9]/g, '');
 
-      // 2️⃣ validasi awalan jika sudah >= 2 digit
       if (val.length >= 2) {
-
-        // jika awalan 08 → ubah ke 628
         if (val.startsWith('08')) {
           val = '628' + val.slice(2);
-        }
-
-        // jika bukan 62 → reset
-        else if (!val.startsWith('62')) {
+        } else if (!val.startsWith('62')) {
           val = '';
         }
       }
 
       $(this).val(val);
+
+      if (val.length >= 11 && val.length <= 14) {
+        $('#btn_submit').prop('disabled', false);
+      } else {
+        $('#btn_submit').prop('disabled', true);
+      }
     });
+
   });
 </script>

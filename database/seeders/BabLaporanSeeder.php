@@ -45,7 +45,7 @@ class BabLaporanSeeder extends Seeder
             [
                 'kode' => 'hal_ori',
                 'nama' => 'Pernyataan Keaslian',
-                'deskripsi' => 'Pernyataan keaslian karya ilmiah oleh mahasiswa.',
+                'deskripsi' => 'Pernyataan keaslian karya ilmiah oleh mhs.',
                 'is_inti' => false,
                 'urutan' => 4,
                 'created_at' => now(),

@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('peserta_bimbingan', function (Blueprint $table) {
             $table->id(); // PK numeric default
 
-            // FK ke mahasiswa
+            // FK ke mhs.
             $table->foreignId('mhs_id')
                 ->constrained('mhs')
                 ->cascadeOnDelete();
@@ -21,7 +21,7 @@ return new class extends Migration
                 ->constrained('bimbingan')
                 ->cascadeOnDelete();
 
-            // siapa yang menunjuk mahasiswa ini sebagai peserta bimbingan
+            // siapa yang menunjuk mhs ini sebagai peserta bimbingan
             $table->foreignId('ditunjuk_oleh')
                 ->nullable()
                 ->constrained('users')

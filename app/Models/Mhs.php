@@ -44,4 +44,9 @@ class Mhs extends Model
     {
         return $this->hasMany(Bimbingan::class, 'mhs_id');
     }
+
+    public function properNama()
+    {
+        return ucwords(strtolower($this->nama_lengkap));
+    }
 }

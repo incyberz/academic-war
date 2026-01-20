@@ -69,7 +69,7 @@ class PesertaBimbinganController extends Controller
 
 
             $pesertaBimbingan = PesertaBimbingan::with([
-                'mahasiswa',
+                'mhs',
                 'bimbingan.jenisBimbingan',
                 'bimbingan.tahunAjar',
                 'penunjuk',
@@ -259,14 +259,14 @@ class PesertaBimbinganController extends Controller
             ->firstOrFail();
         $eligibleBimbingans = collect();
 
-        $mhsEligibles = EligibleBimbingan::with('mahasiswa')
+        $mhsEligibles = EligibleBimbingan::with('mhs')
             ->where('tahun_ajar_id', $tahunAjarId)
             ->where('jenis_bimbingan_id', $jenis_bimbingan_id)
             ->get()
-            ->pluck('mahasiswa');
+            ->pluck('mhs');
 
         // dd('create', $mhsEligibles, $bimbingan);
-        // Hindari mahasiswa yang sudah jadi peserta bimbingan
+        // Hindari mhs yang sudah jadi peserta bimbingan
         $mhsEligibles = $mhsEligibles->whereNotIn(
             'id',
             $bimbingan->pesertaBimbingan()
@@ -281,7 +281,7 @@ class PesertaBimbinganController extends Controller
     {
         // Ambil peserta bimbingan + relasi penting
         $peserta = PesertaBimbingan::with([
-            'mahasiswa',
+            'mhs',
             'bimbingan.jenisBimbingan',
             'bimbingan.tahunAjar',
         ])->findOrFail($id);
@@ -298,7 +298,7 @@ class PesertaBimbinganController extends Controller
 
         return view('peserta-bimbingan.edit', [
             'peserta'        => $peserta,
-            'mahasiswa'      => $peserta->mahasiswa,
+            'mhs'      => $peserta->mhs,
             'bimbingan'      => $peserta->bimbingan,
             'jenisBimbingan' => $peserta->bimbingan->jenisBimbingan,
             'tahunAjar'      => $peserta->bimbingan->tahunAjar,
@@ -380,7 +380,7 @@ class PesertaBimbinganController extends Controller
          * Ambil peserta + validasi kepemilikan bimbingan
          */
         $pesertaBimbingan = PesertaBimbingan::with([
-            'mahasiswa.user',
+            'mhs.user',
             'bimbingan.jenisBimbingan',
             'bimbingan.tahunAjar',
             'penunjuk',
@@ -467,13 +467,13 @@ class PesertaBimbinganController extends Controller
         $validated = $request->validate([
             // USER
             'user.name'     => 'required|string|max:255',
+            'user.whatsapp' => 'required|string|min:11|max:14',
             'user.email'    => 'required|email|unique:users,email',
             'user.username' => 'required|string|unique:users,username',
-            'user.role_id'  => 'required|integer',
 
             // MAHASISWA
-            'mahasiswa.nama_lengkap' => 'required|string|max:255',
-            'mahasiswa.angkatan' => [
+            'mhs.nama_lengkap' => 'required|string|max:255',
+            'mhs.angkatan' => [
                 'required',
                 'integer',
                 'min:' . ($yearNow - 5),
@@ -494,29 +494,30 @@ class PesertaBimbinganController extends Controller
             $user = User::create([
                 'name'     => strtoupper($validated['user']['name']),
                 'email'    => strtolower($validated['user']['email']),
+                'whatsapp' => $validated['user']['whatsapp'],
                 'username' => $username,
-                'role_id'  => $validated['user']['role_id'],
+                'role_id'  => config('roles')['mhs']['id'],
                 'password' => Hash::make($username), // nanti bisa auto-generate
             ]);
 
             // ================= CREATE MAHASISWA =================
-            $mahasiswa = Mhs::create([
+            $mhs = Mhs::create([
                 'user_id'      => $user->id,
-                'nama_lengkap' => strtoupper($validated['mahasiswa']['nama_lengkap']),
-                'angkatan'     => $validated['mahasiswa']['angkatan'],
+                'nama_lengkap' => strtoupper($validated['mhs']['nama_lengkap']),
+                'angkatan'     => $validated['mhs']['angkatan'],
             ]);
 
             // ================= ELIGIBLE BIMBINGAN =================
             EligibleBimbingan::create([
                 'tahun_ajar_id'       => $validated['eligible']['tahun_ajar_id'],
                 'jenis_bimbingan_id'  => $jenisBimbingan->id,
-                'mhs_id'              => $mahasiswa->id,
+                'mhs_id'              => $mhs->id,
                 'assign_by'           => Auth::id(),
             ]);
 
             // ================= PESERTA BIMBINGAN =================
             PesertaBimbingan::create([
-                'mhs_id'         => $mahasiswa->id,
+                'mhs_id'         => $mhs->id,
                 'bimbingan_id'   => $bimbingan->id,
                 'ditunjuk_oleh'  => Auth::id(),
                 'keterangan'     => $validated['peserta']['keterangan']
@@ -543,7 +544,7 @@ class PesertaBimbinganController extends Controller
             ->dosen
             ->user_id !== $userDosenLoginId
         ) {
-            abort(403, 'Anda bukan dosen pembimbing mahasiswa ini.');
+            abort(403, 'Anda bukan dosen pembimbing mhs ini.');
         }
 
         $validated = $request->validate([
@@ -554,7 +555,7 @@ class PesertaBimbinganController extends Controller
         ]);
 
         $userMahasiswa = User::findOrFail(
-            $pesertaBimbingan->mahasiswa->user_id
+            $pesertaBimbingan->mhs->user_id
         );
 
         if (! empty($userMahasiswa->whatsapp)) {
@@ -577,6 +578,6 @@ class PesertaBimbinganController extends Controller
                 'bimbingan.show',
                 $pesertaBimbingan->bimbingan->jenis_bimbingan_id
             )
-            ->with('success', 'Nomor WhatsApp mahasiswa berhasil disimpan.');
+            ->with('success', 'Nomor WhatsApp mhs berhasil disimpan.');
     }
 }

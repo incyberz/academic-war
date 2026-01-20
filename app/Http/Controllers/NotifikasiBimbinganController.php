@@ -52,7 +52,7 @@ class NotifikasiBimbinganController extends Controller
 
 
         $pesanSistem = TemplatePesanBimbingan::whatsapp(
-            namaMahasiswa: $peserta->mahasiswa->nama_lengkap,
+            namaMahasiswa: $peserta->mhs->nama_lengkap,
             namaDosen: $namaDosen,
             statusSesi: $statusSesi,
             statusWaktu: $statusWaktu,
@@ -72,8 +72,6 @@ class NotifikasiBimbinganController extends Controller
             'status_terakhir_bimbingan' => $statusWaktu->value,
         ]);
 
-        $nomorWhatsappUI = $peserta->mahasiswa->user->whatsapp ?? null;
-
         // UI untuk dosen agar klik send whatsapp (sent_by dan sent_at terisi)
         return view('notifikasi-bimbingan.send-whatsapp', compact(
             'pesanSistem',
@@ -82,7 +80,6 @@ class NotifikasiBimbinganController extends Controller
             'pesanLink',
             'notifikasi',
             'peserta',
-            'nomorWhatsappUI'
         ));
     }
 

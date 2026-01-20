@@ -109,7 +109,7 @@
                      focus:border-indigo-500 focus:ring-indigo-500">
 
         <p class="mt-1 text-xs text-gray-500">
-          Jika diisi, mahasiswa tidak dapat mengajukan sesi bimbingan setelah tanggal ini.
+          Jika diisi, mhs tidak dapat mengajukan sesi bimbingan setelah tanggal ini.
         </p>
       </div>
 

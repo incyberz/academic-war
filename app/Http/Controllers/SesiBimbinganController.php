@@ -39,7 +39,7 @@ class SesiBimbinganController extends Controller
      */
     public function create()
     {
-        abort_unless(isRole('mhs'), 403, 'Hanya mahasiswa yang berhak membuat sesi bimbingan');
+        abort_unless(isRole('mhs'), 403, 'Hanya mhs yang berhak membuat sesi bimbingan');
 
         $pesertaBimbinganId = request('peserta_bimbingan_id');
         abort_if(!$pesertaBimbinganId, 404);
@@ -71,7 +71,7 @@ class SesiBimbinganController extends Controller
 
 
     /**
-     * Simpan pengajuan sesi bimbingan oleh mahasiswa
+     * Simpan pengajuan sesi bimbingan oleh mhs
      */
     public function store(Request $request)
     {
@@ -329,7 +329,7 @@ class SesiBimbinganController extends Controller
 
     public function downloadBimbingan(SesiBimbingan $sesi)
     {
-        // Cek hak akses: hanya pembimbing atau mahasiswa yang bersangkutan
+        // Cek hak akses: hanya pembimbing atau mhs yang bersangkutan
         // $this->authorize('view', $sesi);
         dd('download');
 

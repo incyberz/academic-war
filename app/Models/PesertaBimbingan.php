@@ -24,7 +24,7 @@ class PesertaBimbingan extends Model
 
     /* ================= RELASI ================= */
 
-    public function mahasiswa()
+    public function mhs()
     {
         return $this->belongsTo(Mhs::class, 'mhs_id');
     }

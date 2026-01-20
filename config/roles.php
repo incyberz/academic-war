@@ -5,7 +5,7 @@ return [
   'mhs' => [
     'id' => 1,
     'nama' => 'Mahasiswa',
-    'deskripsi' => 'Berperan sebagai mahasiswa yang mengikuti proses pembelajaran dan aktivitas akademik.',
+    'deskripsi' => 'Berperan sebagai mhs yang mengikuti proses pembelajaran dan aktivitas akademik.',
     'color' => 'text-white',
     'bg' => 'bg-indigo-600',
     'gradient' => 'bg-gradient-to-r from-indigo-500 to-indigo-700',

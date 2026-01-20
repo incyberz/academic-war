@@ -10,7 +10,7 @@
 <x-app-layout>
   <x-page-header title="{{$pb->isMyBimbingan() ? 'My ' : ''}}Detail Peserta {{$namaBimbingan}}"
     subtitle="{{ $isMyBimbingan ? 'Peserta bimbingan saya.' : $subtitle }}"
-    route_parent="{{route('bimbingan.show',$jenis_bimbingan_id)}}" />
+    route="{{route('bimbingan.show',$jenis_bimbingan_id)}}" />
 
 
   @if (isRole('mhs'))
@@ -27,19 +27,16 @@
     <x-card>
       <x-card-body class="flex items-center gap-4">
 
-        <img src="{{ $pesertaBimbingan->mahasiswa->user->avatar
-                    ? asset('storage/' . $pesertaBimbingan->mahasiswa->user->avatar)
-                    : asset('img/avatar-default.png') }}" alt="{{ $pesertaBimbingan->mahasiswa->nama_lengkap }}"
-          class="w-16 h-16 rounded-full border object-cover">
+        <x-img-avatar src="{{ $pesertaBimbingan->mhs->user->pathAvatar() }}"
+          alt="{{ $pesertaBimbingan->mhs->nama_lengkap }}" />
 
-
-        <div class="flex-1">
+        <div class=" flex-1">
           <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {{ $pesertaBimbingan->mahasiswa->nama_lengkap }} {{ $isMe ? '(Saya)' : ''}}
+            {{ $pesertaBimbingan->mhs->nama_lengkap }} {{ $isMe ? '(Saya)' : ''}}
           </h2>
 
           <p class="text-sm text-gray-500">
-            NIM {{ $pesertaBimbingan->mahasiswa->nim }}
+            NIM {{ $pesertaBimbingan->mhs->nim }}
             <br>Pembimbing: {{$namaPembimbing}}
           </p>
         </div>
@@ -152,8 +149,8 @@
 
       <div class="flex gap-4 items-center">
 
-        @if($pesertaBimbingan->mahasiswa->no_wa)
-        <a href="https://wa.me/{{ $pesertaBimbingan->mahasiswa->no_wa }}" target="_blank"
+        @if($pesertaBimbingan->mhs->no_wa)
+        <a href="https://wa.me/{{ $pesertaBimbingan->mhs->no_wa }}" target="_blank"
           class="text-sm font-medium text-green-600 hover:text-green-700">
           WhatsApp
         </a>

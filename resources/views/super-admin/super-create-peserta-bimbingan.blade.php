@@ -1,6 +1,6 @@
 <x-app-layout>
   <x-page-header title="Super Create Peserta Bimbingan" subtitle="Back to My Bimbingan :: {{$jenisBimbingan->nama}}"
-    route_parent="{{route('bimbingan.show',$bimbinganId)}}" />
+    route="{{route('bimbingan.show',$bimbinganId)}}" />
 
   <x-page-content>
 
@@ -105,9 +105,6 @@
             @enderror
           </div>
 
-          {{-- ROLE MAHASISWA --}}
-          <input type="hidden" name="user[role_id]" value="6">
-
           <script>
             $(function () {
           
@@ -156,14 +153,14 @@
               Nama Lengkap (Sesuai KTP)
             </x-label>
 
-            <x-input id="nama_lengkap" name="mahasiswa[nama_lengkap]" required autocomplete="off"
+            <x-input id="nama_lengkap" name="mhs[nama_lengkap]" required autocomplete="off"
               placeholder="Contoh: AHMAD FAUZI" />
 
             <p class="text-xs text-amber-600 mt-1">
               ⚠️ Wajib sesuai dengan KTP atau Kartu Keluarga.
             </p>
 
-            @error('mahasiswa.nama_lengkap')
+            @error('mhs.nama_lengkap')
             <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
             @enderror
           </div>
@@ -174,14 +171,14 @@
               Angkatan
             </x-label>
 
-            <x-input id="angkatan" name="mahasiswa[angkatan]" required inputmode="numeric" maxlength="4"
-              autocomplete="off" placeholder="Contoh: 2024" />
+            <x-input id="angkatan" name="mhs[angkatan]" required inputmode="numeric" maxlength="4" autocomplete="off"
+              placeholder="Contoh: 2024" />
 
             <p class="text-xs text-gray-500 mt-1">
               Tahun pertama masuk kuliah (PMB).
             </p>
 
-            @error('mahasiswa.angkatan')
+            @error('mhs.angkatan')
             <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
             @enderror
           </div>
@@ -248,7 +245,7 @@
 
           {{-- PERINGATAN --}}
           <div class="p-3 rounded-md bg-amber-50 border border-amber-300 text-amber-800 text-sm">
-            ⚠️ <b>Perhatian!</b> Pastikan mahasiswa di atas tercantum pada
+            ⚠️ <b>Perhatian!</b> Pastikan mhs di atas tercantum pada
             <b>Surat Tugas Bimbingan</b> yang Anda upload.
           </div>
 

@@ -50,7 +50,7 @@ $count_disetujui = $riwayat->where(' status_sesi_bimbingan', '>', 1)->count();
     @foreach ($perlu_review as $sesi)
     <li>
       <a class="transition-all duration-300 hover:tracking-[0.5px]"
-        href="{{ route('sesi-bimbingan.show',$sesi->id) }}">- {{$sesi->pesertaBimbingan->mahasiswa->nama_lengkap}} -
+        href="{{ route('sesi-bimbingan.show',$sesi->id) }}">- {{$sesi->pesertaBimbingan->mhs->nama_lengkap}} -
         {{$sesi->babLaporan->nama}}
         ➡️</a>
     </li>
@@ -67,7 +67,7 @@ $count_disetujui = $riwayat->where(' status_sesi_bimbingan', '>', 1)->count();
     @foreach ($perlu_revisi as $sesi)
     <li>
       <a class="transition-all duration-300 hover:tracking-[0.5px]"
-        href="{{ route('sesi-bimbingan.show',$sesi->id) }}">- {{$sesi->pesertaBimbingan->mahasiswa->nama_lengkap}} -
+        href="{{ route('sesi-bimbingan.show',$sesi->id) }}">- {{$sesi->pesertaBimbingan->mhs->nama_lengkap}} -
         {{$sesi->babLaporan->nama}}
         ➡️</a>
     </li>

@@ -25,7 +25,7 @@
     </x-textarea>
 
     <p class="mt-1 text-xs text-gray-500">
-      Pesan ini akan dikirim ke mahasiswa melalui WhatsApp ({{$nomorWhatsappUI}}).
+      Pesan ini akan dikirim ke mhs melalui WhatsApp {{$whatsappUI}}.
     </p>
   </div>
 

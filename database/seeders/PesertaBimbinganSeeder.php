@@ -33,7 +33,7 @@ class PesertaBimbinganSeeder extends Seeder
             ['username' => 'khalid', 'nama' => 'Khalid Ibrahim', 'email' => 'khalid@gmail.com', 'angkatan' => 2022],
         ];
 
-        // Ambil role_id untuk mahasiswa
+        // Ambil role_id untuk mhs.
         $roleId = DB::table('role')->where('role_name', 'mhs')->first()->id;
 
         foreach ($mahasiswaData as $m) {
@@ -67,7 +67,7 @@ class PesertaBimbinganSeeder extends Seeder
             // get status_mhs_id aktif
             $statusMhsId = DB::table('status_mhs')->where('kode', 'aktif')->first()->id;
 
-            // 2. Buat record mahasiswa
+            // 2. Buat record mhs.
             $mhs = Mhs::firstOrCreate(
                 ['user_id' => $user->id],
                 [

@@ -1,11 +1,16 @@
+@php
+$jenis_bimbingan_id = $peserta->bimbingan->jenis_bimbingan_id;
+$whatsapp = $peserta->mhs->user->whatsapp;
+$whatsappUI = $peserta->mhs->user->whatsappUI();
+@endphp
 <x-app-layout>
-  <x-page-header title="Kirim Notifikasi Bimbingan"
-    subtitle="Preview dan kirim pesan WhatsApp ke mahasiswa bimbingan" />
+  <x-page-header title="Kirim Notifikasi Bimbingan" subtitle="Back to My Bimbingan"
+    route="{{route('bimbingan.show',$jenis_bimbingan_id)}}" />
 
   <x-page-content>
     <x-card>
       <x-card-header>
-        Notifikasi WhatsApp
+        Send WhatsApp
       </x-card-header>
 
       <x-card-body>
@@ -22,7 +27,7 @@
         </div>
         @endif
 
-        @if (!$nomorWhatsappUI)
+        @if (!$whatsapp)
         @include('notifikasi-bimbingan.form-update-whatsapp-mhs')
         @else
         @include('notifikasi-bimbingan.form-send-whatsapp')

@@ -17,7 +17,7 @@
       @php
       $bimbinganPkl = [
       [
-      'mahasiswa' => 'Ahmad Fauzi',
+      'mhs' => 'Ahmad Fauzi',
       'tanggal' => '2025-12-16 10:00',
       'topik' => 'Persiapan laporan PKL',
       'status' => 'Selesai',
@@ -26,7 +26,7 @@
       'progress' => 87,
       ],
       [
-      'mahasiswa' => 'Siti Rahma',
+      'mhs' => 'Siti Rahma',
       'tanggal' => '2025-12-17 13:30',
       'topik' => 'Revisi Bab 3',
       'status' => 'Hari Ini',
@@ -35,7 +35,7 @@
       'progress' => 56,
       ],
       [
-      'mahasiswa' => 'Budi Santoso',
+      'mhs' => 'Budi Santoso',
       'tanggal' => '2025-12-18 09:00',
       'topik' => 'Pengumpulan laporan Bab 2',
       'status' => 'Besok',
@@ -44,7 +44,7 @@
       'progress' => 40,
       ],
       [
-      'mahasiswa' => 'Rina Widya',
+      'mhs' => 'Rina Widya',
       'tanggal' => '2025-12-19 14:00',
       'topik' => 'Diskusi metodologi',
       'status' => 'Besok',
@@ -53,7 +53,7 @@
       'progress' => 67,
       ],
       [
-      'mahasiswa' => 'Fajar Pratama',
+      'mhs' => 'Fajar Pratama',
       'tanggal' => '2025-12-20 11:00',
       'topik' => 'Revisi Bab 4',
       'status' => 'Akan Datang',
@@ -62,7 +62,7 @@
       'progress' => 85,
       ],
       [
-      'mahasiswa' => 'Dewi Lestari',
+      'mhs' => 'Dewi Lestari',
       'tanggal' => '2025-12-21 15:30',
       'topik' => 'Presentasi hasil PKL',
       'status' => 'Akan Datang',
@@ -79,8 +79,8 @@
       <div class="space-y-2">
         <x-grid>
           @foreach($bimbinganPkl as $b)
-          <x-card-peserta :avatar="$b['avatar']" :nama="$b['mahasiswa']" :progress="$b['progress']"
-            :tanggal="$b['tanggal']" :topik="$b['topik']" :status="$b['status']" :wa="$b['wa']" class="mb-2" />
+          <x-card-peserta :avatar="$b['avatar']" :nama="$b['mhs']" :progress="$b['progress']" :tanggal="$b['tanggal']"
+            :topik="$b['topik']" :status="$b['status']" :wa="$b['wa']" class="mb-2" />
 
           @endforeach
         </x-grid>
@@ -88,7 +88,7 @@
 
       <div>
         <p class="text-xs text-gray-600 dark:text-gray-400 mt-2">
-          * Klik ikon WhatsApp untuk mengirim pengingat atau pembatalan bimbingan kepada mahasiswa.
+          * Klik ikon WhatsApp untuk mengirim pengingat atau pembatalan bimbingan kepada mhs.
         </p>
       </div>
       @else
@@ -114,13 +114,13 @@
       @php
       $bimbinganSkripsi = [
       [
-      'mahasiswa' => 'Rina Widya',
+      'mhs' => 'Rina Widya',
       'tanggal' => '2025-12-17 15:00',
       'topik' => 'Diskusi Metodologi',
       'status' => 'Hari Ini',
       ],
       [
-      'mahasiswa' => 'Budi Santoso',
+      'mhs' => 'Budi Santoso',
       'tanggal' => '2025-12-18 09:00',
       'topik' => 'Review Bab 4',
       'status' => 'Besok',
@@ -136,7 +136,7 @@
                       border border-gray-200 dark:border-gray-700
                       hover:bg-gray-100 dark:hover:bg-gray-700 transition">
           <div>
-            <p class="text-sm font-semibold">{{ $b['mahasiswa'] }}</p>
+            <p class="text-sm font-semibold">{{ $b['mhs'] }}</p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
               {{ \Carbon\Carbon::parse($b['tanggal'])->format('l, d M Y H:i') }} • {{ $b['topik'] }}
             </p>
@@ -197,7 +197,7 @@
 
   @else
   <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-    Anda belum memiliki jadwal bimbingan mahasiswa. Jika ada mahasiswa yang
+    Anda belum memiliki jadwal bimbingan mhs. Jika ada mhs yang
     menunjuk Anda sebagai pembimbing via form bimbingan dan Anda bersedia, silahkan hubungi admin untuk penjadwalan.
   </p>
   @endif

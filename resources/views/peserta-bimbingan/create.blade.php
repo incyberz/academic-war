@@ -5,7 +5,7 @@ $ditunjuk_oleh = auth()->user()->id;
 @endphp
 
 <x-app-layout>
-  <x-page-header title="Add Peserta Bimbingan" subtitle="Silahkan pilih mahasiswa eligible {{ $bimbingan->jenisBimbingan->nama }}
+  <x-page-header title="Add Peserta Bimbingan" subtitle="Silahkan pilih mhs eligible {{ $bimbingan->jenisBimbingan->nama }}
         untuk TA {{ $tahun_ajar_id }}" />
 
   <x-page-content>

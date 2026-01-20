@@ -43,7 +43,7 @@
         <li>
           🎓 <b>Mahasiswa (Mhs)</b><br>
           Login langsung tanpa verifikasi. Verifikasi akun diperlukan saat join class atau akses akademik.
-          Salah satu mahasiswa dapat ditetapkan sebagai <b>Koordinator Mahasiswa (Kosma)</b>.
+          Salah satu mhs dapat ditetapkan sebagai <b>Koordinator Mahasiswa (Kosma)</b>.
         </li>
         <li>
           👨‍🏫 <b>Dosen</b><br>
@@ -56,7 +56,7 @@
         </li>
         <li>
           🤝 <b>Mitra</b><br>
-          Mitra industri yang membutuhkan produk, portfolio, atau prototype dari mahasiswa (gratis / bermitra).
+          Mitra industri yang membutuhkan produk, portfolio, atau prototype dari mhs (gratis / bermitra).
         </li>
         <li>
           🏛️ <b>Akademik</b><br>

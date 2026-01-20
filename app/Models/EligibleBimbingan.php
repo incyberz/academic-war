@@ -32,7 +32,7 @@ class EligibleBimbingan extends Model
         return $this->belongsTo(JenisBimbingan::class);
     }
 
-    public function mahasiswa(): BelongsTo
+    public function mhs(): BelongsTo
     {
         return $this->belongsTo(Mhs::class, 'mhs_id');
     }
@@ -70,7 +70,7 @@ class EligibleBimbingan extends Model
     */
 
     /**
-     * Cek apakah mahasiswa eligible
+     * Cek apakah mhs eligible
      */
     public static function isEligible(
         int $mhsId,
