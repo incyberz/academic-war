@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\StatusSesiBimbingan;
+use App\Enums\StatusTerakhirBimbingan;
 
 class NotifikasiBimbingan extends Model
 {
@@ -11,15 +13,23 @@ class NotifikasiBimbingan extends Model
     protected $fillable = [
         'peserta_bimbingan_id',
         'sesi_bimbingan_id',
-        'channel',            // whatsapp | system
-        'status_sesi',        // diajukan | revisi | selesai
-        'status_waktu',       // ontime | telat | kritis
-        'pesan_tambahan',
+        'channel',            // default null | whatsapp | email | push
+        'status_sesi_bimbingan',        // 
+        'status_terakhir_bimbingan',       // ontime | telat | kritis
         'sent_by',
         'sent_at',
+        'status_pengiriman', // null | 1=berhasil | -1=invalid no wa
+        'verified_at', // null || saat dosen approve notif nya terkirim ke mhs bimbingannya
     ];
 
-    public function peserta()
+    protected $casts = [
+        'status_sesi_bimbingan'     => StatusSesiBimbingan::class,
+        'status_terakhir_bimbingan' => StatusTerakhirBimbingan::class,
+        'sent_at'                   => 'datetime',
+    ];
+
+
+    public function pesertaBimbingan()
     {
         return $this->belongsTo(PesertaBimbingan::class);
     }

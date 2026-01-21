@@ -67,16 +67,17 @@ $cardBgClass = $cardBgNormal;
     <div class="flex-1">
 
         {{-- top of card --}}
-        <div class="flex items-center justify-between gap-2">
-            <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+        <div class="flex items-center justify-between">
+            <span class="max-w-[150px] text-sm font-semibold text-gray-900 dark:text-gray-100 truncate"
+                style="max-widthf: 100px">
                 {{ $nama }}
             </span>
 
-            <span class="text-[11px] px-2 py-0 rounded-md
+            {{-- <span class="text-[11px] px-2 py-0 rounded-md
                          bg-indigo-100 text-indigo-700
                          dark:bg-indigo-900/40 dark:text-indigo-300">
                 {{ $tahun_ajar }}
-            </span>
+            </span> --}}
         </div>
 
         {{-- Progress --}}
@@ -164,11 +165,7 @@ $cardBgClass = $cardBgNormal;
 
     {{-- Actions --}}
     <div class="flex flex-col items-center gap-2">
-        <form method="POST" action="{{ route('notifikasi-bimbingan.store') }}" class="inline">
-            @csrf
-
-            <input type="hidden" name="peserta_bimbingan_id" value="{{ $peserta->id }}">
-
+        <a href="{{ route('preview_whatsapp', $peserta->id) }}">
             <button type="submit" class="
             {{-- tambah logic jika $peserta->mhs->user->whatsapp is null maka color danger else code dibawah --}}
                     {{
@@ -184,10 +181,10 @@ $cardBgClass = $cardBgNormal;
                 " title="Kirim WhatsApp ke Mahasiswa">
                 @include('components.whatsapp-icon')
             </button>
-        </form>
+        </a>
 
         <form action="{{ route('peserta-bimbingan.destroy', $id) }}" method="POST"
-            onsubmit="return confirm('Yakin ingin menghapus peserta bimbingan ini?')">
+            onsubmit="return confirm('Drop mhs ini dari list peserta?')">
             @csrf @method('DELETE')
             <button type="submit" class="text-red-600">@include('components.trash-icon')</button>
         </form>

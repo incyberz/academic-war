@@ -30,7 +30,7 @@ $whatsappUI = $peserta->mhs->user->whatsappUI();
         @if (!$whatsapp)
         @include('notifikasi-bimbingan.form-update-whatsapp-mhs')
         @else
-        @include('notifikasi-bimbingan.form-send-whatsapp')
+        @include('notifikasi-bimbingan.form-preview-whatsapp')
         @endif
       </x-card-body>
     </x-card>

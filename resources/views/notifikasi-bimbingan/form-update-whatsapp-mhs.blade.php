@@ -33,7 +33,7 @@ $namaMhs = ucwords(strtolower($peserta->mhs->nama_lengkap ?? $peserta->mhs->user
         @enderror
       </div>
 
-      <x-button type="primary" id=btn_submit>
+      <x-button btn="primary" id=btn_submit>
         Update WhatsApp a.n {{$namaMhs}}
       </x-button>
     </form>

@@ -22,7 +22,7 @@ return new class extends Migration
                 ->nullOnDelete();
 
             // Channel: whatsapp, email, push, in-app
-            $table->enum('channel', ['whatsapp', 'email', 'push', 'in-app'])->default('whatsapp');
+            $table->enum('channel', ['whatsapp', 'email', 'push', 'in-app'])->nullable();
 
             // Status bimbingan
             $table->tinyInteger('status_terakhir_bimbingan')->nullable()
@@ -31,12 +31,12 @@ return new class extends Migration
             $table->tinyInteger('status_sesi_bimbingan')->nullable()
                 ->comment('-100, -1, 0, 1, 2, 3, 100');
 
-            // Pesan tambahan opsional
-            $table->text('pesan_tambahan')->nullable();
-
             // Logging pengirim
             $table->foreignId('sent_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('sent_at')->nullable();
+
+            $table->tinyInteger('status_pengiriman')->nullable();
+            $table->timestamp('verified_at')->nullable();
 
             $table->timestamps();
         });

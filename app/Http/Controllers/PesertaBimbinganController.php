@@ -139,16 +139,6 @@ class PesertaBimbinganController extends Controller
 
 
 
-
-            // ZZZ AUTO UPDATE
-            // 'terakhir_topik'=>null, // 
-            // 'terakhir_bimbingan'=>null,
-            // 'terakhir_reviewed'=>null,
-
-
-
-
-
             return view(
                 'peserta-bimbingan.show',
                 compact(

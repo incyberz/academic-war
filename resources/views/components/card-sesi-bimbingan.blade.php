@@ -165,7 +165,7 @@ $namaDokumen = substr($namaDokumen, 0, 15).'...';
         @else
         @php $type = $aksi['type'] ?? 'secondary'; @endphp
         <a href="{{ route($aksi['route'], $sesi) }}">
-            <x-button type="{{$type}}" class="w-full"> {{ $aksi['label'] }} </x-button>
+            <x-button btn="{{$type}}" class="w-full"> {{ $aksi['label'] }} </x-button>
         </a>
         @endif
         @endforeach

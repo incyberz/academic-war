@@ -1,5 +1,5 @@
 @props([
-'type' => 'secondary', // primary | danger | warning | secondary
+'btn' => 'secondary', // primary | danger | warning | secondary
 'outline' => false, // true | false
 'size' => 'md', // sm | md | lg
 ])
@@ -44,7 +44,7 @@ dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800',
 ],
 ];
 
-$typeClass = $types[$type][$outline ? 'outline' : 'solid'] ?? $types['secondary']['solid'];
+$typeClass = $types[$btn][$outline ? 'outline' : 'solid'] ?? $types['secondary']['solid'];
 $sizeClass = $sizes[$size] ?? $sizes['md'];
 
 $baseClass = 'justify-center items-center rounded-md tracking-widest

@@ -16,7 +16,7 @@
     'peserta_bimbingan_id' => $sesi->pesertaBimbingan->id,
     'revisi_id' => $sesiId,
 ]) }}">
-      <x-button type="warning" class="w-full">
+      <x-button btn="warning" class="w-full">
         Goto Upload Revisi
       </x-button>
     </a>

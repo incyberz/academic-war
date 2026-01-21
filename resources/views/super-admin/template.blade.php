@@ -12,7 +12,7 @@
         <x-select>
           <option value="">-- Pilih --</option>
         </x-select>
-        <x-button type=primary>Primary</x-button>
+        <x-button btn=primary>Primary</x-button>
       </x-card-body>
     </x-card>
   </x-page-content>

@@ -123,7 +123,7 @@
           </div>
 
           <a href="{{ route('whatsapp.send', $sesi) }}">
-            <x-button type="warning" outline class="w-full justify-center">
+            <x-button btn="warning" outline class="w-full justify-center">
               📲 Hubungi Dosen Pembimbing
             </x-button>
           </a>

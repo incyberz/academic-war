@@ -330,7 +330,7 @@
 
       {{-- ================= SUBMIT ================= --}}
       <div class="">
-        <x-button type="primary" class="w-full">
+        <x-button btn="primary" class="w-full">
           Super Create Peserta Bimbingan
         </x-button>
       </div>

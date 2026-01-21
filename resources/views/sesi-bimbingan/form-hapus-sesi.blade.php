@@ -18,7 +18,7 @@
   </div>
 
   <div class="flex justify-end">
-    <x-button type="danger" class="w-full">
+    <x-button btn="danger" class="w-full">
       Hapus Sesi Bimbingan
     </x-button>
   </div>

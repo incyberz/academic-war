@@ -113,6 +113,18 @@ Route::middleware('auth')->group(function () {
         '/notifikasi-bimbingan',
         [NotifikasiBimbinganController::class, 'store']
     )->name('notifikasi-bimbingan.store');
+
+    Route::get(
+        '/preview_whatsapp/{peserta_bimbingan_id}',
+        [NotifikasiBimbinganController::class, 'preview_whatsapp']
+    )->name('preview_whatsapp');
+
+    Route::post(
+        '/notifikasi-bimbingan/{notifikasi}/verify',
+        [NotifikasiBimbinganController::class, 'verify']
+    )->name('notifikasi-bimbingan.verify');
+
+    Route::resource('notifikasi-bimbingan', NotifikasiBimbinganController::class);
 });
 
 

@@ -158,11 +158,11 @@
 
         @can('delete', $pesertaBimbingan)
         <form action="{{ route('peserta-bimbingan.destroy', $pesertaBimbingan->id) }}" method="POST"
-          onsubmit="return confirm('Yakin ingin menghapus peserta bimbingan ini?')">
+          onsubmit="return confirm('Drop as Peserta?')">
           @csrf
           @method('DELETE')
           <button class="text-sm font-medium text-red-600 hover:text-red-700">
-            Hapus
+            Drop as Peserta
           </button>
         </form>
         @endcan

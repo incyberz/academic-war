@@ -127,7 +127,7 @@
 
   {{-- Submit --}}
   <div class="flex justify-end">
-    <x-button type="primary" class="w-full">
+    <x-button btn="primary" class="w-full">
       Simpan Review
     </x-button>
   </div>

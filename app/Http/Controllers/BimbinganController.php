@@ -24,40 +24,8 @@ class BimbinganController extends Controller
      */
     public function index()
     {
-        // $user = Auth::user();
         if (isRole('dosen') || isRole('mhs')) {
             return redirect()->route('jenis-bimbingan.index');
-
-            // $bimbingans = collect();
-
-            // if (isRole('dosen')) {
-            // $dosen = Dosen::where('user_id', $user->id)->firstOrFail();
-            // $pembimbing = Pembimbing::where('dosen_id', $dosen->id)->firstOrFail();
-            // $bimbingans = Bimbingan::with([
-            //     'pembimbing',
-            //     'jenisBimbingan',
-            //     'tahunAjar',
-            // ])
-            //     ->where('pembimbing_id', $pembimbing->id)
-            //     ->get();
-
-            //     return redirect()->route('jenis-bimbingan.index');
-            // } else { // mhs
-            //     $mhs = Mhs::where('user_id', $user->id)->firstOrFail();
-            //     $bimbingans = Bimbingan::with([
-            //         'pembimbing',
-            //         'jenisBimbingan',
-            //         'tahunAjar',
-            //     ])
-            //         ->where('mhs_id', $mhs->id)
-            //         ->get();
-            // }
-
-            // return view('bimbingan.index', compact(
-            //     'bimbingans'
-            // ));
-        } elseif (isRole('zzz')) {
-            // return redirect()->route('peserta-bimbingan.show')
         } else {
             dd("Belum ada fitur index bimbingan selain role dosen | mhs");
         }
@@ -66,11 +34,7 @@ class BimbinganController extends Controller
 
     public function create(Request $request)
     {
-        /*
-    |--------------------------------------------------------------------------
-    | 1. Ambil parameter wajib
-    |--------------------------------------------------------------------------
-    */
+        // 1. Ambil parameter wajib
         $jenis_bimbingan_id = $request->query('jenis_bimbingan_id');
         $tahun_ajar_id = $request->session()->get('tahun_ajar_id');
 
@@ -80,11 +44,7 @@ class BimbinganController extends Controller
                 ->with('error', 'Jenis bimbingan atau tahun ajar tidak valid.');
         }
 
-        /*
-    |--------------------------------------------------------------------------
-    | 2. Validasi tahun ajar aktif
-    |--------------------------------------------------------------------------
-    */
+        // 2. Validasi tahun ajar aktif
         $tahunAjar = TahunAjar::where('id', $tahun_ajar_id)
             ->where('aktif', true)
             ->first();
@@ -95,11 +55,7 @@ class BimbinganController extends Controller
                 ->with('error', 'Tahun ajar tidak aktif.');
         }
 
-        /*
-    |--------------------------------------------------------------------------
-    | 3. Validasi jenis bimbingan
-    |--------------------------------------------------------------------------
-    */
+        // 3. Validasi jenis bimbingan
         $jenisBimbingan = JenisBimbingan::find($jenis_bimbingan_id);
 
         if (!$jenisBimbingan) {
@@ -109,11 +65,7 @@ class BimbinganController extends Controller
         }
 
 
-        /*
-    |--------------------------------------------------------------------------
-    | 4. Ambil pembimbing aktif berdasarkan user login
-    |--------------------------------------------------------------------------
-    */
+        // 4. Ambil pembimbing aktif berdasarkan user login
         $dosen = Dosen::where('user_id', Auth::id())->first();
 
         if (!$dosen) {
@@ -133,11 +85,7 @@ class BimbinganController extends Controller
         }
 
 
-        /*
-    |--------------------------------------------------------------------------
-    | 5. Cegah duplikasi bimbingan
-    |--------------------------------------------------------------------------
-    */
+        // 5. Cegah duplikasi bimbingan
         $existing = Bimbingan::where('pembimbing_id', $pembimbing->id)
             ->where('jenis_bimbingan_id', $jenis_bimbingan_id)
             ->where('tahun_ajar_id', $tahun_ajar_id)
@@ -149,11 +97,7 @@ class BimbinganController extends Controller
                 ->with('info', 'Bimbingan sudah ada, diarahkan ke halaman edit.');
         }
 
-        /*
-    |--------------------------------------------------------------------------
-    | 6. Auto insert bimbingan
-    |--------------------------------------------------------------------------
-    */
+        // 6. Auto insert bimbingan
         $bimbingan = Bimbingan::create([
             'pembimbing_id'      => $pembimbing->id,
             'jenis_bimbingan_id' => $jenis_bimbingan_id,
@@ -161,11 +105,7 @@ class BimbinganController extends Controller
             'status'             => 'aktif',
         ]);
 
-        /*
-    |--------------------------------------------------------------------------
-    | 7. Redirect ke edit
-    |--------------------------------------------------------------------------
-    */
+        // 7. Redirect ke edit
         return redirect()
             ->route('bimbingan.edit', $bimbingan->id)
             ->with('success', 'Bimbingan berhasil dibuat.');

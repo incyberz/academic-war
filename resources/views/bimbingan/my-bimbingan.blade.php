@@ -60,14 +60,14 @@
       </a>
       @endif
 
-      @php $zzz= 1 @endphp
-      @if($zzz)
+      @php $debug= 1 @endphp
+      @if($debug)
       @php $bimbinganId= $jenis->bimbingan->first()->id @endphp
       <a href="{{ route('peserta-bimbingan.super-create', [
               'bimbingan'      => $bimbinganId,
               'jenisBimbingan' => $jenis->id,
           ]) }}">
-        <x-button type="danger" class="w-full mt-4">
+        <x-button btn="danger" class="w-full mt-4">
           Add Peserta Eligible {{ $namaBimbingan }}
         </x-button>
       </a>
@@ -256,14 +256,9 @@
 
 <script>
   $(function(){
-    console.log('zzz');
-    
     $('.clickable').click(function(){
       $('.count_detail').hide()
       $('#count_detail--'+$(this).prop('id')).fadeIn()
-      console.log('count_detail--'+$(this).prop('id'));
-      
-      // let id = $(this).prop('id');
     })
   })
 </script>
