@@ -17,7 +17,7 @@ class Mhs extends Model
         'nama_lengkap',
         'nim',
         'angkatan',
-        'status_mhs_id',
+        'status_akademik_id',
     ];
 
     public function user()
@@ -25,10 +25,10 @@ class Mhs extends Model
         return $this->belongsTo(User::class);
     }
 
-    // public function statusMhs()
-    // {
-    //     return $this->belongsTo(StatusMhs::class, 'status_mhs_id');
-    // }
+    public function statusAkademik()
+    {
+        return $this->belongsTo(StatusAkademik::class, 'status_akademik_id');
+    }
 
     public function prodi()
     {

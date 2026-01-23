@@ -26,10 +26,10 @@ return new class extends Migration {
             $table->string('nim', 20)->nullable()->unique();
             $table->string('angkatan', 4);   // contoh: 2021
 
-            // Status akademik -> FK ke tabel status_mhs
-            $table->foreignId('status_mhs_id')
+            // Status akademik -> FK ke tabel status_akademik
+            $table->foreignId('status_akademik_id')
                 ->default(1)
-                ->constrained('status_mhs')
+                ->constrained('status_akademik')
                 ->restrictOnDelete();
 
             $table->timestamps();

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('status_mhs', function (Blueprint $table) {
+        Schema::create('status_akademik', function (Blueprint $table) {
             $table->id(); // PK auto increment
             $table->string('kode', 20)->unique(); // misal: AKTIF, CUTI, NONAKTIF, LULUS, DROPOUT
             $table->string('nama', 50);          // nama lengkap status
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('status_mhs');
+        Schema::dropIfExists('status_akademik');
     }
 };

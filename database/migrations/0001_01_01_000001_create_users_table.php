@@ -24,15 +24,20 @@ return new class extends Migration
 
 
             $table->string('whatsapp', 15)->nullable();
-            $table->timestamp('whatsapp_verified_at')->nullable();
             $table->enum('gender', ['L', 'P'])->nullable();
             $table->string('avatar')->nullable();
 
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
 
             $table->enum('status', [1, -1])->default(1);
+
+            $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('avatar_verified_at')->nullable();
+            $table->timestamp('whatsapp_verified_at')->nullable();
+
+            $table->text('alamat_lengkap')->nullable();
+            $table->string('kec_id', 6)->nullable();
 
             $table->timestamps();
         });

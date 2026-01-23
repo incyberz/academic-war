@@ -51,8 +51,8 @@ class PesertaBimbinganSeeder extends Seeder
             );
 
 
-            // updateOrInsert status_mhs 
-            DB::table('status_mhs')->updateOrInsert(
+            // updateOrInsert status_akademik 
+            DB::table('status_akademik')->updateOrInsert(
                 ['kode' => 'aktif'],
                 [
                     'nama' => 'Aktif',
@@ -64,8 +64,8 @@ class PesertaBimbinganSeeder extends Seeder
 
 
 
-            // get status_mhs_id aktif
-            $statusMhsId = DB::table('status_mhs')->where('kode', 'aktif')->first()->id;
+            // get status_akademik_id aktif
+            $statusMhsId = DB::table('status_akademik')->where('kode', 'aktif')->first()->id;
 
             // 2. Buat record mhs.
             $mhs = Mhs::firstOrCreate(
@@ -74,7 +74,7 @@ class PesertaBimbinganSeeder extends Seeder
                     'nama_lengkap' => $m['nama'],
                     'nim' => strtoupper($m['username']) . '001',
                     'angkatan' => $m['angkatan'],
-                    'status_mhs_id' => $statusMhsId, // default aktif
+                    'status_akademik_id' => $statusMhsId, // default aktif
                 ]
             );
 

@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 
+use Illuminate\Support\Facades\Hash;
+
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
@@ -27,6 +29,9 @@ class User extends Authenticatable
         'avatar',
         'password',
         'status',
+        'avatar_verified_at',
+        'whatsapp_verified_at',
+        'alamat_lengkap'
     ];
 
     /**
@@ -86,5 +91,66 @@ class User extends Authenticatable
     public function whatsappUI(): string
     {
         return empty($this->whatsapp) ? '-' : '628...' . substr($this->whatsapp, -3);
+    }
+
+
+    # ============================================================
+    # USER GAMIFICATION
+    # ============================================================
+    public function getIsPasswordDefaultAttribute(): bool
+    {
+        // misal default = username
+        if (!$this->password) return true;
+
+        return Hash::check($this->username, $this->password);
+    }
+
+    // Hitung bonus Profile Integrity
+    public function getProfileIntegrityBonusAttribute(): int
+    {
+        $bonus = 0;
+
+        // Password update
+        if (!$this->is_password_default) {
+            $bonus += 1; // 1% untuk password
+        }
+
+        // Avatar verified
+        if ($this->avatar_verified_at) {
+            $bonus += 2;
+        }
+
+        // Email verified
+        if ($this->email_verified_at) {
+            $bonus += 1;
+        }
+
+        // WhatsApp verified (misal ada field whatsapp_verified_at)
+        if ($this->whatsapp_verified_at) {
+            $bonus += 1;
+        }
+
+        // Data alamat lengkap
+        if ($this->alamat_lengkap ?? false) {
+            $bonus += 1;
+        }
+
+        // Hard cap 5%
+        return min($bonus, 5);
+    }
+
+    // Hitung progress kelengkapan (0-100%)
+    public function getProfileIntegrityProgressAttribute(): int
+    {
+        $steps = 5; // jumlah komponen
+        $completed = 0;
+
+        if (!$this->is_password_default) $completed++;
+        if ($this->avatar_verified_at) $completed++;
+        if ($this->email_verified_at) $completed++;
+        if ($this->whatsapp_verified_at) $completed++;
+        if ($this->alamat_lengkap ?? false) $completed++;
+
+        return intval(($completed / $steps) * 100);
     }
 }

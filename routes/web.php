@@ -1,7 +1,10 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\MhsController;
+use App\Http\Controllers\DosenController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BimbinganController;
 use App\Http\Controllers\JenisBimbinganController;
 use App\Http\Controllers\SesiBimbinganController;
@@ -124,6 +127,8 @@ Route::middleware('auth')->group(function () {
         [NotifikasiBimbinganController::class, 'verify']
     )->name('notifikasi-bimbingan.verify');
 
+    Route::resource('mhs', MhsController::class);
+    Route::resource('dosen', DosenController::class);
     Route::resource('notifikasi-bimbingan', NotifikasiBimbinganController::class);
 });
 

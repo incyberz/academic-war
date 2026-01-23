@@ -53,15 +53,15 @@
         {{-- USERNAME --}}
         <div>
             <x-input-label for="username" :value="__('Username')" />
-            <x-text-input id="username" name="username" type="text" class="mt-1 block w-full" placeholder="username..."
-                :value="old('username', $user->username)" minlength="3" maxlength="20" />
+            <x-text-input required id="username" name="username" type="text" class="mt-1 block w-full"
+                placeholder="username..." :value="old('username', $user->username)" minlength="3" maxlength="20" />
             <x-input-error class="mt-2" :messages="$errors->get('username')" />
         </div>
 
         <div>
             <x-input-label for="whatsapp" :value="__('WhatsApp')" />
-            <x-text-input id="whatsapp" name="whatsapp" type="text" class="mt-1 block w-full" placeholder="08xxxxxxxxxx"
-                :value="old('whatsapp', $user->whatsapp)" minlength="11" maxlength="14" />
+            <x-text-input required id="whatsapp" name="whatsapp" type="text" class="mt-1 block w-full"
+                placeholder="08xxxxxxxxxx" :value="old('whatsapp', $user->whatsapp)" minlength="11" maxlength="14" />
             <x-input-error class="mt-2" :messages="$errors->get('whatsapp')" />
         </div>
 
@@ -71,14 +71,14 @@
 
             <div class="mt-2 flex gap-6">
                 <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                    <input type="radio" name="gender" value="L" class="text-indigo-600 focus:ring-indigo-500"
+                    <input required type="radio" name="gender" value="L" class="text-indigo-600 focus:ring-indigo-500"
                         @checked(old('gender', $user->gender) === 'L')
                     >
                     Laki-laki
                 </label>
 
                 <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                    <input type="radio" name="gender" value="P" class="text-indigo-600 focus:ring-indigo-500"
+                    <input required type="radio" name="gender" value="P" class="text-indigo-600 focus:ring-indigo-500"
                         @checked(old('gender', $user->gender) === 'P')
                     >
                     Perempuan
@@ -89,25 +89,53 @@
         </div>
 
         {{-- IMAGE --}}
-        <div>
-            <x-input-label for="avatar" :value="__('Profile Avatar')" />
+        <div class="space-y-2 border border-gray-500 rounded-lg p-4">
+            <x-input-label for="avatar" :value="__('Profile Avatar')" class=" mb-4" />
 
-            <div class="flex items-center gap-4 mt-2">
-                @if ($user->avatar)
+            {{-- Preview Avatar --}}
+            @if ($user->avatar)
+            <div class="flex flex-col items-center border-y py-4 my-4 border-gray-600">
                 <img src="{{ asset('storage/' . $user->avatar) }}" alt="Profile Avatar"
-                    class="w-16 h-16 rounded-full object-cover border">
-                @endif
+                    class="w-20 h-20 rounded-full object-cover border border-gray-300 dark:border-gray-600" />
 
-                <input id="avatar" name="avatar" type="file" accept="avatar/*" class="block w-full text-sm text-gray-700 dark:text-gray-300
-                               file:mr-4 file:py-2 file:px-4
-                               file:rounded-md file:border-0
-                               file:text-sm file:font-semibold
-                               file:bg-indigo-50 file:text-indigo-700
-                               dark:file:bg-indigo-900 dark:file:text-indigo-300
-                               hover:file:bg-indigo-100" />
+                <div class="mt-2 text-center">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Status Avatar:</span>
+
+                    @if (!$user->avatar_verified_at)
+                    <x-badge type="warning" text="Unverified" addClass="italic mt-1" />
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Menunggu dosen atau kosma approve avatar Anda
+                    </p>
+                    @else
+                    <x-badge type="success" text="Verified" addClass="mt-1" />
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Avatar sudah diverifikasi
+                    </p>
+                    @endif
+                </div>
             </div>
+            @endif
 
-            <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+            {{-- Upload Input --}}
+            <div class="flex-1">
+                <input id="avatar" name="avatar" type="file" accept="image/*" {{$user->avatar ? '' : 'required'}}
+                class="block w-full text-sm text-gray-700 dark:text-gray-300
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-md file:border-0
+                file:text-sm file:font-semibold
+                file:bg-indigo-50 file:text-indigo-700
+                dark:file:bg-indigo-900 dark:file:text-indigo-300
+                hover:file:bg-indigo-100 dark:hover:file:bg-indigo-800
+                transition-colors"
+                />
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Upload foto dengan wajah asli. Maks. ukuran 2MB.
+                </p>
+
+                <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+            </div>
+            <div class="flex items-start gap-4 mt-2">
+            </div>
         </div>
 
         <div class="flex items-center gap-4">

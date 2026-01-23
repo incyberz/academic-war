@@ -9,10 +9,8 @@ class Dosen extends Model
 {
     use HasFactory;
 
-    // Nama tabel (opsional, karena default = plural)
     protected $table = 'dosen';
 
-    // Kolom yang boleh diisi
     protected $fillable = [
         'nama',
         'user_id',
@@ -20,7 +18,7 @@ class Dosen extends Model
         'nidn',
         'gelar_depan',
         'gelar_belakang',
-        'jabatan_fungsional',
+        'jabatan_fungsional', // enum: AA, L, LK, GB, PF
     ];
 
     public function namaGelar(): string

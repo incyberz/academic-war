@@ -60,7 +60,8 @@ class JenisBimbinganController extends Controller
                 'bimbingan'
             ])->where('mhs_id', $mhs->id)->get();
         } else {
-            abort(403, 'Role belum memiliki akses ke halaman ini');
+            $role_id = Auth::user()->role_id;
+            abort(403, "Role id [$role_id] belum memiliki akses ke halaman ini");
         }
 
         return view('jenis-bimbingan.index', compact(

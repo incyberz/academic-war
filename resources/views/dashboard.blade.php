@@ -3,6 +3,16 @@ $user = auth()->user();
 // $role = $user->role->role_name ?? 'mhs';
 $role_nama = $user->role->nama ?? 'Mhs';
 
+$arr_sapaan = [
+'mhs' => 'Selamat datang, pejuang akademik. Misi hari ini sudah menantimu.',
+'dosen' => 'Selamat datang, komandan. Kendali perkuliahan dan bimbingan ada di tangan Anda.',
+'akademik' => 'Selamat datang. Stabilitas sistem akademik hari ini bergantung pada Anda.',
+'default' => 'Selamat datang kembali. Mari mulai aktivitas Anda.',
+];
+
+$sapaan = $arr_sapaan[$role] ?? $arr_sapaan['default'];
+
+
 @endphp
 
 <x-app-layout>
@@ -13,13 +23,39 @@ $role_nama = $user->role->nama ?? 'Mhs';
 
         {{-- Welcome Card --}}
         <x-section>
-            <h3 class="text-lg font-semibold mb-1">
-                👋 Selamat Datang {{$user->name}}!
-            </h3>
-            <x-p class="text-sm">
-                Anda login sebagai <span class="font-semibold">{{ $role_nama }}</span>.
-                Silakan lengkapi data akademik Anda untuk mulai mengajar.
-            </x-p>
+
+            {{-- Header --}}
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold flex items-center gap-2">
+                    👋 Selamat Datang <span>{{ $user->properName() }}</span>
+                </h3>
+
+                <x-p class="text-sm text-gray-600 dark:text-gray-400">
+                    Anda login sebagai
+                    <span class="font-semibold text-gray-800 dark:text-gray-200">
+                        {{ $role_nama }}
+                    </span>.
+                    {{ $sapaan }}
+                </x-p>
+            </div>
+
+            @if (isRole('mhs'))
+
+            {{-- Progress Grid --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+
+                <x-progress-bar label="Kelengkapan Akun" hint="Profil & verifikasi" />
+
+                <x-progress-bar label="Data Mahasiswa" hint="NIM, Prodi, Angkatan" />
+
+                <x-progress-bar label="Presensi Pekan Ini" hint="Kehadiran kuliah" />
+
+                <x-progress-bar label="Bimbingan Skripsi" hint="Progress & jadwal" />
+
+            </div>
+
+            @endif
+
         </x-section>
 
         @php

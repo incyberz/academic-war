@@ -1,7 +1,7 @@
 @props([
 'type' => 'default', // default, success, warning, danger, info
 'text' => '',
-'class' => '',
+'addClass' => '',
 ])
 
 @php
@@ -24,7 +24,8 @@ break;
 }
 @endphp
 
-<span {{ $attributes->merge(['class' => 'inline-flex items-center px-2 py-1 text-xs font-semibold rounded ' . $baseClass
-    . ' ' . $class]) }}>
+<span {{ $attributes->merge(['class' => 'inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full ' .
+    $baseClass
+    . ' ' . $addClass]) }}>
     {{ $text }}
 </span>
