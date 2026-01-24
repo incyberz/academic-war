@@ -44,13 +44,28 @@ $sapaan = $arr_sapaan[$role] ?? $arr_sapaan['default'];
             {{-- Progress Grid --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
 
-                <x-progress-bar label="Kelengkapan Akun" hint="Profil & verifikasi" />
+                <div>
+                    <x-progress-bar label="Kelengkapan Akun" hint="Profil & verifikasi" />
+                    <a href="/profile">Lengkapi</a>
+                </div>
 
-                <x-progress-bar label="Data Mahasiswa" hint="NIM, Prodi, Angkatan" />
+                <div>
+                    <x-progress-bar label="Data Mahasiswa" hint="NIM, Prodi, Angkatan" />
+                    <a href="/mhs">Lengkapi</a>
+                </div>
 
-                <x-progress-bar label="Presensi Pekan Ini" hint="Kehadiran kuliah" />
+                <div>
+                    <x-progress-bar label="Presensi Pekan Ini" hint="Kehadiran kuliah" />
+                    <a href="/presensi">Lengkapi</a>
+                </div>
 
-                <x-progress-bar label="Bimbingan Skripsi" hint="Progress & jadwal" />
+                <div>
+                    <x-progress-bar label="Bimbingan Skripsi" hint="Progress & jadwal" />
+                    <a href="/bimbingan">Lengkapi</a>
+                </div>
+
+
+
 
             </div>
 
