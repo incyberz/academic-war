@@ -27,6 +27,9 @@ return new class extends Migration
             $table->enum('gender', ['L', 'P'])->nullable();
             $table->string('avatar')->nullable();
 
+            $table->string('tempat_lahir', 50)->nullable();
+            $table->date('tanggal_lahir')->nullable();
+
             $table->string('password');
             $table->rememberToken();
 

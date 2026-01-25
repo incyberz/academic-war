@@ -88,6 +88,65 @@
             <x-input-error class="mt-2" :messages="$errors->get('gender')" />
         </div>
 
+        <div>
+            <x-input-label for="tempat_lahir" :value="__('Tempat Lahir')" />
+            <x-text-input required id="tempat_lahir" name="tempat_lahir" type="text" class="mt-1 block w-full uppercase"
+                placeholder="Kab Lahir..." :value="old('tempat_lahir', $user->tempat_lahir)" minlength="3"
+                maxlength="50" />
+            <x-input-error class="mt-2" :messages="$errors->get('tempat_lahir')" />
+        </div>
+
+        <div class="space-y-1">
+            @php
+            $min = now()->subYears(50)->format('Y-m-d');
+            $max = now()->subYears(18)->format('Y-m-d');
+            @endphp
+
+            <x-input-label for="tanggal_lahir" value="Tanggal Lahir" />
+
+            <x-input required id="tanggal_lahir" name="tanggal_lahir" type="date" class="mt-1 block w-full"
+                :value="old('tanggal_lahir', $user->tanggal_lahir->format('Y-m-d'))" min="{{ $min }}"
+                max="{{ $max }}" />
+
+            <x-input-error class="mt-2" :messages="$errors->get('tanggal_lahir')" />
+
+            <p id="usia_anda" class="text-xs text-gray-500 dark:text-gray-400">
+                * Usia harus antara <strong>18 – 50 tahun</strong>
+            </p>
+            <script>
+                $(function () {
+                $('#tanggal_lahir').on('change', function () {
+                    const tgl = $(this).val();
+                    if (!tgl) return;
+            
+                    const birth = new Date(tgl);
+                    const today = new Date();
+            
+                    let usia = today.getFullYear() - birth.getFullYear();
+                    const m = today.getMonth() - birth.getMonth();
+            
+                    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+                        usia--;
+                    }
+            
+                    let pesan = `Usia Anda <strong>${usia}</strong> tahun.`;
+                    let cls = 'text-green-600 dark:text-green-400';
+            
+                    if (usia < 18 || usia > 50) {
+                        pesan = `⚠️ Usia <strong>${usia}</strong> tahun (tidak memenuhi syarat)`;
+                        cls = 'text-red-600 dark:text-red-400';
+                    }
+            
+                    $('#usia_anda')
+                        .html(pesan)
+                        .removeClass()
+                        .addClass(`text-xs mt-1 ${cls}`);
+                });
+            });
+            </script>
+        </div>
+
+
         {{-- IMAGE --}}
         <div class="space-y-2 border border-gray-500 rounded-lg p-4">
             <x-input-label for="avatar" :value="__('Profile Avatar')" class=" mb-4" />

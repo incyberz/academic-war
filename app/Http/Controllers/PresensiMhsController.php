@@ -19,7 +19,7 @@ class PresensiMhsController extends Controller
             ->orderBy('kelas_mhs_id')
             ->paginate(15);
 
-        return view('presensi_mhs.index', compact('presensiList'));
+        return view('presensi-mhs.index', compact('presensiList'));
     }
 
     /**
@@ -30,7 +30,7 @@ class PresensiMhsController extends Controller
         $pertemuanKelasList = PertemuanKelas::with(['pertemuanTa', 'kelas'])->orderBy('id')->get();
         $kelasMhsList = KelasMhs::with(['mhs', 'kelas'])->orderBy('id')->get();
 
-        return view('presensi_mhs.create', compact('pertemuanKelasList', 'kelasMhsList'));
+        return view('presensi-mhs.create', compact('pertemuanKelasList', 'kelasMhsList'));
     }
 
     /**
@@ -56,7 +56,7 @@ class PresensiMhsController extends Controller
 
         $presensi = PresensiMhs::create($validated);
 
-        return redirect()->route('presensi_mhs.index')
+        return redirect()->route('presensi-mhs.index')
             ->with('success', "Presensi mahasiswa berhasil dibuat.");
     }
 
@@ -66,7 +66,7 @@ class PresensiMhsController extends Controller
     public function show(PresensiMhs $presensiMhs)
     {
         $presensiMhs->load(['pertemuanKelas', 'kelasMhs']);
-        return view('presensi_mhs.show', compact('presensiMhs'));
+        return view('presensi-mhs.show', compact('presensiMhs'));
     }
 
     /**
@@ -77,7 +77,7 @@ class PresensiMhsController extends Controller
         $pertemuanKelasList = PertemuanKelas::with(['pertemuanTa', 'kelas'])->orderBy('id')->get();
         $kelasMhsList = KelasMhs::with(['mhs', 'kelas'])->orderBy('id')->get();
 
-        return view('presensi_mhs.edit', compact('presensiMhs', 'pertemuanKelasList', 'kelasMhsList'));
+        return view('presensi-mhs.edit', compact('presensiMhs', 'pertemuanKelasList', 'kelasMhsList'));
     }
 
     /**
@@ -104,7 +104,7 @@ class PresensiMhsController extends Controller
 
         $presensiMhs->update($validated);
 
-        return redirect()->route('presensi_mhs.index')
+        return redirect()->route('presensi-mhs.index')
             ->with('success', "Presensi mahasiswa berhasil diperbarui.");
     }
 
@@ -115,7 +115,7 @@ class PresensiMhsController extends Controller
     {
         $presensiMhs->delete();
 
-        return redirect()->route('presensi_mhs.index')
+        return redirect()->route('presensi-mhs.index')
             ->with('success', "Presensi mahasiswa berhasil dihapus.");
     }
 }

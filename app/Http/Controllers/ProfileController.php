@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Kec;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,8 +18,11 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $kecs = Kec::all();
+
         return view('profile.edit', [
             'user' => $request->user(),
+            'kecs' => $kecs,
         ]);
     }
 
@@ -50,6 +54,8 @@ class ProfileController extends Controller
             $path = $request->file('avatar')->store('avatars', 'public');
             $user->avatar = $path;
         }
+
+        $user->tempat_lahir = strtoupper($request->tempat_lahir);
 
         $user->save();
 

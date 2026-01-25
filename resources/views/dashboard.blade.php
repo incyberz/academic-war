@@ -42,30 +42,34 @@ $sapaan = $arr_sapaan[$role] ?? $arr_sapaan['default'];
             @if (isRole('mhs'))
 
             {{-- Progress Grid --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
 
-                <div>
-                    <x-progress-bar label="Kelengkapan Akun" hint="Profil & verifikasi" />
-                    <a href="/profile">Lengkapi</a>
-                </div>
+                @if ($user->profile_completeness_progress<100) <div
+                    class="hover:tracking-[0.5px] transition-all duration-200">
+                    <a href="{{ route('profile.edit') }}">
+                        <x-progress-bar label="Kelengkapan Akun" info="lengkapi ➡️"
+                            :value="$user->profile_completeness_progress" />
+                    </a>
+            </div>
+            @endif
 
-                <div>
-                    <x-progress-bar label="Data Mahasiswa" hint="NIM, Prodi, Angkatan" />
-                    <a href="/mhs">Lengkapi</a>
-                </div>
+            <div class="hover:tracking-[0.5px] transition-all duration-200">
+                <a href="{{ route('mhs.index') }}">
+                    <x-progress-bar label="Data Mahasiswa" info="lengkapi ➡️" />
+                </a>
+            </div>
 
-                <div>
-                    <x-progress-bar label="Presensi Pekan Ini" hint="Kehadiran kuliah" />
-                    <a href="/presensi">Lengkapi</a>
-                </div>
+            <div class="hover:tracking-[0.5px] transition-all duration-200">
+                <a href="{{ route('presensi-mhs.index') }}">
+                    <x-progress-bar label="Presensi Pekan Ini" info="lengkapi ➡️" />
+                </a>
+            </div>
 
-                <div>
-                    <x-progress-bar label="Bimbingan Skripsi" hint="Progress & jadwal" />
-                    <a href="/bimbingan">Lengkapi</a>
-                </div>
-
-
-
+            <div class="hover:tracking-[0.5px] transition-all duration-200">
+                <a href="{{ route('jenis-bimbingan.index') }}">
+                    <x-progress-bar label="Bimbingan Skripsi" info="lengkapi ➡️" />
+                </a>
+            </div>
 
             </div>
 

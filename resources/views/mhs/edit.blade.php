@@ -59,10 +59,10 @@
             {{-- Status Akademik --}}
             <div class="md:col-span-2">
               <x-label>Status Akademik</x-label>
-              <x-select name="status_akademik_id" required>
+              <x-select name="status_mhs_id" required>
                 <option value="">-- Pilih Status Akademik --</option>
-                @foreach ($statusAkademiks as $status)
-                <option value="{{ $status->id }}" @selected(old('status_akademik_id', $mh->status_akademik_id) ==
+                @foreach ($statusMhss as $status)
+                <option value="{{ $status->id }}" @selected(old('status_mhs_id', $mh->status_mhs_id) ==
                   $status->id)
                   >
                   {{ $status->nama }}
@@ -70,9 +70,9 @@
                 @endforeach
               </x-select>
 
-              @if ($mh->statusAkademik)
+              @if ($mh->statusMhs)
               <p class="mt-1 text-xs text-gray-500">
-                {{ $mh->statusAkademik->keterangan }}
+                {{ $mh->statusMhs->keterangan }}
               </p>
               @endif
             </div>

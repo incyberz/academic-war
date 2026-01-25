@@ -12,22 +12,49 @@ class Mhs extends Model
     protected $table = 'mhs';
 
     protected $fillable = [
+        // relasi inti
         'user_id',
         'prodi_id',
+        'shift_id',
+        'kampus_id',
+        'jalur_masuk_id',
+        'pmb_id',
+
+        // identitas akademik
         'nama_lengkap',
         'nim',
         'angkatan',
-        'status_akademik_id',
+        'semester_awal',
+        'email_kampus',
+
+        // status & metadata
+        'status_mhs_id',
+        'tanggal_masuk',
+        'tanggal_lulus',
     ];
 
+    protected $casts = [
+        'semester_awal' => 'integer',
+        'tanggal_masuk' => 'date',
+        'tanggal_lulus' => 'date',
+    ];
+
+    # ============================================================
+    # RELATIONS
+    # ============================================================
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function statusAkademik()
+    public function statusMhs()
     {
-        return $this->belongsTo(StatusAkademik::class, 'status_akademik_id');
+        return $this->belongsTo(StatusMhs::class, 'status_mhs_id');
+    }
+
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class);
     }
 
     public function prodi()
@@ -40,11 +67,24 @@ class Mhs extends Model
         return $this->hasMany(PesertaBimbingan::class, 'mhs_id');
     }
 
-    public function bimbingan()
+    # ============================================================
+    # SCOPES
+    # ============================================================
+    public function scopeAktif($query)
     {
-        return $this->hasMany(Bimbingan::class, 'mhs_id');
+        return $query->whereHas('statusMhs', function ($q) {
+            $q->where('kode', 'AKTIF');
+        });
     }
 
+    public function scopeAngkatan($query, $angkatan)
+    {
+        return $query->where('angkatan', $angkatan);
+    }
+
+    # ============================================================
+    # HELPERS
+    # ============================================================
     public function properNama()
     {
         return ucwords(strtolower($this->nama_lengkap));

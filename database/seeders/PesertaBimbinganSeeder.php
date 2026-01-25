@@ -13,18 +13,8 @@ class PesertaBimbinganSeeder extends Seeder
 {
     public function run(): void
     {
-        // Pastikan user 'insho' ada (super admin)
-        $insho = User::firstOrCreate(
-            ['username' => 'insho'],
-            [
-                'name' => 'Super Admin',
-                'email' => 'insho@gmail.com',
-                'role_id' => 100, // super admin
-                'whatsapp' => '6287729007318',
-                'whatsapp_verified_at' => now(),
-                'password' => Hash::make('insho'),
-            ]
-        );
+
+        $insho = User::where('username', 'insho')->firstOrFail();
 
         $mahasiswaData = [
             ['username' => 'ahmad', 'nama' => 'Ahmad Firdaus', 'email' => 'ahmad@gmail.com', 'angkatan' => 2022],
@@ -51,8 +41,8 @@ class PesertaBimbinganSeeder extends Seeder
             );
 
 
-            // updateOrInsert status_akademik 
-            DB::table('status_akademik')->updateOrInsert(
+            // updateOrInsert status_mhs 
+            DB::table('status_mhs')->updateOrInsert(
                 ['kode' => 'aktif'],
                 [
                     'nama' => 'Aktif',
@@ -64,8 +54,8 @@ class PesertaBimbinganSeeder extends Seeder
 
 
 
-            // get status_akademik_id aktif
-            $statusMhsId = DB::table('status_akademik')->where('kode', 'aktif')->first()->id;
+            // get status_mhs_id aktif
+            $statusMhsId = DB::table('status_mhs')->where('kode', 'aktif')->first()->id;
 
             // 2. Buat record mhs.
             $mhs = Mhs::firstOrCreate(
@@ -74,7 +64,7 @@ class PesertaBimbinganSeeder extends Seeder
                     'nama_lengkap' => $m['nama'],
                     'nim' => strtoupper($m['username']) . '001',
                     'angkatan' => $m['angkatan'],
-                    'status_akademik_id' => $statusMhsId, // default aktif
+                    'status_mhs_id' => $statusMhsId, // default aktif
                 ]
             );
 

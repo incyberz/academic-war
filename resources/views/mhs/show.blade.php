@@ -64,12 +64,12 @@
           <x-label>Status Akademik</x-label>
 
           <div class="mt-2 flex items-center gap-2">
-            <x-badge :type="$mh->statusAkademik?->kode === 'AKTIF' ? 'success' : 'secondary'"
-              :text="$mh->statusAkademik?->nama ?? '-'" />
+            <x-badge :type="$mh->statusMhs?->kode === 'AKTIF' ? 'success' : 'secondary'"
+              :text="$mh->statusMhs?->nama ?? '-'" />
 
-            @if ($mh->statusAkademik)
+            @if ($mh->statusMhs)
             <span class="text-xs text-gray-500">
-              {{ $mh->statusAkademik->keterangan }}
+              {{ $mh->statusMhs->keterangan }}
             </span>
             @endif
           </div>
@@ -83,25 +83,25 @@
             <li>
               KRS:
               <strong>
-                {{ $mh->statusAkademik?->boleh_krs ? 'Diizinkan' : 'Tidak Diizinkan' }}
+                {{ $mh->statusMhs?->boleh_krs ? 'Diizinkan' : 'Tidak Diizinkan' }}
               </strong>
             </li>
             <li>
               Mengikuti Perkuliahan:
               <strong>
-                {{ $mh->statusAkademik?->boleh_kuliah ? 'Diizinkan' : 'Tidak Diizinkan' }}
+                {{ $mh->statusMhs?->boleh_kuliah ? 'Diizinkan' : 'Tidak Diizinkan' }}
               </strong>
             </li>
             <li>
               Bimbingan Akademik:
               <strong>
-                {{ $mh->statusAkademik?->boleh_bimbingan ? 'Diizinkan' : 'Tidak Diizinkan' }}
+                {{ $mh->statusMhs?->boleh_bimbingan ? 'Diizinkan' : 'Tidak Diizinkan' }}
               </strong>
             </li>
             <li>
               Akses Sistem:
               <strong>
-                {{ $mh->statusAkademik?->boleh_login ? 'Diizinkan' : 'Tidak Diizinkan' }}
+                {{ $mh->statusMhs?->boleh_login ? 'Diizinkan' : 'Tidak Diizinkan' }}
               </strong>
             </li>
           </ul>

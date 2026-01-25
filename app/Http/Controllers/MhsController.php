@@ -2,29 +2,55 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Mhs;
 use App\Models\Prodi;
-use App\Models\StatusAkademik;
+use App\Models\Shift;
+use App\Models\StatusMhs;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MhsController extends Controller
 {
     public function index()
     {
-        $data = Mhs::with(['user', 'prodi', 'statusAkademik'])
-            ->orderBy('angkatan', 'desc')
-            ->orderBy('nama_lengkap')
-            ->get();
+        $user = User::findOrFail(Auth::id());
+        $role_id = $user->role_id;
+        $mhs = collect();
+        $dataMhs = collect();
 
-        return view('mhs.index', compact('data'));
+        $prodi = Prodi::all();
+        $shift = Shift::all();
+
+
+        if (isRole('mhs')) {
+            $mhs = Mhs::where('user_id', $user->id)->firstOrFail();
+        } elseif (isRole('super_admin')) {
+            $dataMhs = Mhs::with(['user', 'prodi', 'statusMhs'])
+                ->orderBy('angkatan', 'desc')
+                ->orderBy('nama_lengkap')
+                ->get();
+        } else {
+            dd("Belum ada index untuk role_id [$role_id]");
+        }
+
+        // dd($mhs->prodi->nama);
+
+        return view('mhs.index', compact(
+            'dataMhs',
+            'user',
+            'mhs',
+            'prodi',
+            'shift',
+        ));
     }
 
     public function create()
     {
         $prodi = Prodi::orderBy('nama')->get();
-        $statusAkademik = StatusAkademik::orderBy('id')->get();
+        $statusMhs = StatusMhs::orderBy('id')->get();
 
-        return view('mhs.create', compact('prodi', 'statusAkademik'));
+        return view('mhs.create', compact('prodi', 'statusMhs'));
     }
 
     public function store(Request $request)
@@ -35,7 +61,7 @@ class MhsController extends Controller
             'nama_lengkap' => 'required|string|max:100',
             'nim' => 'required|string|max:30|unique:mhs,nim',
             'angkatan' => 'required|digits:4',
-            'status_akademik_id' => 'required|exists:status_akademik,id',
+            'status_mhs_id' => 'required|exists:status_mhs,id',
         ]);
 
         Mhs::create($validated);
@@ -47,7 +73,7 @@ class MhsController extends Controller
 
     public function show(Mhs $mh)
     {
-        $mh->load(['user', 'prodi', 'statusAkademik']);
+        $mh->load(['user', 'prodi', 'statusMhs']);
 
         return view('mhs.show', compact('mh'));
     }
@@ -55,9 +81,9 @@ class MhsController extends Controller
     public function edit(Mhs $mh)
     {
         $prodis = Prodi::orderBy('nama')->get();
-        $statusAkademiks = StatusAkademik::orderBy('id')->get();
+        $statusMhss = StatusMhs::orderBy('id')->get();
 
-        return view('mhs.edit', compact('mh', 'prodis', 'statusAkademiks'));
+        return view('mhs.edit', compact('mh', 'prodis', 'statusMhss'));
     }
 
     public function update(Request $request, Mhs $mh)
@@ -67,7 +93,7 @@ class MhsController extends Controller
             'nama_lengkap' => 'required|string|max:100',
             'nim' => 'required|string|max:30|unique:mhs,nim,' . $mh->id,
             'angkatan' => 'required|digits:4',
-            'status_akademik_id' => 'required|exists:status_akademik,id',
+            'status_mhs_id' => 'required|exists:status_mhs,id',
         ]);
 
         $mh->update($validated);

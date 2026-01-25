@@ -27,11 +27,15 @@ class User extends Authenticatable
         'whatsapp',
         'gender',
         'avatar',
+        'tempat_lahir',
+        'tanggal_lahir',
         'password',
         'status',
         'avatar_verified_at',
         'whatsapp_verified_at',
-        'alamat_lengkap'
+        'alamat_lengkap',
+        'kec_id',
+        'kelengkapan_akun', // 0-100 persen
     ];
 
     /**
@@ -52,6 +56,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'tanggal_lahir' => 'date',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
@@ -60,6 +65,11 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id', 'id');
+    }
+
+    public function kec()
+    {
+        return $this->belongsTo(Kec::class, 'kec_id', 'id');
     }
 
     // Relation to Dosen
@@ -105,52 +115,45 @@ class User extends Authenticatable
         return Hash::check($this->username, $this->password);
     }
 
-    // Hitung bonus Profile Integrity
-    public function getProfileIntegrityBonusAttribute(): int
+    public function getProfileCompletenessBonusAttribute(): int
     {
+        $rules = config('profile_bonus.rules', []);
+
         $bonus = 0;
-
-        // Password update
-        if (!$this->is_password_default) {
-            $bonus += 1; // 1% untuk password
+        foreach ($rules as $field => $rule) {
+            if ($field == 'password') {
+                if (!$this->is_password_default) {
+                    $bonus += $rule['point'];
+                }
+            } else {
+                if (!empty($this->$field)) {
+                    $bonus += $rule['point'];
+                }
+            }
         }
 
-        // Avatar verified
-        if ($this->avatar_verified_at) {
-            $bonus += 2;
-        }
-
-        // Email verified
-        if ($this->email_verified_at) {
-            $bonus += 1;
-        }
-
-        // WhatsApp verified (misal ada field whatsapp_verified_at)
-        if ($this->whatsapp_verified_at) {
-            $bonus += 1;
-        }
-
-        // Data alamat lengkap
-        if ($this->alamat_lengkap ?? false) {
-            $bonus += 1;
-        }
-
-        // Hard cap 5%
-        return min($bonus, 5);
+        return $bonus;
     }
 
-    // Hitung progress kelengkapan (0-100%)
-    public function getProfileIntegrityProgressAttribute(): int
+    public function getProfileCompletenessProgressAttribute(): int
     {
-        $steps = 5; // jumlah komponen
-        $completed = 0;
+        $rules = config('profile_bonus.rules', []);
+        $bonus = $this->profile_completeness_bonus;
+        $totalBonus = 0;
 
-        if (!$this->is_password_default) $completed++;
-        if ($this->avatar_verified_at) $completed++;
-        if ($this->email_verified_at) $completed++;
-        if ($this->whatsapp_verified_at) $completed++;
-        if ($this->alamat_lengkap ?? false) $completed++;
+        foreach ($rules as $field => $rule) {
+            $totalBonus += $rule['point'];
+        }
 
-        return intval(($completed / $steps) * 100);
+        return (int) round(($bonus / $totalBonus) * 100);
+    }
+
+
+    # ============================================================
+    # USER GAMIFICATION METHOD
+    # ============================================================
+    public function cekKelengkapanAkun(): int
+    {
+        return 0;
     }
 }
