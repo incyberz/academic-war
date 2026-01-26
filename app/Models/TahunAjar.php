@@ -21,7 +21,7 @@ class TahunAjar extends Model
 
     protected $fillable = [
         'id',               // ⬅️ WAJIB agar bisa mass assign
-        'aktif',
+        'is_active',
         'tanggal_mulai',
         'tanggal_selesai',
     ];

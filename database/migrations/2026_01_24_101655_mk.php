@@ -14,6 +14,7 @@ return new class extends Migration
             // identitas resmi mata kuliah
             $table->string('kode')->unique();
             $table->string('nama');
+            $table->string('singkatan', 10);
             $table->unsignedTinyInteger('sks');
 
             // deskripsi singkat (opsional)

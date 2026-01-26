@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('tahun_ajar', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
             // Status apakah tahun ajar sedang aktif
-            $table->boolean('aktif')->default(false);
+            $table->boolean('is_active')->default(false);
 
             // Range periode (opsional)
             $table->date('tanggal_mulai')->nullable();

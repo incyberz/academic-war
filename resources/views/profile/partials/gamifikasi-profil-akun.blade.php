@@ -1,6 +1,6 @@
 {{-- gamifikasi-profil-akun.blade.php --}}
 @php
-$rules = config('profile_bonus.rules');
+$rules = config('xp_bonus.profile');
 @endphp
 <section class="space-y-6">
 

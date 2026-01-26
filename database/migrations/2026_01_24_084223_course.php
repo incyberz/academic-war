@@ -23,7 +23,7 @@ return new class extends Migration
 
             // Metadata
             $table->string('level')->nullable(); // dasar / menengah / lanjutan
-            $table->boolean('aktif')->default(true);
+            $table->boolean('is_active')->default(true);
 
             // Audit
             $table->timestamps();

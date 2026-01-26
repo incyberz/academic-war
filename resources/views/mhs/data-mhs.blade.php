@@ -1,3 +1,38 @@
+@php
+$detailMhs = [
+[
+'label' => 'Nama Lengkap',
+'value' => $mhs->nama_lengkap,
+],
+[
+'label' => 'NIM',
+'value' => $mhs->nim,
+],
+[
+'label' => 'Program Studi',
+'value' => $mhs->prodi->nama ?? '-- belum pilih prodi --',
+],
+[
+'label' => 'Angkatan',
+'value' => $mhs->angkatan,
+],
+[
+'label' => 'Semester Awal',
+'value' => $mhs->semester_awal ?? 1,
+],
+[
+'label' => 'Kelas (Shift)',
+'value' => $mhs->shift->nama ?? 'Pagi',
+],
+[
+'label' => 'Kampus',
+'value' => $mhs->kampus->nama ?? '-',
+],
+];
+@endphp
+
+
+
 <x-card class="x_card">
 
   <x-card-header>
@@ -8,6 +43,17 @@
   </x-card-header>
 
   <x-card-body class="card_body">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      @foreach($detailMhs as $item)
+      <div>
+        <span class="text-gray-500">{{ $item['label'] }}</span>
+        <div class="font-semibold">
+          {{ $item['value'] }}
+        </div>
+      </div>
+      @endforeach
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
 
       <div>
@@ -68,7 +114,7 @@
   </x-card-header>
 
   <x-card-body>
-    <form method="POST" action="{{ route('mhs.update', $mhs->id) }}">
+    <form method="POST" action="{{ route('mhs.update', $mhs->id) }}" id="form-mhs">
       @csrf
       @method('PUT')
 
@@ -143,4 +189,45 @@
       $('.x_card').slideToggle(200)
     })
   })
+</script>
+
+<script>
+  $(document).ready(function () {
+
+    $('#form-mhs').on('submit', function (e) {
+        e.preventDefault(); // stop submit biasa
+
+        let form = $(this);
+        let url = form.attr('action');
+
+        $.ajax({
+            url: url,
+            type: "POST", // tetap POST
+            data: form.serialize(), // otomatis bawa _token & _method
+            success: function (res) {
+
+                alert('✅ Data mahasiswa berhasil disimpan');
+
+                // contoh redirect (opsional)
+                // window.location.href = "{{ route('mhs.index') }}";
+            },
+            error: function (xhr) {
+
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.errors;
+                    let pesan = '';
+
+                    $.each(errors, function (key, value) {
+                        pesan += value[0] + '\n';
+                    });
+
+                    alert('❌ Validasi gagal:\n' + pesan);
+                } else {
+                    alert('❌ Terjadi kesalahan server');
+                }
+            }
+        });
+    });
+
+});
 </script>

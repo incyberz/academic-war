@@ -34,7 +34,7 @@
               <td class="border px-3 py-2">{{ strtoupper($course->tipe) }}</td>
               <td class="border px-3 py-2">{{ $course->level ?? '-' }}</td>
               <td class="border px-3 py-2">
-                @if($course->aktif)
+                @if($course->is_active)
                 <span class="text-green-600 font-semibold">Ya</span>
                 @else
                 <span class="text-red-600 font-semibold">Tidak</span>

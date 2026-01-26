@@ -117,7 +117,7 @@ class User extends Authenticatable
 
     public function getProfileCompletenessBonusAttribute(): int
     {
-        $rules = config('profile_bonus.rules', []);
+        $rules = config('xp_bonus.profile', []);
 
         $bonus = 0;
         foreach ($rules as $field => $rule) {
@@ -137,7 +137,7 @@ class User extends Authenticatable
 
     public function getProfileCompletenessProgressAttribute(): int
     {
-        $rules = config('profile_bonus.rules', []);
+        $rules = config('xp_bonus.profile', []);
         $bonus = $this->profile_completeness_bonus;
         $totalBonus = 0;
 

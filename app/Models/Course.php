@@ -19,18 +19,18 @@ class Course extends Model
         'deskripsi',
         'tipe',
         'level',
-        'aktif',
+        'is_active',
     ];
 
     // Tipe data kolom
     protected $casts = [
-        'aktif' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     // Default values (jika ingin di-set juga di model, selain migration)
     protected $attributes = [
         'tipe' => 'mk',
-        'aktif' => true,
+        'is_active' => true,
     ];
 
     /**
@@ -46,6 +46,6 @@ class Course extends Model
      */
     public function scopeAktif($query)
     {
-        return $query->where('aktif', true);
+        return $query->where('is_active', true);
     }
 }

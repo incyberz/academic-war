@@ -86,22 +86,40 @@ class MhsController extends Controller
         return view('mhs.edit', compact('mh', 'prodis', 'statusMhss'));
     }
 
-    public function update(Request $request, Mhs $mh)
+    // public function update(Request $request, Mhs $mh)
+    // {
+    //     $validated = $request->validate([
+    //         'prodi_id' => 'required|exists:prodi,id',
+    //         'nama_lengkap' => 'required|string|max:100',
+    //         'nim' => 'required|string|max:30|unique:mhs,nim,' . $mh->id,
+    //         'angkatan' => 'required|digits:4',
+    //         'status_mhs_id' => 'required|exists:status_mhs,id',
+    //     ]);
+
+    //     $mh->update($validated);
+
+    //     return redirect()
+    //         ->route('mhs.index')
+    //         ->with('success', 'Data mahasiswa berhasil diperbarui.');
+    // }
+
+    public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'prodi_id' => 'required|exists:prodi,id',
-            'nama_lengkap' => 'required|string|max:100',
-            'nim' => 'required|string|max:30|unique:mhs,nim,' . $mh->id,
-            'angkatan' => 'required|digits:4',
-            'status_mhs_id' => 'required|exists:status_mhs,id',
+        $request->validate([
+            'nama_lengkap' => 'required',
+            'nim' => 'required',
+            'prodi_id' => 'required',
         ]);
 
-        $mh->update($validated);
+        $mhs = Mhs::findOrFail($id);
+        $mhs->update($request->all());
 
-        return redirect()
-            ->route('mhs.index')
-            ->with('success', 'Data mahasiswa berhasil diperbarui.');
+        return response()->json([
+            'status' => true,
+            'message' => 'Data berhasil disimpan'
+        ]);
     }
+
 
     public function destroy(Mhs $mh)
     {
