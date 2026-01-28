@@ -46,7 +46,7 @@ class BimbinganController extends Controller
 
         // 2. Validasi tahun ajar aktif
         $tahunAjar = TahunAjar::where('id', $tahun_ajar_id)
-            ->where('aktif', true)
+            ->where('is_active', true)
             ->first();
 
         if (!$tahunAjar) {

@@ -1,3 +1,79 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ===== Typography ===== */
+h1 {
+  @apply text-3xl font-bold text-gray-900 dark:text-gray-100;
+}
+
+h2 {
+  @apply text-2xl font-semibold text-gray-900 dark:text-gray-100;
+}
+
+h3 {
+  @apply text-xl font-semibold text-gray-800 dark:text-gray-200;
+}
+
+p {
+  @apply text-gray-800 dark:text-gray-200 mb-2;
+}
+
+small {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+a {
+  @apply text-blue-600 dark:text-blue-400 hover:underline;
+}
+
+/* ===== Lists ===== */
+ul,
+ol {
+  @apply list-inside list-disc mb-2 text-gray-800 dark:text-gray-200;
+}
+
+
+
+
+/* ===== Inputs / Forms ===== */
+input,
+select,
+textarea {
+  @apply border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500;
+}
+
+/* ===== Tables ===== */
+table {
+  @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700;
+  border-collapse: collapse;
+}
+
+thead {
+  @apply bg-gray-50 dark:bg-gray-800;
+}
+
+th {
+  @apply px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300;
+}
+
+tbody {
+  @apply bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700;
+}
+
+td {
+  @apply px-4 py-2 text-gray-800 dark:text-gray-200;
+}
+
+tfoot {
+  @apply bg-gray-50 dark:bg-gray-800 font-semibold;
+}
+
+/* ===== Badge / Labels ===== */
+.table-badge-active {
+  @apply px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100;
+}
+
+.table-badge-inactive {
+  @apply px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300;
+}

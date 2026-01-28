@@ -47,7 +47,7 @@ class Unit extends Model
      */
     public function scopeAktif($query)
     {
-        return $query->where('aktif', true);
+        return $query->where('is_active', true);
     }
 
     /**

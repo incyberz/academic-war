@@ -13,4 +13,8 @@ class Jenjang extends Model
         'nama',
         'jumlah_semester',
     ];
+
+    protected $casts = [
+        'jumlah_semester' => 'integer',
+    ];
 }

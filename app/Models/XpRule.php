@@ -31,7 +31,7 @@ class XpRule extends Model
     public function scopeAktif($query)
     {
         return $query
-            ->where('aktif', true)
+            ->where('is_active', true)
             ->where(function ($q) {
                 $q->whereNull('berlaku_dari')
                     ->orWhere('berlaku_dari', '<=', now());

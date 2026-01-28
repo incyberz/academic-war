@@ -1,4 +1,4 @@
-<x-page-header title="My Bimbingan" subtitle="Dashboard Bimbingan TA.{{$tahunAjarAktif}}/{{$semesterAktif}}" />
+<x-page-header title="My Bimbingan" subtitle="Dashboard Bimbingan TA.{{$tahunAktif}}/{{$semesterAktif}}" />
 @include('bimbingan.nav')
 
 @foreach ($myJenisBimbingan as $jenis)

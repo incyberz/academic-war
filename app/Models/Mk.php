@@ -14,7 +14,10 @@ class Mk extends Model
     protected $fillable = [
         'kode',
         'nama',
+        'singkatan',
         'sks',
+        'rekom_semester',
+        'rekom_fakultas',
         'deskripsi',
         'is_active',
     ];

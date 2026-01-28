@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('nama');
             $table->string('singkatan', 10);
             $table->unsignedTinyInteger('sks');
+            $table->unsignedTinyInteger('rekom_semester')->nullable();
+            $table->string('rekom_fakultas', 10)->nullable();
 
             // deskripsi singkat (opsional)
             $table->text('deskripsi')->nullable();

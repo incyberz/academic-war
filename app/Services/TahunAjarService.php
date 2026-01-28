@@ -12,7 +12,7 @@ class TahunAjarService
   public static function getAktif()
   {
     // 1. Admin set
-    if ($ta = TahunAjar::where('aktif', true)->first()) {
+    if ($ta = TahunAjar::where('is_active', true)->first()) {
       return $ta;
     }
 
@@ -49,7 +49,7 @@ class TahunAjarService
 
     return DB::transaction(function () use ($tahun_ajar, $nama, $tanggal_mulai, $tanggal_selesai) {
 
-      TahunAjar::where('aktif', true)->update(['aktif' => false]);
+      TahunAjar::where('is_active', true)->update(['aktif' => false]);
 
       return TahunAjar::firstOrCreate(
         ['id' => $tahun_ajar],

@@ -33,11 +33,15 @@ use App\Http\Controllers\{
     KuisController,
     KuisSoalController,
     JawabanMhsController,
+    KurikulumController,
     PertemuanTaController,
     PertemuanKelasController,
     PresensiDosenController,
     PresensiMhsController,
     PresensiOfflineController,
+    StmController,
+    StmItemController,
+    KurMkController,
 };
 
 
@@ -194,6 +198,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('presensi-dosen', PresensiDosenController::class);
     Route::resource('presensi-mhs', PresensiMhsController::class);
     Route::resource('presensi-offline', PresensiOfflineController::class);
+
+    // Kurikulum dan STM
+    Route::resource('kurikulum', KurikulumController::class);
+    Route::resource('kur-mk', KurMkController::class);
+    Route::resource('stm', StmController::class);
+    Route::prefix('stm/{stm}')->group(function () {
+        Route::resource('item', StmItemController::class);
+    });
 });
 
 

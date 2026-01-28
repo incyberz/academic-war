@@ -26,11 +26,14 @@ class AppServiceProvider extends ServiceProvider
             }
 
             $taId = session('tahun_ajar_id');
+            $tahunAktif = substr($taId, 0, 4);
+            $semesterAktif = substr($taId, -1);
 
             $view->with([
                 'listTahunAjar'   => TahunAjar::orderBy('id', 'desc')->get(),
-                'tahunAjarAktif'  => substr($taId, 0, 4),
-                'semesterAktif'   => substr($taId, -1),
+                'tahunAktif'  => $tahunAktif,
+                'semesterAktif'   => $semesterAktif,
+                'taAktif'   => $tahunAktif . '/' . ($tahunAktif + 1) . ' ' . ($semesterAktif % 2 == 0 ? 'Genap' : 'Ganjil'),
                 'role'       => Auth::check()
                     ? Auth::user()->role->role_name
                     : null,

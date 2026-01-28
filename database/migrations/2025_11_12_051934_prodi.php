@@ -17,11 +17,10 @@ return new class extends Migration {
             $table->string('prodi', 10)->unique(); // kode prodi, unik tapi bukan PK
             $table->tinyInteger('urutan')->nullable();
 
-            // FK fakultas (numeric, asumsi tabel fakultas sudah pakai PK id)
-            $table->foreignId('fakultas_id')->default(1)->constrained('fakultas');
+            $table->foreignId('fakultas_id')->constrained('fakultas');
+            $table->foreignId('jenjang_id')->constrained('jenjang');
 
             $table->string('nama', 30);
-            $table->char('jenjang', 2)->nullable();
 
             $table->timestamps();
 

@@ -26,7 +26,7 @@ class EligibleBimbinganSeeder extends Seeder
         /**
          * Ambil Tahun Ajar Aktif
          */
-        $tahunAjarId = TahunAjar::where('aktif', true)->value('id') ?? 20251;
+        $tahunAjarId = TahunAjar::where('is_active', true)->value('id') ?? 20251;
 
         /**
          * Jenis bimbingan yang eligible

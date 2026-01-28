@@ -17,7 +17,7 @@ $sapaan = $arr_sapaan[$role] ?? $arr_sapaan['default'];
 
 <x-app-layout>
     <x-page-header title="Dashboard {{ucwords($role)}}"
-        subtitle="Dashboard {{ucwords($role)}} TA.{{$tahunAjarAktif}}/{{$semesterAktif}}" />
+        subtitle="Dashboard {{ucwords($role)}} TA.{{$tahunAktif}}/{{$semesterAktif}}" />
 
     <x-page-content>
 

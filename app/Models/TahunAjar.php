@@ -33,4 +33,22 @@ class TahunAjar extends Model
     {
         return $this->hasMany(Bimbingan::class, 'tahun_ajar_id', 'id');
     }
+
+    public function getNamaAttribute()
+    {
+        // Ambil id tahun ajar misal: 20251
+        $id = $this->id;
+
+        // Pisahkan tahun dan semester
+        $tahun = intdiv($id, 10); // misal 20251 / 10 = 2025
+        $semester_digit = $id % 10; // 20251 % 10 = 1
+
+        // Hitung tahun ajar kedua
+        $tahun_akhir = $tahun + 1;
+
+        // Tentukan ganjil/genap
+        $ganjil_genap = $semester_digit == 1 ? 'Ganjil' : 'Genap';
+
+        return "$tahun/$tahun_akhir $ganjil_genap";
+    }
 }

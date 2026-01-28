@@ -22,7 +22,7 @@ class UnitController extends Controller
      */
     public function create()
     {
-        $courses = Course::where('aktif', true)->orderBy('nama')->get();
+        $courses = Course::where('is_active', true)->orderBy('nama')->get();
         return view('unit.create', compact('courses'));
     }
 
@@ -67,7 +67,7 @@ class UnitController extends Controller
      */
     public function edit(Unit $unit)
     {
-        $courses = Course::where('aktif', true)->orderBy('nama')->get();
+        $courses = Course::where('is_active', true)->orderBy('nama')->get();
         return view('unit.edit', compact('unit', 'courses'));
     }
 

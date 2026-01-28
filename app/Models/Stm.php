@@ -25,6 +25,17 @@ class Stm extends Model
         'status',
     ];
 
+
+
+    protected $casts = [
+        'tanggal_surat' => 'date',          // otomatis jadi Carbon
+        'total_sks_tugas' => 'integer',
+        'total_sks_beban' => 'integer',
+        'total_sks_honor' => 'integer',
+        'status' => 'string',
+        'uuid' => 'string',
+    ];
+
     /**
      * Relasi: STM → Tahun Ajar
      */
@@ -39,7 +50,7 @@ class Stm extends Model
      */
     public function dosen()
     {
-        return $this->belongsTo(User::class, 'dosen_id');
+        return $this->belongsTo(Dosen::class, 'dosen_id');
     }
 
     /**
@@ -50,11 +61,21 @@ class Stm extends Model
         return $this->belongsTo(UnitPenugasan::class);
     }
 
-    /**
-     * Relasi: STM → Detail STM (rekap sumber utama SKS)
-     */
-    public function details()
+
+    public function items()
     {
-        return $this->hasMany(StmMk::class);
+        return $this->hasMany(StmItem::class, 'stm_id');
+    }
+
+
+    # ============================================================
+    # HELPERS
+    # ============================================================
+    public function updateTotalSks()
+    {
+        $this->total_sks_tugas = $this->items->sum('sks_tugas');
+        $this->total_sks_beban = $this->items->sum('sks_beban');
+        $this->total_sks_honor = $this->items->sum('sks_honor');
+        $this->save();
     }
 }

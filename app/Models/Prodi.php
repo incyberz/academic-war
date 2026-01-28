@@ -17,13 +17,18 @@ class Prodi extends Model
         'urutan',
         'fakultas_id',
         'nama',
-        'jenjang',
+        'jenjang_id',
     ];
 
     /**
      * Relasi ke Fakultas
      * Setiap Prodi dimiliki oleh satu Fakultas
      */
+    public function jenjang()
+    {
+        return $this->belongsTo(Jenjang::class, 'jenjang_id');
+    }
+
     public function fakultas()
     {
         return $this->belongsTo(Fakultas::class, 'fakultas_id');

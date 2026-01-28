@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
     {
 
         $this->call(FakultasSeeder::class);
+        $this->call(JenjangSeeder::class);
         $this->call(ProdiSeeder::class);
         $this->call(RoleSeeder::class);
         $this->call(UsersSeeder::class);
@@ -33,5 +34,8 @@ class DatabaseSeeder extends Seeder
         $this->call(StatusMhsSeeder::class);
         $this->call(ShiftSeeder::class);
         $this->call(JabatanStrukturalSeeder::class);
+        $this->call(StmSeeder::class);
+        $this->call(MKSeeder::class);
+        $this->call(DosenSeeder::class);
     }
 }

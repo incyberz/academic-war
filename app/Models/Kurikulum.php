@@ -26,4 +26,21 @@ class Kurikulum extends Model
     {
         return $this->belongsTo(Prodi::class);
     }
+
+    /**
+     * Relasi: Kurikulum memiliki banyak Mata Kuliah (KurMk)
+     */
+    public function kurMks()
+    {
+        return $this->hasMany(KurMk::class, 'kurikulum_id');
+    }
+
+
+    // Model Kurikulum
+    public function totalSKS(?int $semester = null): int
+    {
+        return $this->kurMks
+            ->when($semester, fn($q) => $q->where('semester', $semester))
+            ->sum(fn($kurMk) => $kurMk->mk->sks ?? 0);
+    }
 }
