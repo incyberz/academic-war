@@ -105,7 +105,7 @@
             <x-input-label for="tanggal_lahir" value="Tanggal Lahir" />
 
             <x-input required id="tanggal_lahir" name="tanggal_lahir" type="date" class="mt-1 block w-full"
-                :value="old('tanggal_lahir', $user->tanggal_lahir->format('Y-m-d'))" min="{{ $min }}"
+                :value="old('tanggal_lahir', $user->tanggal_lahir?->format('Y-m-d'))" min="{{ $min }}"
                 max="{{ $max }}" />
 
             <x-input-error class="mt-2" :messages="$errors->get('tanggal_lahir')" />

@@ -35,7 +35,7 @@
           @forelse($stms as $index => $stm)
           <tr>
             <td class="px-4 py-2 text-gray-800 dark:text-gray-200">{{ $loop->iteration }}</td>
-            <td class="px-4 py-2 text-gray-800 dark:text-gray-200">{{ '$stm->dosen->namaGelar()' ?? 'zzz' }}</td>
+            <td class="px-4 py-2 text-gray-800 dark:text-gray-200">{{ $stm->dosen->namaGelar() }}</td>
             <td class="px-4 py-2 text-gray-800 dark:text-gray-200">{{ $stm->tahunAjar->nama ?? '-' }}</td>
             <td class="px-4 py-2 text-gray-800 dark:text-gray-200">{{ $stm->unitPenugasan->nama ?? '-' }}</td>
             <td class="px-4 py-2 capitalize">

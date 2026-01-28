@@ -24,17 +24,6 @@
           </p>
         </div>
 
-        @if ($errors->any())
-        <div class="mb-4 p-3 rounded bg-red-100 text-red-700">
-          <ul class="list-disc pl-5">
-            @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-            @endforeach
-          </ul>
-        </div>
-        @endif
-
-
         {{-- form --}}
         <form action="{{ route('sesi-bimbingan.store') }}" method="POST" enctype="multipart/form-data"
           class="space-y-5">

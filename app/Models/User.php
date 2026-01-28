@@ -38,29 +38,17 @@ class User extends Authenticatable
         'kelengkapan_akun', // 0-100 persen
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
+    protected $casts = [
+        'tanggal_lahir'        => 'date',
+        'avatar_verified_at'        => 'datetime',
+        'whatsapp_verified_at'        => 'datetime',
+    ];
+
+
     protected $hidden = [
         'password',
         'remember_token',
     ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'tanggal_lahir' => 'date',
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
 
     public function role()
     {

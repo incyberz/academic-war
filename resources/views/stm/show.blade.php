@@ -2,8 +2,8 @@
 $stm->updateTotalSks()
 @endphp
 <x-app-layout>
-  <x-page-header title="Detail STM" subtitle="Back | Informasi lengkap Surat Tugas Mengajar"
-    route="{{ route('stm.index') }}" />
+  <x-page-header title="STM Saya - {{$taAktif}}" subtitle="Back | Informasi lengkap Surat Tugas Mengajar"
+    route="{{ isSuperAdmin() ? route('stm.index') : (isDosen() ? route('presensi-dosen.index') : route('dashboard')) }}" />
 
   <x-page-content>
 
@@ -12,7 +12,7 @@ $stm->updateTotalSks()
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <h3 class="text-gray-700 dark:text-gray-200 font-semibold">Dosen</h3>
-          <p class="text-gray-800 dark:text-gray-100">{{ $stm->dosen->name }}</p>
+          <p class="text-gray-800 dark:text-gray-100">{{ $stm->dosen->namaGelar() }}</p>
         </div>
         <div>
           <h3 class="text-gray-700 dark:text-gray-200 font-semibold">Tahun Ajar</h3>

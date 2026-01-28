@@ -4,23 +4,6 @@
 
   <x-page-content>
 
-    {{-- if errors any --}}
-    {{-- GLOBAL VALIDATION ERROR --}}
-    @if ($errors->any())
-    <x-card class="mb-4 border-red-300 bg-red-50 dark:bg-red-950">
-      <x-card-header class="text-red-700 dark:text-red-300">
-        Terjadi kesalahan input
-      </x-card-header>
-      <x-card-body>
-        <ul class="list-disc list-inside text-sm text-red-600 dark:text-red-300">
-          @foreach ($errors->all() as $error)
-          <li>{{ $error }}</li>
-          @endforeach
-        </ul>
-      </x-card-body>
-    </x-card>
-    @endif
-
     <form method="POST" action="{{ route('peserta-bimbingan.super-store', [
               'bimbingan'      => $bimbinganId,
               'jenisBimbingan' => $jenisBimbinganId,

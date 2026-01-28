@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\PresensiDosen;
+
 class PertemuanKelas extends Model
 {
     use HasFactory;
@@ -28,34 +30,30 @@ class PertemuanKelas extends Model
         'status' => 0,
     ];
 
-    /**
-     * Relasi ke PertemuanTa
-     */
     public function pertemuanTa()
     {
         return $this->belongsTo(PertemuanTa::class, 'pertemuan_ta_id');
     }
 
-    /**
-     * Relasi ke Kelas
-     */
     public function kelas()
     {
         return $this->belongsTo(Kelas::class, 'kelas_id');
     }
 
     /**
-     * Scope untuk pertemuan yang sudah dimulai
+     * Relasi ke PresensiDosen
      */
+    public function presensiDosen()
+    {
+        return $this->hasMany(PresensiDosen::class, 'pertemuan_kelas_id');
+    }
+
     public function scopeMulai($query)
     {
         return $query->whereNotNull('start_at')
             ->where('start_at', '<=', now());
     }
 
-    /**
-     * Scope untuk pertemuan dengan status tertentu
-     */
     public function scopeStatus($query, $status)
     {
         return $query->where('status', $status);

@@ -5,7 +5,7 @@
     <x-card>
       <x-card-header>
         Kelas List
-        <x-button btn="primary" class="float-right" onclick="window.location='{{ route('kelas.create') }}'">
+        <x-button size=sm class="float-right" onclick="window.location='{{ route('kelas.create') }}'">
           Tambah Kelas
         </x-button>
       </x-card-header>
@@ -26,7 +26,7 @@
             </tr>
           </thead>
           <tbody>
-            @forelse ($kelas_list as $kelas)
+            @forelse ($kelasList as $kelas)
             <tr>
               <td class="border px-3 py-2">{{ $loop->iteration }}</td>
               <td class="border px-3 py-2">{{ $kelas->kode }}</td>
@@ -56,7 +56,7 @@
         </table>
 
         <div class="mt-3">
-          {{ $kelas_list->links() }}
+          {{ $kelasList->links() }}
         </div>
       </x-card-body>
     </x-card>

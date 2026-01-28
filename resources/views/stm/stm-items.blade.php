@@ -1,13 +1,13 @@
 <x-card>
-  <x-card-header>STM Items</x-card-header>
-  <x-card-body>
-    <div class="mb-4 flex justify-between items-center">
-      <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-200">STM Items</h2>
-      <a href="{{ route('item.create', ['stm' => $stm->id]) }}"
-        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
-        + Tambah Item
+  <x-card-header>
+    <div class="flex justify-between items-center">
+      <h2>STM Items</h2>
+      <a href="{{ route('item.create', ['stm' => $stm->id]) }}">
+        <x-button size=sm>+ Tambah Item</x-button>
       </a>
     </div>
+  </x-card-header>
+  <x-card-body>
 
     <div class="overflow-x-auto bg-white dark:bg-gray-900 rounded shadow">
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
