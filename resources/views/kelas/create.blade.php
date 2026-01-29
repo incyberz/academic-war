@@ -2,6 +2,53 @@
   <x-page-header title="Buat Kelas Baru" subtitle="TA {{$taAktif}}" />
 
   <x-page-content>
+
+    @php
+    $ZZZ = 1;
+    @endphp
+
+    @if(isSuperAdmin() || $ZZZ)
+    <x-card class="mb-6 border border-red-300 dark:border-red-800">
+      <x-card-header class="bg-red-50 dark:bg-red-950/40">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="text-lg font-bold text-red-700 dark:text-red-300">
+              ⚠️ Super Admin Tools
+            </div>
+            <div class="text-sm text-red-600/90 dark:text-red-200/80">
+              Fitur ini akan membuat kelas massal (otomatis) untuk seluruh prodi/shift/rombel.
+              Gunakan hanya jika Anda paham konsekuensinya.
+            </div>
+          </div>
+
+          <form method="POST" action="{{ route('kelas.superCreate') }}"
+            onsubmit="return confirm('Yakin menjalankan SUPER CREATE KELAS? Ini akan membuat data massal.')">
+            @csrf
+            <x-button btn="danger" type="submit">
+              Super Create Kelas
+            </x-button>
+          </form>
+        </div>
+      </x-card-header>
+
+      <x-card-body>
+        <x-alert type="danger" title="Peringatan">
+          Ini adalah fitur level sistem. Jika TA yang aktif adalah <b>semester pendek (...3)</b>,
+          proses akan otomatis di-skip.
+        </x-alert>
+
+        <div class="mt-3 text-sm text-gray-700 dark:text-gray-300">
+          <ul class="list-disc pl-5 space-y-1">
+            <li>Membuat kelas untuk semua prodi</li>
+            <li>Rombel diambil dari TA sebelumnya / default 1</li>
+            <li>Menghindari duplikasi dengan unique constraint</li>
+          </ul>
+        </div>
+      </x-card-body>
+    </x-card>
+    @endif
+
+
     <form method="POST" action="{{ route('kelas.store') }}">
       @csrf
 

@@ -128,13 +128,17 @@ Route::middleware('auth')->group(function () {
 
 
     # ============================================================
-    # GOD MODE 
+    # GOD MODE | LINK DEWA
     # ============================================================
     // dosen boleh set tahapan peserta bimbingan nya
     Route::post(
         '/peserta-bimbingan/{pesertaBimbingan}/set-tahapan',
         [PesertaBimbinganController::class, 'setTahapan']
     )->name('peserta-bimbingan.set-tahapan');
+
+    Route::post('/kelas/super-create', [KelasController::class, 'superCreateKelas'])
+        ->name('kelas.superCreate');
+
 
 
 

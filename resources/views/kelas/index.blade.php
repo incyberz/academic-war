@@ -1,5 +1,5 @@
 <x-app-layout>
-  <x-page-header title="Daftar Kelas" subtitle="Kelola kelas pada tahun ajar aktif" />
+  <x-page-header title="Daftar Kelas TA {{$taAktif}}" subtitle="Kelola kelas pada tahun ajar aktif" />
 
   <x-page-content>
     <x-card>

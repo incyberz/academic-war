@@ -17,6 +17,7 @@ class KelasController extends Controller
     public function index()
     {
         $kelasList = Kelas::with(['tahunAjar', 'prodi', 'shift'])
+            ->where('tahun_ajar_id', session('tahun_ajar_id'))
             ->orderBy('tahun_ajar_id')
             ->orderBy('prodi_id')
             ->orderBy('semester')
@@ -219,5 +220,129 @@ class KelasController extends Controller
 
         return redirect()->route('kelas.index')
             ->with('success', "Kelas '{$kelas->label}' berhasil diperbarui.");
+    }
+
+    public function superCreateKelas(Request $request)
+    {
+        $ZZZ = false;
+        if (!isSuperAdmin() && $ZZZ) {
+            abort(403, 'Akses ditolak. Hanya Super Admin.');
+        }
+
+        $tahunAjarId = session('tahun_ajar_id');
+        if (!$tahunAjarId) {
+            return back()->with('error', 'Session tahun ajar belum di-set.');
+        }
+
+        // digit terakhir: 1 ganjil, 2 genap
+        $digitAkhir = (int) substr((string) $tahunAjarId, -1);
+        if ($digitAkhir > 2) {
+            return back()->with('error', 'TA ini adalah Semester Pendek (kode > 2). Super Create Kelas di-skip.');
+        }
+        $semesterList = $digitAkhir === 1 ? [1, 3, 5, 7] : [2, 4, 6, 8];
+
+        // TA sebelumnya (misal: 20251 -> 20242)
+        $tahunAjarSebelumnya = ((int)$tahunAjarId) - 9;
+
+        $prodis = Prodi::with('jenjang')->get();
+        $shifts = Shift::all();
+
+        $created = 0;
+        $updated = 0;
+        $skipped = 0;
+
+        DB::beginTransaction();
+        try {
+
+            foreach ($prodis as $prodi) {
+                foreach ($shifts as $shift) {
+
+                    // Ambil jumlah rombel TA sebelumnya jika ada
+                    // $rombelSebelumnya = Kelas::where('prodi_id', $prodi->id)
+                    //     ->where('shift_id', $shift->id)
+                    //     ->where('tahun_ajar_id', $tahunAjarSebelumnya)
+                    //     ->max('jumlah_rombel');
+
+                    // $jumlahRombel = $rombelSebelumnya ?: 1;
+
+
+
+                    foreach ($semesterList as $semester) {
+
+                        // ambil jumlah rombel dari TA sebelumnya (berdasarkan jumlah kelas yang ada)
+                        $jumlahRombelSebelumnya = Kelas::where('tahun_ajar_id', $tahunAjarSebelumnya)
+                            ->where('prodi_id', $prodi->id)
+                            ->where('shift_id', $shift->id)
+                            ->where('semester', $semester)
+                            ->distinct('rombel')
+                            ->count('rombel');
+
+                        $jumlahRombel = $jumlahRombelSebelumnya > 0 ? $jumlahRombelSebelumnya : 1;
+
+                        // kode dan label dibuat sama seperti di form kamu
+                        $jenjang = $prodi->jenjang->kode;     // contoh S1
+                        $kodeProdi = $prodi->prodi;           // contoh SI
+                        $kodeShift = $shift->kode;            // contoh R/NR
+
+                        # ============================================================
+                        # ZZZ LOOP SESUAI JUMLAH ROMBEL
+                        # ============================================================
+
+                        $kode = "{$jenjang}-{$kodeProdi}-A-{$kodeShift}-{$semester}-{$tahunAjarId}";
+                        $rombelA = $jumlahRombel == 1 ? '-' : '-A-';
+                        $label = "{$kodeProdi}{$rombelA}{$kodeShift}{$semester}";
+
+                        // cegah duplikasi: Tahun Ajar + Prodi + Shift + Semester
+                        $kelas = Kelas::where('tahun_ajar_id', $tahunAjarId)
+                            ->where('prodi_id', $prodi->id)
+                            ->where('shift_id', $shift->id)
+                            ->where('semester', $semester)
+                            ->first();
+
+                        if ($kelas) {
+                            // update jika perlu
+                            $kelas->update([
+                                'kode' => $kode,
+                                'label' => $label,
+                                'jumlah_rombel' => $jumlahRombel,
+                            ]);
+                            $updated++;
+                            continue;
+                        }
+
+                        // create baru
+                        Kelas::create([
+                            'tahun_ajar_id' => $tahunAjarId,
+                            'prodi_id'      => $prodi->id,
+                            'shift_id'      => $shift->id,
+                            'semester'      => $semester,
+
+                            'kode'          => $kode,
+                            'label'         => $label,
+                            'rombel'        => $kelas->rombel ?? 'A', // ZZZ ambil rombel dari kelas terdahulu
+
+
+                            'jumlah_rombel' => $jumlahRombel,
+                            'max_peserta'   => 40,
+                            'min_peserta'   => 5,
+                            'is_aktif'      => true,
+                        ]);
+
+                        $created++;
+                    } // end foreach semester
+                }
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('kelas.index')
+                ->with('success', "Super Create Kelas selesai. Created: {$created}, Updated: {$updated}, Skipped: {$skipped}");
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            report($e);
+
+            return back()->with('error', 'Gagal Super Create Kelas: ' . $e->getMessage());
+        }
     }
 }
