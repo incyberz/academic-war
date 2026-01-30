@@ -13,15 +13,29 @@ class KurikulumController extends Controller
      */
     public function index()
     {
-        $kurikulums = Kurikulum::with('prodi')->orderByDesc('tahun')->get();
+        $kurikulums = Kurikulum::select('kurikulum.*')
+            ->join('prodi', 'kurikulum.prodi_id', '=', 'prodi.id')
+            ->with('prodi')
+            ->orderBy('prodi.nama')
+            ->orderByDesc('kurikulum.tahun')
+            ->paginate(15);
+
+
         return view('kurikulum.index', compact('kurikulums'));
     }
+
 
     /**
      * Show the form for creating a new kurikulum.
      */
     public function create()
     {
+        $ZZZ = false;
+        if (!isSuperAdmin() and $ZZZ) {
+            // return back with error hanya super admin
+            return redirect()->route('kurikulum.index')
+                ->with('error', "Hanya Super Admin yang dapat menambah kurikulum baru.");
+        }
         $prodis = Prodi::orderBy('nama')->get();
         return view('kurikulum.create', compact('prodis'));
     }
@@ -31,30 +45,86 @@ class KurikulumController extends Controller
      */
     public function store(Request $request)
     {
+        // Hanya super admin bisa akses
+        // ZZZ
+        // if (!isSuperAdmin()) {
+        //     return redirect()->route('kurikulum.index')
+        //         ->with('error', 'Hanya Super Admin yang dapat membuat kurikulum.');
+        // }
+
+        // Validasi input
         $validated = $request->validate([
-            'nama'       => 'required|string|unique:kurikulum,nama|max:255',
-            'tahun'      => 'required|digits:4|integer|min:1900|max:2100',
-            'prodi_id'   => 'required|exists:prodi,id',
-            'is_active'  => 'nullable|boolean',
-            'keterangan' => 'nullable|string',
+            'tahun' => 'required|integer|min:2022|max:' . date('Y') + 1,
+            'keterangan' => 'nullable|string|max:500',
         ]);
 
-        $kurikulum = Kurikulum::create($validated);
+        // Ambil semua prodi
+        $prodis = Prodi::orderBy('nama')->get();
+        $tahun = $validated['tahun'];
+        $tahunSebelumnya = $tahun - 1;
+
+
+        // Buat kurikulum untuk setiap prodi
+        foreach ($prodis as $prodi) {
+
+            $cek = Kurikulum::where('prodi_id', $prodi->id)
+                ->where('tahun', $tahun)
+                ->first();
+            if ($cek) continue; // sudah ada, lewati
+
+            $kurikulumBaru = Kurikulum::create([
+                'tahun' => $tahun,
+                'prodi_id' => $prodi->id,
+                'keterangan' => $validated['keterangan'] ?? null,
+            ]);
+
+            // cek apakah prodi ini punya kurikulum di tahun sebelumnya
+            $kurikulumSebelumnya = Kurikulum::where('prodi_id', $prodi->id)
+                ->where('tahun', $tahunSebelumnya)
+                ->first();
+
+            if ($kurikulumSebelumnya) {
+                // salin mata kuliah dari kurikulum sebelumnya ke kurikulum baru
+                foreach ($kurikulumSebelumnya->kurMks as $kurMkLama) {
+                    $kurikulumBaru->kurMks()->create([
+                        'mk_id' => $kurMkLama->mk_id,
+                        'semester' => $kurMkLama->semester,
+                        'jenis' => $kurMkLama->jenis,
+                        'prasyarat_mk_id' => $kurMkLama->prasyarat_mk_id,
+                    ]);
+                }
+            }
+        }
 
         return redirect()->route('kurikulum.index')
-            ->with('success', "Kurikulum '{$kurikulum->nama}' berhasil dibuat.");
+            ->with('success', "Kurikulum berhasil dibuat untuk {$prodis->count()} prodi.");
     }
+
 
     /**
      * Display the specified kurikulum.
      */
     public function show(Kurikulum $kurikulum)
     {
-        // langsung redirect ke kur-mk.create dengan kurikulum_id
-        return redirect()->route('kur-mk.create', [
-            'kurikulum_id' => $kurikulum->id,
-        ])->with('info', "Detail Kurikulum auto-redirect ke Struktur '{$kurikulum->nama}'.");
+        $kurikulum->load([
+            'prodi.jenjang',
+            'kurMks.mk',
+        ]);
+
+        $jumlahSemester = $kurikulum->prodi->jenjang->jumlah_semester ?? 8;
+
+        $kurMksBySemester = $kurikulum->kurMks
+            ->sortBy(fn($x) => $x->mk->kode ?? '')
+            ->groupBy('semester');
+
+        return view('kurikulum.show', compact(
+            'kurikulum',
+            'jumlahSemester',
+            'kurMksBySemester',
+        ));
     }
+
+
 
 
     /**
@@ -62,10 +132,9 @@ class KurikulumController extends Controller
      */
     public function edit(Kurikulum $kurikulum)
     {
-        dd('edit kurikulum not available');
-
-        $prodis = Prodi::orderBy('nama')->get();
-        return view('kurikulum.edit', compact('kurikulum', 'prodis'));
+        return redirect()->route('kur-mk.create', [
+            'kurikulum_id' => $kurikulum->id,
+        ]);
     }
 
     /**

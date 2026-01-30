@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dosen;
 use App\Models\Stm;
 use App\Models\StmItem;
 use App\Models\KurMk;
 use App\Models\Kelas;
+use App\Models\Shift;
+use App\Models\TahunAjar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StmItemController extends Controller
 {
@@ -25,23 +29,61 @@ class StmItemController extends Controller
      */
     public function create(Stm $stm)
     {
-        // Ambil item STM yang sudah ada
-        $stm->load('items');
+        $user = Auth::user();
+        $tahunAjarAktif = TahunAjar::where('is_active', true)->firstOrFail();
+        $tahun_ajar_id = session('tahun_ajar_id');
+        if ($tahun_ajar_id && $tahun_ajar_id != $tahunAjarAktif->id) {
+            $namaTaAktif   = $tahunAjarAktif->nama ?? $tahunAjarAktif->id;
+            return redirect()->back()->withErrors([
+                'tahun_ajar_id' =>
+                "Anda sedang berada di TA {$tahun_ajar_id}, TA aktif {$namaTaAktif}, silahkan Switch dahulu ke TA aktif.",
+            ]);
+        }
+        $shifts = Shift::orderBy('jam_awal_kuliah')->get();
 
-        // ID MK & Kelas yang sudah dipakai di STM ini
-        $myKurMK = $stm->items
-            ->pluck('kur_mk_id')
-            ->unique()
-            ->values();
+        if (isDosen()) {
 
-        $myKelass = $stm->items
-            ->pluck('kelas_id')
-            ->unique()
-            ->values();
+            $dosen = Dosen::where('user_id', $user->id)->firstOrFail();
+            $myProdi = $dosen->prodi; // myhomebase
+            $myFakultas = $myProdi ? $dosen->prodi->fakultas : null; // myfakultas
 
-        // Ambil MK & Kelas yang BELUM dipakai
-        $kurMks = KurMk::whereNotIn('id', $myKurMK)->get();
-        $kelass = Kelas::whereNotIn('id', $myKelass)->get();
+            // Ambil item STM yang sudah ada
+            $stm->load('items');
+
+            // ID MK & Kelas yang sudah dipakai di STM ini
+            $myKurMK = $stm->items
+                ->pluck('kur_mk_id')
+                ->unique()
+                ->values();
+
+            $myKelass = $stm->items
+                ->pluck('kelas_id')
+                ->unique()
+                ->values();
+
+            // Ambil MK & Kelas yang BELUM dipakai
+            $kurMks = KurMk::whereNotIn('id', $myKurMK)->get();
+
+            $kelass = Kelas::query()
+                ->with(['shift', 'prodi.fakultas'])
+                ->where('kelas.tahun_ajar_id', $tahun_ajar_id)
+                ->when(!empty($myKelass), function ($q) use ($myKelass) {
+                    $q->whereNotIn('kelas.id', $myKelass);
+                })
+                ->leftJoin('prodi', 'prodi.id', '=', 'kelas.prodi_id')
+                ->leftJoin('shift', 'shift.id', '=', 'kelas.shift_id')
+                ->leftJoin('fakultas', 'fakultas.id', '=', 'prodi.fakultas_id')
+                ->orderBy('fakultas.id')
+                ->orderBy('prodi.id')
+                ->orderBy('shift.id')
+                ->orderBy('kelas.kode')
+                ->select('kelas.*')
+                ->get();
+        } else {
+            dd('STM Item Create saat ini hanya untuk role dosen');
+        }
+
+
 
         return view('stm.item.create', compact(
             'stm',
@@ -49,6 +91,9 @@ class StmItemController extends Controller
             'kelass',
             'myKurMK',
             'myKelass',
+            'myFakultas',
+            'myProdi',
+            'shifts',
         ));
     }
 

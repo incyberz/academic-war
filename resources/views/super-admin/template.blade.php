@@ -13,6 +13,9 @@
         <x-select>
           <option value="">-- Pilih --</option>
         </x-select>
+        <div>
+          <x-detail-item label="label" :value="$value" />
+        </div>
         <x-button btn=primary>Primary</x-button>
       </x-card-body>
     </x-card>

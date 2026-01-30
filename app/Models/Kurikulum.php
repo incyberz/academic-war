@@ -12,12 +12,22 @@ class Kurikulum extends Model
     protected $table = 'kurikulum';
 
     protected $fillable = [
-        'nama',
+        // 'nama', // auto
         'tahun',
         'prodi_id',
         'is_active',
         'keterangan',
     ];
+
+    public function getNamaAttribute()
+    {
+        $jenjang = $this->prodi?->jenjang?->kode ?? 'Undefined Jenjang!';
+        $prodi   = $this->prodi?->nama ?? 'Undefined Prodi!';
+        $tahun   = $this->tahun ?? 'Unset Tahun Kurikulum!';
+
+        return "Kurikulum {$jenjang} - {$prodi} {$tahun}";
+    }
+
 
     /**
      * Relasi: Kurikulum dimiliki oleh satu Prodi
@@ -42,5 +52,10 @@ class Kurikulum extends Model
         return $this->kurMks
             ->when($semester, fn($q) => $q->where('semester', $semester))
             ->sum(fn($kurMk) => $kurMk->mk->sks ?? 0);
+    }
+
+    public function pengesahan()
+    {
+        return null; // next fitur ZZZ
     }
 }

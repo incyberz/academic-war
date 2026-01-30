@@ -5,7 +5,7 @@
     <x-card>
       <x-card-header>
         Mata Kuliah List
-        <x-button btn="primary" class="float-right" onclick="window.location='{{ route('mk.create') }}'">
+        <x-button btn="primary" size=sm class="float-right" onclick="window.location='{{ route('mk.create') }}'">
           Tambah MK
         </x-button>
       </x-card-header>
@@ -50,7 +50,9 @@
             </tr>
             @empty
             <tr>
-              <td class="border px-3 py-2 text-center" colspan="7">Tidak ada data mata kuliah</td>
+              <td class="border px-3 py-2 text-center" colspan="7">
+                <x-alert type=warning title="No Data">Tidak ada data mata kuliah</x-alert>
+              </td>
             </tr>
             @endforelse
           </tbody>

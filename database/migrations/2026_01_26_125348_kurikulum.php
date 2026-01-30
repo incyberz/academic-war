@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('kurikulum', function (Blueprint $table) {
             $table->id();
 
-            $table->string('nama')->unique();
+            // $table->string('nama')->unique(); // auto, by getNamaAttribute
             // contoh: "Kurikulum Sistem Informasi 2025"
 
             $table->year('tahun');

@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.super_admin {
+  border: solid 2px red !important;
+}
+
 /* petunjuk penggunaan in-app */
 .step-no {
   @apply inline-flex items-center justify-center h-10 w-10 min-w-[2.5rem] rounded-full text-2xl font-bold leading-none bg-blue-600 text-white shadow-sm;

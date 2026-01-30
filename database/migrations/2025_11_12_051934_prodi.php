@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->string('prodi', 10)->unique(); // kode prodi, unik tapi bukan PK
             $table->tinyInteger('urutan')->nullable();
 
-            $table->foreignId('fakultas_id')->constrained('fakultas')->nullable(); // untuk kampus kecil nullable
+            $table->foreignId('fakultas_id')->constrained('fakultas'); // wajib ada fakultas, walau sekolah tinggi
             $table->foreignId('jenjang_id')->constrained('jenjang');
 
             $table->string('nama', 30);

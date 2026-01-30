@@ -23,7 +23,7 @@
                 <th class="px-3 py-2 border">No</th>
                 <th class="px-3 py-2 border text-left">Nama</th>
                 <th class="px-3 py-2 border text-left">NIDN</th>
-                <th class="px-3 py-2 border text-left">Prodi</th>
+                <th class="px-3 py-2 border text-left">Homebase Prodi</th>
                 <th class="px-3 py-2 border text-center">Jabatan</th>
                 <th class="px-3 py-2 border text-center">Aksi</th>
               </tr>
@@ -37,7 +37,7 @@
                 </td>
 
                 <td class="px-3 py-2 border">
-                  {{ $item->namaGelar() }}
+                  {{ $item->nama }}
                 </td>
 
                 <td class="px-3 py-2 border">

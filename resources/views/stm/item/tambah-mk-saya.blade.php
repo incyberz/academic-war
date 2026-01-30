@@ -22,31 +22,14 @@ $namaDosen = $stm->dosen->nama;
               <span class="step">Pilih MK yang Anda ampu!</span>
             </span>
 
-            <a href="{{ route('kur-mk.index') }}">
+            <a href="{{ route('kurikulum.index') }}">
               <x-button type="button" :outline="true" size="sm">Manage KurMK</x-button>
             </a>
           </x-card-header>
 
           <x-card-body class="h-80 overflow-y-auto">
-            <p>Kurikulum Mata Kuliah yang tersedia:</p>
-            <div class="grid grid-cols-1 gap-2">
-              @forelse($kurMks as $kmk)
-              <label class="flex items-center space-x-2 rounded cursor-pointer
-                               hover:bg-gray-100 dark:hover:bg-yellow-900">
-                <input type="radio" name="kur_mk_ids" value="{{ $kmk->id }}" />
-                <span class="text-sm text-gray-700 dark:text-gray-200">
-                  {{ $kmk->mk->nama }}
-                  <span class="text-xs text-gray-500 dark:text-gray-400">
-                    ({{ $kmk->mk->sks }} SKS)
-                  </span>
-                </span>
-              </label>
-              @empty
-              <div class="flex items-center justify-center h-full text-sm text-gray-500 dark:text-gray-400 italic">
-                Tidak ada MK unassign
-              </div>
-              @endforelse
-            </div>
+            {{-- Kurikulum MK yang tersedia --}}
+            @include('stm.item.kmk-yang-tersedia')
           </x-card-body>
         </x-card>
 
@@ -64,79 +47,16 @@ $namaDosen = $stm->dosen->nama;
           </x-card-header>
 
           <x-card-body class="h-80 overflow-y-auto">
-            <p>Kelas yang tersedia:</p>
-            <div class="grid grid-cols-2 gap-2">
-              @forelse($kelass as $kelas)
-              <label class="flex items-center space-x-2 p-2 rounded cursor-pointer
-                               hover:bg-gray-100 dark:hover:bg-gray-800">
-                <input type="checkbox" name="kelas_ids[]" value="{{ $kelas->id }}"
-                  class="rounded text-blue-600 focus:ring-blue-500" {{ in_array($kelas->id, old('kelas_ids', [])) ?
-                'checked'
-                : '' }}>
-                <span class="text-sm text-gray-700 dark:text-gray-200">
-                  {{ $kelas->kode }}
-                </span>
-              </label>
-              @empty
-              <div class="col-span-2 flex items-center justify-center h-full text-sm
-                         text-gray-500 dark:text-gray-400 italic">
-                Tidak ada kelas unassign
-              </div>
-              @endforelse
-            </div>
+            @include('stm.item.kelas-yang-tersedia')
           </x-card-body>
         </x-card>
 
       </div>
 
 
-      <x-card>
-        <x-card-header class="flex items-center justify-between">
-          <span class="flex items-center gap-3">
-            <span class="step-no">3</span>
-            <span class="step leading-tight">Penyesuaian SKS (opsional)</span>
-          </span>
+      @include('stm.item.penyesuaian-sks')
 
-          <a href="{{ route('mk.index') }}" class="shrink-0" onclick="return confirm(`Menuju daftar MK?`)">
-            <x-button type="button" :outline="true" size="sm">Daftar MK</x-button>
-          </a>
-        </x-card-header>
 
-        <x-card-body class="h-80 overflow-y-auto">
-          <p>SKS pada MK terpilih adalah <span id="sks_mk">?</span> SKS. Jika ada penyesuaian silahkan klik <span
-              class="toggle">Sesuaikan</span></p>
-          {{-- SKS Tugas --}}
-          <div id="blok_penyesuaian_sks" class="hidden">
-            <div>
-              <x-label for="sks_tugas">SKS Tugas</x-label>
-              <x-input id="sks_tugas" type="number" name="sks_tugas" min="0" value="{{ old('sks_tugas') }}" />
-              <p>SKS yang tertera pada STM yang akan disahkan</p>
-            </div>
-
-            {{-- SKS Beban --}}
-            <div>
-              <x-label for="sks_beban">SKS Beban</x-label>
-              <x-input id="sks_beban" type="number" name="sks_beban" min="0" value="{{ old('sks_beban') }}" />
-              <p>SKS penyesuaian untuk input BKD</p>
-            </div>
-
-            {{-- SKS Honor --}}
-            <div>
-              <x-label for="sks_honor">SKS Honor</x-label>
-              <x-input id="sks_honor" type="number" name="sks_honor" min="0" value="{{ old('sks_honor') }}" />
-              <p>SKS untuk perhitungan honor/insentif</p>
-            </div>
-            <x-button type=button size=sm class="toggle">Batal</x-button>
-          </div>
-        </x-card-body>
-      </x-card>
-      <script>
-        $(function() {
-          $('.toggle').click(function() {
-            $("#blok_penyesuaian_sks").slideToggle()
-          })
-        })
-      </script>
 
 
       {{-- Tombol Submit --}}
@@ -151,5 +71,10 @@ $namaDosen = $stm->dosen->nama;
         </a>
       </div>
     </form>
+
+    @if ($myKelass)
+    @include('stm.item.kelas-yang-saya-ampu')
+    @include('stm.item.mk-yang-anda-pilih')
+    @endif
   </x-page-content>
 </x-app-layout>
