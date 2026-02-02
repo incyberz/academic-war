@@ -28,7 +28,7 @@
               <th class="border px-3 py-2">Kode MK</th>
               <th class="border px-3 py-2">SKS</th>
               <th class="border px-3 py-2">Kelas</th>
-              <th class="border px-3 py-2">Jumlah Pertemuan</th>
+              <th class="border px-3 py-2">Jumlah Sesi</th>
               <th class="border px-3 py-2">Hadir</th>
               <th class="border px-3 py-2">Absen</th>
               <th class="border px-3 py-2">Progres</th>

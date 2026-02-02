@@ -16,6 +16,11 @@ return new class extends Migration
             $table->string('nama');
             $table->text('deskripsi')->nullable();
 
+            // Opsional: konteks stm item (jika course ini dibuat dari konteks stm item tertentu)
+            $table->unsignedBigInteger('stm_item_id')->nullable()->index();
+
+
+
             // Tipe course (opsional tapi future-proof)
             // mk      = 1 course = 1 MK (model sekarang)
             // bidang  = course besar / paket kompetensi

@@ -136,6 +136,9 @@ class StmController extends Controller
     public function show(Stm $stm): \Illuminate\View\View
     {
         // Eager load semua relasi yang diperlukan, termasuk detail STM Items
+
+        $stm->updateTotalSks();
+
         $stm->load([
             'tahunAjar',
             'dosen',

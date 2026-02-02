@@ -1,21 +1,33 @@
 <p>Kelas yang tersedia:</p>
+<style>
+  .kelas_prodi_active {
+    background: rgb(245, 208, 1) !important;
+    color: black !important;
+  }
+</style>
 
 @php
 $myFakultasNama = $myFakultas->nama ?? null;
 $myProdiId = $myProdi->id ?? null;
 
+// $kelassGrouped = $kelass->groupBy(function ($kelas) {
+// return optional(optional($kelas->prodi)->fakultas)->nama ?? 'Tanpa Fakultas';
+// });
+
 $kelassGrouped = $kelass->groupBy(function ($kelas) {
-return optional(optional($kelas->prodi)->fakultas)->nama ?? 'Tanpa Fakultas';
+return optional(optional($kelas->prodi)->fakultas)->id ?? 0;
 });
+
 @endphp
 
-@forelse($kelassGrouped as $namaFakultas => $items)
+@forelse($kelassGrouped as $fakultasId => $items)
 
 @php
-$isMyFakultas = $myFakultasNama && ($myFakultasNama === $namaFakultas);
+$namaFakultas = optional(optional($items->first()->prodi)->fakultas)->nama ?? 'Tanpa Fakultas';
+$isMyFakultas = ($myFakultas?->id) && ((int)$myFakultas->id === (int)$fakultasId);
 @endphp
 
-<div class="rounded-xl border p-3 space-y-3
+<div id="fakultas--{{$fakultasId}}" class="fakultas hidden rounded-xl border p-3 space-y-3
       {{ $isMyFakultas
           ? 'border-blue-400 bg-blue-50 dark:border-blue-600/60 dark:bg-blue-950/30'
           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900'
@@ -55,21 +67,23 @@ $isMyFakultas = $myFakultasNama && ($myFakultasNama === $namaFakultas);
         $isMyProdi = $myProdiId && ($kelasProdiId == $myProdiId);
         @endphp
 
-        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer border
+        <label data-prodi-id="{{$kelas->prodi_id}}" data-semester="{{$kelas->semester}}" class="label_kelas label_kelas--{{$kelas->prodi_id}} label_kelas--{{$kelas->prodi_id}}--{{$kelas->semester}} flex items-center space-x-2 p-2 rounded-lg cursor-pointer border
                             hover:bg-gray-50 dark:hover:bg-gray-800
                 {{ $isMyProdi
                     ? 'border-emerald-400 bg-emerald-50 dark:border-emerald-600/60 dark:bg-emerald-950/30'
                     : 'border-transparent'
                 }}">
 
-          <input type="checkbox" name="kelas_ids[]" value="{{ $kelas->id }}"
-            class="rounded text-blue-600 focus:ring-blue-500" {{ in_array($kelas->id, old('kelas_ids', [])) ? 'checked'
-          : '' }}>
+          <input data-kelas-label="{{ $kelas->label }}" type="checkbox" name="kelas_ids[]" value="{{ $kelas->id }}"
+            class="cb_kelas h-4 w-4 rounded border-gray-300 text-blue-600
+                   focus:ring-2 focus:ring-blue-500
+                   dark:border-gray-600 dark:bg-gray-900 dark:text-blue-500
+                   dark:focus:ring-blue-400" autocomplete="off">
 
           <div class="flex flex-col">
             <span class="text-sm font-medium
                     {{ $isMyProdi ? 'text-emerald-800 dark:text-emerald-200' : 'text-gray-700 dark:text-gray-200' }}">
-              {{ $kelas->kode }}
+              {{ $kelas->label }}
             </span>
 
             @if($isMyProdi)

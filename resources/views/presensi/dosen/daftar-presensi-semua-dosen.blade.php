@@ -1,5 +1,5 @@
 <x-app-layout>
-  <x-page-header title="Presensi Dosen" subtitle="Daftar presensi dosen per pertemuan kelas." />
+  <x-page-header title="Presensi Dosen" subtitle="Daftar presensi dosen per sesi kelas." />
 
   <x-page-content>
     {{-- FILTER --}}
@@ -15,12 +15,12 @@
             </div>
 
             <div>
-              <x-label>Pertemuan Kelas</x-label>
-              <x-select name="pertemuan_kelas_id">
+              <x-label>Sesi Kelas</x-label>
+              <x-select name="sesi_kelas_id">
                 <option value="">-- Semua --</option>
-                @foreach($pertemuanKelas as $pk)
-                <option value="{{ $pk->id }}" @selected(request('pertemuan_kelas_id')==$pk->id)>
-                  {{ $pk->nama ?? ('Pertemuan #' . $pk->id) }}
+                @foreach($sesiKelas as $pk)
+                <option value="{{ $pk->id }}" @selected(request('sesi_kelas_id')==$pk->id)>
+                  {{ $pk->nama ?? ('Sesi #' . $pk->id) }}
                 </option>
                 @endforeach
               </x-select>
@@ -65,7 +65,7 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Pertemuan</th>
+                <th>Sesi</th>
                 <th>Dosen</th>
                 <th>Start</th>
                 <th>XP</th>
@@ -80,7 +80,7 @@
                 <td>{{ $items->firstItem() + $i }}</td>
 
                 <td>
-                  {{ $row->pertemuanKelas->nama ?? ('Pertemuan #' . $row->pertemuan_kelas_id) }}
+                  {{ $row->sesiKelas->nama ?? ('Sesi #' . $row->sesi_kelas_id) }}
                 </td>
 
                 <td>

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PresensiOffline;
-use App\Models\PertemuanKelas;
+use App\Models\SesiKelas;
 use App\Models\KelasMhs;
 use Illuminate\Http\Request;
 
@@ -14,8 +14,8 @@ class PresensiOfflineController extends Controller
      */
     public function index()
     {
-        $presensiList = PresensiOffline::with(['pertemuanKelas', 'kelasMhs'])
-            ->orderBy('pertemuan_kelas_id')
+        $presensiList = PresensiOffline::with(['sesiKelas', 'kelasMhs'])
+            ->orderBy('sesi_kelas_id')
             ->orderBy('kelas_mhs_id')
             ->paginate(15);
 
@@ -27,10 +27,7 @@ class PresensiOfflineController extends Controller
      */
     public function create()
     {
-        $pertemuanKelasList = PertemuanKelas::with(['pertemuanTa', 'kelas'])->orderBy('id')->get();
-        $kelasMhsList = KelasMhs::with(['mhs', 'kelas'])->orderBy('id')->get();
-
-        return view('presensi_offline.create', compact('pertemuanKelasList', 'kelasMhsList'));
+        dd('ondev');
     }
 
     /**
@@ -39,7 +36,7 @@ class PresensiOfflineController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'pertemuan_kelas_id' => 'required|exists:pertemuan_kelas,id',
+            'sesi_kelas_id' => 'required|exists:sesi_kelas,id',
             'kelas_mhs_id' => 'required|exists:kelas_mhs,id',
             'status' => 'nullable|integer',
             'xp' => 'nullable|integer|min:0',
@@ -47,11 +44,11 @@ class PresensiOfflineController extends Controller
         ]);
 
         // cek constraint unik
-        if (PresensiOffline::where('pertemuan_kelas_id', $validated['pertemuan_kelas_id'])
+        if (PresensiOffline::where('sesi_kelas_id', $validated['sesi_kelas_id'])
             ->where('kelas_mhs_id', $validated['kelas_mhs_id'])
             ->exists()
         ) {
-            return back()->withErrors(['kelas_mhs_id' => 'Mahasiswa sudah tercatat presensi offline di pertemuan ini'])->withInput();
+            return back()->withErrors(['kelas_mhs_id' => 'Mahasiswa sudah tercatat presensi offline di sesi ini'])->withInput();
         }
 
         $presensi = PresensiOffline::create($validated);
@@ -65,7 +62,7 @@ class PresensiOfflineController extends Controller
      */
     public function show(PresensiOffline $presensiOffline)
     {
-        $presensiOffline->load(['pertemuanKelas', 'kelasMhs']);
+        $presensiOffline->load(['sesiKelas', 'kelasMhs']);
         return view('presensi_offline.show', compact('presensiOffline'));
     }
 
@@ -74,10 +71,7 @@ class PresensiOfflineController extends Controller
      */
     public function edit(PresensiOffline $presensiOffline)
     {
-        $pertemuanKelasList = PertemuanKelas::with(['pertemuanTa', 'kelas'])->orderBy('id')->get();
-        $kelasMhsList = KelasMhs::with(['mhs', 'kelas'])->orderBy('id')->get();
-
-        return view('presensi_offline.edit', compact('presensiOffline', 'pertemuanKelasList', 'kelasMhsList'));
+        dd('ondev');
     }
 
     /**
@@ -86,7 +80,7 @@ class PresensiOfflineController extends Controller
     public function update(Request $request, PresensiOffline $presensiOffline)
     {
         $validated = $request->validate([
-            'pertemuan_kelas_id' => 'required|exists:pertemuan_kelas,id',
+            'sesi_kelas_id' => 'required|exists:sesi_kelas,id',
             'kelas_mhs_id' => 'required|exists:kelas_mhs,id',
             'status' => 'nullable|integer',
             'xp' => 'nullable|integer|min:0',
@@ -94,12 +88,12 @@ class PresensiOfflineController extends Controller
         ]);
 
         // cek constraint unik (exclude current)
-        if (PresensiOffline::where('pertemuan_kelas_id', $validated['pertemuan_kelas_id'])
+        if (PresensiOffline::where('sesi_kelas_id', $validated['sesi_kelas_id'])
             ->where('kelas_mhs_id', $validated['kelas_mhs_id'])
             ->where('id', '!=', $presensiOffline->id)
             ->exists()
         ) {
-            return back()->withErrors(['kelas_mhs_id' => 'Mahasiswa sudah tercatat presensi offline di pertemuan ini'])->withInput();
+            return back()->withErrors(['kelas_mhs_id' => 'Mahasiswa sudah tercatat presensi offline di sesi ini'])->withInput();
         }
 
         $presensiOffline->update($validated);

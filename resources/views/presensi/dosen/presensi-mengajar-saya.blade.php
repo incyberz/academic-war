@@ -1,11 +1,11 @@
 <x-app-layout>
   <x-page-header title="Presensi Mengajar Saya"
-    subtitle="Daftar pertemuan mengajar pada TA aktif, beserta status presensi Anda." />
+    subtitle="Daftar sesi mengajar pada TA aktif, beserta status presensi Anda." />
 
   <x-page-content>
     {{-- 1) Belum punya STM --}}
     @if (!$stm)
-    <x-alert type="warning" title="STM belum tersedia">
+    <x-alert type="warning" title="STM belum tersedia di {{$taAktif}}">
       Persiapkan STM (Surat Tugas Mengajar), bentuknya boleh fisik atau softcopy dari Fakultas Anda, lalu silahkan Anda
       <span class="font-semibold">Create New STM</span>.
       <div class="mt-3">
@@ -16,7 +16,7 @@
     </x-alert>
 
     {{-- 2) STM ada, tapi belum ada item MK --}}
-    @elseif (($stmItemsCount ?? 0) < 1) <x-alert type="warning" title="Item MK pada STM belum ada">
+    @elseif ($stmItems->count() < 1) <x-alert type="warning" title="Item MK pada STM belum ada">
       MK pada STM belum Anda masukan, silahkan <span class="font-semibold">Tambah Item MK</span>.
       <div class="mt-3 flex flex-wrap gap-2">
         <a href="{{ route('stm.show', $stm->id) }}">
@@ -29,17 +29,22 @@
       </div>
       </x-alert>
 
-      {{-- 3) Belum ada pertemuan kelas --}}
-      @elseif (($pertemuanKelas?->count() ?? 0) < 1) <x-alert type="info" title="Belum ada pertemuan kelas">
-        Belum ada pertemuan kelas sama sekali.
+      {{-- 3) Belum ada sesi kelas --}}
+      @elseif ($sesiKelas?->count() < 1) <x-alert type="info" title="Belum ada sesi kelas">
+        Belum ada sesi kelas sama sekali.
+        <div class="mt-3 flex flex-wrap gap-2">
+          <a href="{{ route('stm.show', $stm->id) }}">
+            <x-button btn="primary">Cek STM Saya</x-button>
+          </a>
+        </div>
         </x-alert>
 
-        {{-- 4) Ada pertemuan kelas -> tampilkan list --}}
+        {{-- 4) Ada sesi kelas -> tampilkan list --}}
         @else
         <x-card>
           <x-card-header>
             <div class="flex flex-col gap-1">
-              <div class="text-lg font-semibold">Daftar Pertemuan Kelas</div>
+              <div class="text-lg font-semibold">Daftar Sesi Kelas</div>
               <div class="text-sm text-gray-500 dark:text-gray-400">
                 Rentang: {{ $rangeStart?->format('d M Y') }} s/d {{ $rangeEnd?->format('d M Y') }}
               </div>
@@ -56,11 +61,11 @@
                 </div>
 
                 <div>
-                  <x-label>Pertemuan Kelas</x-label>
-                  <x-select name="pertemuan_kelas_id">
+                  <x-label>Sesi Kelas</x-label>
+                  <x-select name="sesi_kelas_id">
                     <option value="">-- Semua --</option>
-                    @foreach ($pertemuanKelas as $pk)
-                    <option value="{{ $pk->id }}" @selected(request('pertemuan_kelas_id')==$pk->id)>
+                    @foreach ($sesiKelas as $pk)
+                    <option value="{{ $pk->id }}" @selected(request('sesi_kelas_id')==$pk->id)>
                       #{{ $pk->id }}
                       @if($pk->start_at) - {{ $pk->start_at->format('d M Y H:i') }} @endif
                     </option>
@@ -82,7 +87,7 @@
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Pertemuan Kelas</th>
+                  <th>Sesi Kelas</th>
                   <th>Mulai</th>
                   <th>Status</th>
                   <th>XP</th>
@@ -94,13 +99,13 @@
               <tbody>
                 @forelse($items as $row)
                 @php
-                $pk = $row->pertemuanKelas;
+                $pk = $row->sesiKelas;
                 @endphp
                 <tr>
                   <td>{{ $loop->iteration + ($items->firstItem() - 1) }}</td>
 
                   <td>
-                    <div class="font-semibold">#{{ $row->pertemuan_kelas_id }}</div>
+                    <div class="font-semibold">#{{ $row->sesi_kelas_id }}</div>
                     <div class="text-sm text-gray-500 dark:text-gray-400">
                       {{ $pk?->catatan_dosen ? \Illuminate\Support\Str::limit($pk->catatan_dosen, 60) : '-' }}
                     </div>

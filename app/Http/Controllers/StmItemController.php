@@ -7,6 +7,7 @@ use App\Models\Stm;
 use App\Models\StmItem;
 use App\Models\KurMk;
 use App\Models\Kelas;
+use App\Models\Prodi;
 use App\Models\Shift;
 use App\Models\TahunAjar;
 use Illuminate\Http\Request;
@@ -50,25 +51,45 @@ class StmItemController extends Controller
             // Ambil item STM yang sudah ada
             $stm->load('items');
 
-            // ID MK & Kelas yang sudah dipakai di STM ini
-            $myKurMK = $stm->items
-                ->pluck('kur_mk_id')
-                ->unique()
-                ->values();
 
-            $myKelass = $stm->items
+            $myKelasIds = $stm->items
                 ->pluck('kelas_id')
                 ->unique()
                 ->values();
 
+            $myKelass = Kelas::with(['shift', 'prodi.fakultas'])
+                ->whereIn('id', $stm->items->pluck('kelas_id')->unique())
+                ->orderBy('kode')
+                ->get();
+
+            $myKurMks = KurMk::with(['kurikulum', 'mk'])
+                ->whereIn('id', $stm->items->pluck('kur_mk_id')->unique())
+                ->orderBy('kurikulum_id')
+                ->orderBy('semester')
+                ->get();
+
+
+            // ID MK & Kelas yang sudah dipakai di STM ini
+            $myKurMkIds = $stm->items
+                ->pluck('kur_mk_id')
+                ->unique()
+                ->values();
+
             // Ambil MK & Kelas yang BELUM dipakai
-            $kurMks = KurMk::whereNotIn('id', $myKurMK)->get();
+            $kurMks = KurMk::whereNotIn('id', $myKurMkIds)
+                ->orderBy('kurikulum_id')
+                ->orderBy('semester')
+                ->get();
+
+            $prodis = Prodi::orderBy('fakultas_id')
+                ->orderBy('prodi')
+                ->get();
 
             $kelass = Kelas::query()
                 ->with(['shift', 'prodi.fakultas'])
                 ->where('kelas.tahun_ajar_id', $tahun_ajar_id)
-                ->when(!empty($myKelass), function ($q) use ($myKelass) {
-                    $q->whereNotIn('kelas.id', $myKelass);
+                ->when(!empty($myKelasIds), function ($q) use ($myKelasIds) {
+                    $q->whereNotIn('kelas.id', $myKelasIds);
                 })
                 ->leftJoin('prodi', 'prodi.id', '=', 'kelas.prodi_id')
                 ->leftJoin('shift', 'shift.id', '=', 'kelas.shift_id')
@@ -89,10 +110,11 @@ class StmItemController extends Controller
             'stm',
             'kurMks',
             'kelass',
-            'myKurMK',
+            'myKurMks',
             'myKelass',
             'myFakultas',
             'myProdi',
+            'prodis',
             'shifts',
         ));
     }
@@ -103,26 +125,36 @@ class StmItemController extends Controller
      */
     public function store(Request $request, Stm $stm)
     {
-        $request->validate([
-            'kur_mk_id' => 'required|exists:kur_mk,id',
-            'kelas_id' => 'required|exists:kelas,id',
-            'sks_tugas' => 'nullable|integer|min:0',
-            'sks_beban' => 'nullable|integer|min:0',
-            'sks_honor' => 'nullable|integer|min:0',
+        $validated = $request->validate([
+            'kur_mk_id'   => ['required', 'exists:kur_mk,id'],
+            'kelas_ids'   => ['required', 'array', 'min:1'],
+            'kelas_ids.*' => ['required', 'exists:kelas,id'],
+
+            'sks_tugas' => ['nullable', 'integer', 'min:0'],
+            'sks_beban' => ['nullable', 'integer', 'min:0'],
+            'sks_honor' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        StmItem::create([
-            'stm_id' => $stm->id,
-            'kur_mk_id' => $request->kur_mk_id,
-            'kelas_id' => $request->kelas_id,
-            'sks_tugas' => $request->sks_tugas,
-            'sks_beban' => $request->sks_beban,
-            'sks_honor' => $request->sks_honor,
-        ]);
 
-        return redirect()->route('stm.item.index', $stm->id)
+        foreach ($validated['kelas_ids'] as $kelasId) {
+            $kurMk = KurMk::find($validated['kur_mk_id']);
+            $sksMk = $kurMk->mk->sks;
+            // dd($sksMk, $validated['sks_tugas'], $validated['sks_beban'], $validated['sks_honor']);
+            StmItem::create([
+                'stm_id'    => $stm->id,
+                'kur_mk_id' => $validated['kur_mk_id'],
+                'kelas_id'  => $kelasId,
+
+                'sks_tugas' => $validated['sks_tugas'] ?? $sksMk,
+                'sks_beban' => $validated['sks_beban'] ?? $sksMk,
+                'sks_honor' => $validated['sks_honor'] ?? $sksMk,
+            ]);
+        }
+
+        return redirect()->route('stm.show', $stm->id)
             ->with('success', 'Item STM berhasil ditambahkan!');
     }
+
 
     /**
      * Tampilkan detail STM item.
@@ -163,14 +195,38 @@ class StmItemController extends Controller
             ->with('success', 'Item STM berhasil diperbarui!');
     }
 
-    /**
-     * Hapus STM item.
-     */
-    public function destroy(Stm $stm, StmItem $stmItem)
+    public function destroy(Stm $stm, StmItem $item)
     {
-        $stmItem->delete();
+        // Validasi: pastikan item benar-benar milik STM ini
+        if ($item->stm_id !== $stm->id) {
+            abort(404);
+        }
 
-        return redirect()->route('stm.item.index', $stm->id)
-            ->with('success', 'Item STM berhasil dihapus!');
+        // Hard delete (karena model tidak pakai SoftDeletes)
+        $item->delete();
+
+        return redirect()
+            ->route('stm.show', $stm->id)
+            ->with('success', 'Item berhasil dihapus.');
+    }
+
+
+
+    # ============================================================
+    # USE COURSE
+    # ============================================================
+    public function useCourse(Request $request, StmItem $item)
+    {
+        $validated = $request->validate([
+            'course_id' => ['required', 'integer', 'exists:course,id'],
+        ]);
+
+        $item->update([
+            'course_id' => $validated['course_id'],
+        ]);
+
+        return redirect()
+            ->route('stm.show', $item->stm_id)
+            ->with('success', 'Course berhasil dipilih untuk item STM.');
     }
 }

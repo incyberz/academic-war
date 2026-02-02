@@ -24,7 +24,6 @@ use App\Http\Controllers\{
     ChallengeLevelSubmissionController,
     QuestSubmissionController,
     MkController,
-    PertemuanController,
     MkTaController,
     ShiftController,
     KelasController,
@@ -34,8 +33,7 @@ use App\Http\Controllers\{
     KuisSoalController,
     JawabanMhsController,
     KurikulumController,
-    PertemuanTaController,
-    PertemuanKelasController,
+    SesiKelasController,
     PresensiDosenController,
     PresensiMhsController,
     PresensiOfflineController,
@@ -170,7 +168,17 @@ Route::middleware('auth')->group(function () {
 
     // Akademik / Course System
     Route::resource('course', CourseController::class);
-    Route::resource('unit', UnitController::class);
+    // pilih course untuk stm_item tertentu
+    Route::put('/stm-item/{item}/use-course', [StmItemController::class, 'useCourse'])
+        ->name('stm.item.useCourse');
+
+    // Route::resource('unit', UnitController::class);
+    // Unit: store + destroy + update (inline edit)
+    Route::post('course/{course}/unit', [UnitController::class, 'store'])->name('course.unit.store');
+    Route::put('unit/{unit}', [UnitController::class, 'update'])->name('unit.update');
+    Route::delete('unit/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy');
+
+
     Route::resource('quest', QuestController::class);
     Route::resource('challenge', ChallengeController::class);
     Route::resource('challenge-level', ChallengeLevelController::class);
@@ -180,7 +188,6 @@ Route::middleware('auth')->group(function () {
 
     // Mata Kuliah
     Route::resource('mk', MkController::class);
-    Route::resource('pertemuan', PertemuanController::class);
     Route::resource('mk-ta', MkTaController::class);
 
     // Kelas / Shift
@@ -194,9 +201,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('kuis-soal', KuisSoalController::class);
     Route::resource('jawaban-mhs', JawabanMhsController::class);
 
-    // Pertemuan terkait TA / Kelas
-    Route::resource('pertemuan-ta', PertemuanTaController::class);
-    Route::resource('pertemuan-kelas', PertemuanKelasController::class);
+    // Sesi terkait TA / Kelas
+    Route::resource('sesi-kelas', SesiKelasController::class);
 
     // Presensi
     Route::resource('presensi-dosen', PresensiDosenController::class);

@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('presensi_mhs', function (Blueprint $table) {
             $table->id();
 
-            // FK ke pertemuan_kelas
-            $table->foreignId('pertemuan_kelas_id')->constrained('pertemuan_kelas')->cascadeOnDelete();
+            // FK ke sesi_kelas
+            $table->foreignId('sesi_kelas_id')->constrained('sesi_kelas')->cascadeOnDelete();
 
             // FK ke kelas_mhs (peserta mahasiswa)
             $table->foreignId('kelas_mhs_id')->constrained('kelas_mhs')->cascadeOnDelete();
@@ -28,8 +28,8 @@ return new class extends Migration
 
             $table->timestamps();
 
-            // Unik: satu mahasiswa per pertemuan_kelas
-            $table->unique(['pertemuan_kelas_id', 'kelas_mhs_id']);
+            // Unik: satu mahasiswa per sesi_kelas
+            $table->unique(['sesi_kelas_id', 'kelas_mhs_id']);
         });
     }
 

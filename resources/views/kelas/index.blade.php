@@ -49,7 +49,7 @@
             </tr>
             @empty
             <tr>
-              <td class="border px-3 py-2 text-center" colspan="9">Tidak ada kelas untuk tahun ajar aktif</td>
+              <td class="border px-3 py-2 text-center" colspan="9">Tidak ada kelas di {{$taAktif}}</td>
             </tr>
             @endforelse
           </tbody>

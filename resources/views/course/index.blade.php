@@ -1,67 +1,109 @@
 <x-app-layout>
+  @php
+  $stmItemId = request()->query('stm_item_id');
+  @endphp
+
   <x-page-header title="Daftar Course" subtitle="Kelola semua course di sistem" />
 
   <x-page-content>
     <x-card>
       <x-card-header>
-        Course List
-        <x-button btn="primary" class="float-right" onclick="window.location='{{ route('course.create') }}'">
-          Tambah Course
-        </x-button>
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <span>Course List</span>
+
+            @if($stmItemId)
+            <span class="text-xs font-semibold px-2 py-1 rounded-full bg-blue-600 text-white">
+              stm_item_id: {{ $stmItemId }}
+            </span>
+            @endif
+          </div>
+
+          <x-button btn="primary"
+            onclick="window.location='{{ route('course.create', $stmItemId ? ['stm_item_id' => $stmItemId] : []) }}'">
+            Tambah Course
+          </x-button>
+        </div>
       </x-card-header>
 
       <x-card-body>
-        <table class="min-w-full border border-gray-200 text-sm">
-          <thead class="bg-gray-100">
+
+        {{-- Info jika sedang konteks stm_item --}}
+        @if($stmItemId)
+        <div class="mb-3 p-3 rounded-xl border border-blue-200 bg-blue-50 text-blue-900">
+          Anda sedang menambahkan course untuk STM Item ID:
+          <span class="font-bold">{{ $stmItemId }}</span>
+        </div>
+        @endif
+
+        <table>
+          <thead>
             <tr>
-              <th class="border px-3 py-2">#</th>
-              <th class="border px-3 py-2">Kode</th>
-              <th class="border px-3 py-2">Nama</th>
-              <th class="border px-3 py-2">Deskripsi</th>
-              <th class="border px-3 py-2">Tipe</th>
-              <th class="border px-3 py-2">Level</th>
-              <th class="border px-3 py-2">Aktif</th>
-              <th class="border px-3 py-2">Aksi</th>
+              <th>#</th>
+              <th>Kode</th>
+              <th>Nama</th>
+              <th>Deskripsi</th>
+              <th>Tipe</th>
+              <th>Level</th>
+              <th>Aktif</th>
+              <th>Aksi</th>
             </tr>
           </thead>
           <tbody>
             @forelse ($courses as $course)
             <tr>
-              <td class="border px-3 py-2">{{ $loop->iteration }}</td>
-              <td class="border px-3 py-2">{{ $course->kode }}</td>
-              <td class="border px-3 py-2">{{ $course->nama }}</td>
-              <td class="border px-3 py-2">{{ $course->deskripsi }}</td>
-              <td class="border px-3 py-2">{{ strtoupper($course->tipe) }}</td>
-              <td class="border px-3 py-2">{{ $course->level ?? '-' }}</td>
-              <td class="border px-3 py-2">
+              <td>{{ $loop->iteration }}</td>
+              <td>{{ $course->kode }}</td>
+              <td>{{ $course->nama }}</td>
+              <td>{{ $course->deskripsi }}</td>
+              <td>{{ strtoupper($course->tipe) }}</td>
+              <td>{{ $course->level ?? '-' }}</td>
+              <td>
                 @if($course->is_active)
                 <span class="text-green-600 font-semibold">Ya</span>
                 @else
                 <span class="text-red-600 font-semibold">Tidak</span>
                 @endif
               </td>
-              <td class="border px-3 py-2 space-x-1">
-                <x-button btn="warning" onclick="window.location='{{ route('course.edit', $course->id) }}'">Edit
+              <td>
+                <x-button btn="warning" onclick="window.location='{{ route('course.edit', $course->id) }}'">
+                  Edit
                 </x-button>
+
                 <form action="{{ route('course.destroy', $course->id) }}" method="POST" class="inline-block"
                   onsubmit="return confirm('Hapus course ini?')">
                   @csrf
                   @method('DELETE')
                   <x-button btn="danger" type="submit">Hapus</x-button>
                 </form>
+
+                @if($stmItemId)
+                <form action="{{ route('stm.item.useCourse', ['item' => $stmItemId]) }}" method="POST"
+                  class="inline-block" onsubmit="return confirm('Gunakan course ini untuk item STM?')">
+                  @csrf
+                  @method('PUT')
+
+                  <input type="hidden" name="course_id" value="{{ $course->id }}">
+
+                  <x-button btn="primary" type="submit">
+                    Pilih Course
+                  </x-button>
+                </form>
+                @endif
               </td>
             </tr>
             @empty
             <tr>
-              <td class="border px-3 py-2 text-center" colspan="8">Tidak ada data course</td>
+              <td colspan="8" style="text-align:center;">Tidak ada data course</td>
             </tr>
             @endforelse
           </tbody>
         </table>
 
         <div class="mt-3">
-          {{ $courses->links() }}
+          {{ $courses->appends(request()->query())->links() }}
         </div>
+
       </x-card-body>
     </x-card>
   </x-page-content>

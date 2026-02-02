@@ -4,25 +4,25 @@ return [
 
   0 => [
     'label' => 'Draft',
-    'desc'  => 'Pertemuan baru dibuat, belum dimulai',
+    'desc'  => 'Sesi baru dibuat, belum dimulai',
     'bg' => 'bg-gray-400 text-white',
   ],
 
   1 => [
     'label' => 'Sedang Berlangsung',
-    'desc'  => 'Dosen sudah memulai pertemuan',
+    'desc'  => 'Dosen sudah memulai sesi',
     'bg' => 'bg-blue-500 text-white',
   ],
 
   100 => [
     'label' => 'Selesai',
-    'desc'  => 'Pertemuan sudah selesai',
+    'desc'  => 'Sesi sudah selesai',
     'bg' => 'bg-green-500 text-white',
   ],
 
   -1 => [
     'label' => 'Dibatalkan',
-    'desc'  => 'Pertemuan dibatalkan / dijadwal ulang',
+    'desc'  => 'Sesi dibatalkan / dijadwal ulang',
     'bg' => 'bg-red-500 text-white',
   ],
 

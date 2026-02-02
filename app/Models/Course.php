@@ -20,6 +20,7 @@ class Course extends Model
         'tipe',
         'level',
         'is_active',
+        'stm_item_id',
     ];
 
     // Tipe data kolom
@@ -33,19 +34,8 @@ class Course extends Model
         'is_active' => true,
     ];
 
-    /**
-     * Contoh accessor: menampilkan nama lengkap course
-     */
-    public function getNamaLengkapAttribute()
+    public function units()
     {
-        return "{$this->kode} - {$this->nama}";
-    }
-
-    /**
-     * Scope untuk hanya mengambil course yang aktif
-     */
-    public function scopeAktif($query)
-    {
-        return $query->where('is_active', true);
+        return $this->hasMany(\App\Models\Unit::class, 'course_id', 'id');
     }
 }

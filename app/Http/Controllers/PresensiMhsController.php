@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PresensiMhs;
-use App\Models\PertemuanKelas;
+use App\Models\SesiKelas;
 use App\Models\KelasMhs;
 use Illuminate\Http\Request;
 
@@ -14,8 +14,8 @@ class PresensiMhsController extends Controller
      */
     public function index()
     {
-        $presensiList = PresensiMhs::with(['pertemuanKelas', 'kelasMhs'])
-            ->orderBy('pertemuan_kelas_id')
+        $presensiList = PresensiMhs::with(['sesiKelas', 'kelasMhs'])
+            ->orderBy('sesi_kelas_id')
             ->orderBy('kelas_mhs_id')
             ->paginate(15);
 
@@ -27,10 +27,7 @@ class PresensiMhsController extends Controller
      */
     public function create()
     {
-        $pertemuanKelasList = PertemuanKelas::with(['pertemuanTa', 'kelas'])->orderBy('id')->get();
-        $kelasMhsList = KelasMhs::with(['mhs', 'kelas'])->orderBy('id')->get();
-
-        return view('presensi-mhs.create', compact('pertemuanKelasList', 'kelasMhsList'));
+        dd('ondev');
     }
 
     /**
@@ -39,7 +36,7 @@ class PresensiMhsController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'pertemuan_kelas_id' => 'required|exists:pertemuan_kelas,id',
+            'sesi_kelas_id' => 'required|exists:sesi_kelas,id',
             'kelas_mhs_id' => 'required|exists:kelas_mhs,id',
             'waktu' => 'nullable|date',
             'xp' => 'nullable|integer|min:0',
@@ -47,11 +44,11 @@ class PresensiMhsController extends Controller
         ]);
 
         // cek constraint unik
-        if (PresensiMhs::where('pertemuan_kelas_id', $validated['pertemuan_kelas_id'])
+        if (PresensiMhs::where('sesi_kelas_id', $validated['sesi_kelas_id'])
             ->where('kelas_mhs_id', $validated['kelas_mhs_id'])
             ->exists()
         ) {
-            return back()->withErrors(['kelas_mhs_id' => 'Mahasiswa sudah tercatat hadir di pertemuan ini'])->withInput();
+            return back()->withErrors(['kelas_mhs_id' => 'Mahasiswa sudah tercatat hadir di sesi ini'])->withInput();
         }
 
         $presensi = PresensiMhs::create($validated);
@@ -65,7 +62,7 @@ class PresensiMhsController extends Controller
      */
     public function show(PresensiMhs $presensiMhs)
     {
-        $presensiMhs->load(['pertemuanKelas', 'kelasMhs']);
+        $presensiMhs->load(['sesiKelas', 'kelasMhs']);
         return view('presensi-mhs.show', compact('presensiMhs'));
     }
 
@@ -74,10 +71,7 @@ class PresensiMhsController extends Controller
      */
     public function edit(PresensiMhs $presensiMhs)
     {
-        $pertemuanKelasList = PertemuanKelas::with(['pertemuanTa', 'kelas'])->orderBy('id')->get();
-        $kelasMhsList = KelasMhs::with(['mhs', 'kelas'])->orderBy('id')->get();
-
-        return view('presensi-mhs.edit', compact('presensiMhs', 'pertemuanKelasList', 'kelasMhsList'));
+        dd('ondev');
     }
 
     /**
@@ -86,7 +80,7 @@ class PresensiMhsController extends Controller
     public function update(Request $request, PresensiMhs $presensiMhs)
     {
         $validated = $request->validate([
-            'pertemuan_kelas_id' => 'required|exists:pertemuan_kelas,id',
+            'sesi_kelas_id' => 'required|exists:sesi_kelas,id',
             'kelas_mhs_id' => 'required|exists:kelas_mhs,id',
             'waktu' => 'nullable|date',
             'xp' => 'nullable|integer|min:0',
@@ -94,12 +88,12 @@ class PresensiMhsController extends Controller
         ]);
 
         // cek constraint unik (exclude current)
-        if (PresensiMhs::where('pertemuan_kelas_id', $validated['pertemuan_kelas_id'])
+        if (PresensiMhs::where('sesi_kelas_id', $validated['sesi_kelas_id'])
             ->where('kelas_mhs_id', $validated['kelas_mhs_id'])
             ->where('id', '!=', $presensiMhs->id)
             ->exists()
         ) {
-            return back()->withErrors(['kelas_mhs_id' => 'Mahasiswa sudah tercatat hadir di pertemuan ini'])->withInput();
+            return back()->withErrors(['kelas_mhs_id' => 'Mahasiswa sudah tercatat hadir di sesi ini'])->withInput();
         }
 
         $presensiMhs->update($validated);

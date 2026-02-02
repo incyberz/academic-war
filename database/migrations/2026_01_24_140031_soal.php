@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('soal', function (Blueprint $table) {
             $table->id();
 
-            // Induk unit / pertemuan
+            // Induk unit / sesi
             $table->foreignId('unit_id')->constrained('unit')->cascadeOnDelete();
 
             // Pembuat soal
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->integer('max_opsi')->default(0);
             $table->string('emoji', 10)->nullable();
             $table->string('bg', 50)->nullable();
-            $table->string('tags')->nullable();      // wajib mengandung tag pertemuan/unit
+            $table->string('tags')->nullable();      // wajib mengandung tag sesi/unit
 
             // Gamifikasi / workflow
             $table->tinyInteger('status')->default(0); // sesuai config/status_soal

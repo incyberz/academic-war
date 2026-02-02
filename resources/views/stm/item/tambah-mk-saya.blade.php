@@ -1,6 +1,7 @@
 @php
 $namaDosen = $stm->dosen->nama;
 @endphp
+
 <x-app-layout>
   <x-page-header title="Tambah MK Saya di TA {{$taAktif}}" subtitle="Back | {{$namaDosen}}"
     route="{{ isDosen() ? route('stm.show',$stm->id) :  route('dashboard') }}" />

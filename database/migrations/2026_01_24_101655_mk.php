@@ -18,16 +18,10 @@ return new class extends Migration
             $table->unsignedTinyInteger('sks');
             $table->unsignedTinyInteger('rekom_semester')->nullable();
             $table->string('rekom_fakultas', 10)->nullable();
-
-            // deskripsi singkat (opsional)
             $table->text('deskripsi')->nullable();
-
-            // status aktif / tidak (untuk reuse)
             $table->boolean('is_active')->default(true);
-
             $table->timestamps();
 
-            // optimasi
             $table->index('nama');
         });
     }

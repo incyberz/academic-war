@@ -43,7 +43,7 @@
         <div class="text-center">
           <p class="text-sm opacity-80">Streak Hadir</p>
           <p class="text-2xl font-bold">🔥 12</p>
-          <p class="text-xs opacity-80">pertemuan</p>
+          <p class="text-xs opacity-80">sesi</p>
         </div>
       </div>
     </section>

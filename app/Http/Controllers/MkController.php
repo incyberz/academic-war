@@ -109,18 +109,26 @@ class MkController extends Controller
     public function update(Request $request, Mk $mk)
     {
         $validated = $request->validate([
-            'kode' => "required|string|max:20|unique:mk,kode,{$mk->id}",
-            'nama' => 'required|string|max:255',
-            'sks' => 'required|integer|min:1|max:20',
-            'deskripsi' => 'nullable|string',
-            'is_active' => 'nullable|boolean',
+            'kode'          => ['required', 'string', 'max:255', 'unique:mk,kode,' . $mk->id],
+            'nama'          => ['required', 'string', 'max:255'],
+            'singkatan'     => ['required', 'string', 'max:10'],
+            'sks'           => ['required', 'integer', 'min:0', 'max:24'],
+            'rekom_semester' => ['nullable', 'integer', 'min:1', 'max:14'],
+            'rekom_fakultas' => ['nullable', 'string', 'max:10'],
+            'deskripsi'     => ['nullable', 'string'],
+            'is_active'     => ['nullable', 'boolean'],
         ]);
+
+        // checkbox handling (kalau tidak dicentang, tidak terkirim)
+        $validated['is_active'] = $request->boolean('is_active');
 
         $mk->update($validated);
 
-        return redirect()->route('mk.index')
-            ->with('success', "Mata kuliah '{$mk->nama}' berhasil diperbarui.");
+        return redirect()
+            ->route('mk.edit', $mk->id)
+            ->with('success', 'Mata kuliah berhasil diperbarui.');
     }
+
 
     /**
      * Hapus MK

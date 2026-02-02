@@ -26,6 +26,12 @@ return new class extends Migration
                 ->constrained('kelas')
                 ->cascadeOnDelete();
 
+            // LMS Course (opsional)
+            $table->foreignId('course_id')
+                ->nullable()
+                ->constrained('course')
+                ->nullOnDelete();
+
             // SKS sesuai STM (boleh null → fallback ke mk.sks)
             $table->unsignedTinyInteger('sks_tugas')->nullable();
 

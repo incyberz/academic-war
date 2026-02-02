@@ -1,0 +1,28 @@
+<?php
+
+return [
+
+  1  => ['fase' => 'normal', 'label' => 'P1'],
+  2  => ['fase' => 'normal', 'label' => 'P2'],
+  3  => ['fase' => 'normal', 'label' => 'P3'],
+  4  => ['fase' => 'normal', 'label' => 'P4'],
+  5  => ['fase' => 'normal', 'label' => 'P5'],
+  6  => ['fase' => 'normal', 'label' => 'P6'],
+  7  => ['fase' => 'normal', 'label' => 'P7'],
+
+  // 8: UTS
+  8  => ['fase' => 'uts', 'label' => null],
+
+  // 9-15: P8..P14
+  9  => ['fase' => 'normal', 'label' => 'P8'],
+  10 => ['fase' => 'normal', 'label' => 'P9'],
+  11 => ['fase' => 'normal', 'label' => 'P10'],
+  12 => ['fase' => 'normal', 'label' => 'P11'],
+  13 => ['fase' => 'normal', 'label' => 'P12'],
+  14 => ['fase' => 'normal', 'label' => 'P13'],
+  15 => ['fase' => 'normal', 'label' => 'P14'],
+
+  // 16: UAS
+  16 => ['fase' => 'uas', 'label' => null],
+
+];

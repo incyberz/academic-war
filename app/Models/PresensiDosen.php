@@ -12,7 +12,7 @@ class PresensiDosen extends Model
     protected $table = 'presensi_dosen';
 
     protected $fillable = [
-        'pertemuan_kelas_id',
+        'sesi_kelas_id',
         'dosen_id',
         'start_at',
         'xp',
@@ -29,11 +29,11 @@ class PresensiDosen extends Model
     ];
 
     /**
-     * Relasi ke PertemuanKelas
+     * Relasi ke SesiKelas
      */
-    public function pertemuanKelas()
+    public function sesiKelas()
     {
-        return $this->belongsTo(PertemuanKelas::class, 'pertemuan_kelas_id');
+        return $this->belongsTo(SesiKelas::class, 'sesi_kelas_id');
     }
 
     /**
