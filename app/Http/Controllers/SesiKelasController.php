@@ -7,21 +7,31 @@ use App\Models\StmItem;
 use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SesiKelasController extends Controller
 {
     public function index(Request $request)
     {
+        if (!isDosen()) {
+            return back()->with('error', 'Hanya Dosen yang boleh mengakses halaman ini.');
+        }
+
         $query = SesiKelas::query()
             ->with([
                 'stmItem.kelas',
                 'stmItem.kurMk.mk',
                 'unit',
             ])
+            ->whereHas('stmItem.stm', function ($q) {
+                $q->whereHas('dosen', function ($q2) {
+                    $q2->where('user_id', Auth::id());
+                });
+            })
             ->orderByDesc('start_at')
             ->orderByDesc('id');
 
-        // filter opsional
+
         if ($request->filled('stm_item_id')) {
             $query->where('stm_item_id', $request->stm_item_id);
         }
@@ -38,10 +48,11 @@ class SesiKelasController extends Controller
             $query->whereDate('start_at', '<=', $request->to);
         }
 
-        $sesiKelases = $query->paginate(15)->withQueryString();
+        $sesiKelass = $query->paginate(15)->withQueryString();
 
-        return view('sesi_kelas.index', compact('sesiKelases'));
+        return view('sesi-kelas.index', compact('sesiKelass'));
     }
+
 
     public function create(Request $request)
     {
@@ -61,7 +72,7 @@ class SesiKelasController extends Controller
             }
         }
 
-        return view('sesi_kelas.create', compact('stmItem', 'units'));
+        return view('sesi-kelas.create', compact('stmItem', 'units'));
     }
 
     public function store(Request $request)
@@ -118,7 +129,7 @@ class SesiKelasController extends Controller
             'unit',
         ]);
 
-        return view('sesi_kelas.show', compact('sesiKelas'));
+        return view('sesi-kelas.show', compact('sesiKelas'));
     }
 
     public function edit(SesiKelas $sesiKelas)
@@ -133,7 +144,7 @@ class SesiKelasController extends Controller
                 ->get();
         }
 
-        return view('sesi_kelas.edit', compact('sesiKelas', 'units'));
+        return view('sesi-kelas.edit', compact('sesiKelas', 'units'));
     }
 
     public function update(Request $request, SesiKelas $sesiKelas)

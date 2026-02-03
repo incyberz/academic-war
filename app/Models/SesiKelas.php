@@ -18,7 +18,9 @@ class SesiKelas extends Model
         'start_at',
         'end_at',
         'catatan_dosen',
-        'status',
+        'status', // status sesi kelas tsb
+        'fase', // normal / uts / uas
+        'label', // P1, P2, etc
     ];
 
     /**
