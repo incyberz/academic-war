@@ -22,6 +22,8 @@ use App\Http\Controllers\{
     ChallengeLevelController,
     ChallengeSubmissionController,
     ChallengeLevelSubmissionController,
+    JadwalController,
+    JamSesiController,
     QuestSubmissionController,
     MkController,
     MkTaController,
@@ -216,6 +218,10 @@ Route::middleware('auth')->group(function () {
     Route::prefix('stm/{stm}')->group(function () {
         Route::resource('item', StmItemController::class);
     });
+
+    // Jadwal STM
+    Route::resource('jadwal', JadwalController::class);
+    Route::resource('jam-sesi', JamSesiController::class);
 });
 
 

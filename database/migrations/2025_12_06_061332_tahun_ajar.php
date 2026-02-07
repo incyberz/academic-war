@@ -16,6 +16,8 @@ return new class extends Migration {
             $table->date('tanggal_mulai')->nullable();
             $table->date('tanggal_selesai')->nullable();
 
+            $table->date('senin_pertama_kuliah')->nullable();
+
             $table->timestamps();
         });
     }

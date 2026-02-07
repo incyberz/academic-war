@@ -16,9 +16,8 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->foreignId('unit_id')
-                ->nullable()
                 ->constrained('unit')
-                ->nullOnDelete();
+                ->restrictOnDelete(); // atau cascadeOnDelete jika Anda yakin
 
             $table->date('tanggal_rencana')->nullable();
 
@@ -27,14 +26,17 @@ return new class extends Migration
 
             $table->text('catatan_dosen')->nullable();
 
-            $table->unsignedTinyInteger('status')->default(0); // 0 draft, 1 open, 2 closed, 3 selesai
-            $table->string('fase', 20)->nullable(); // normal/uts/uas
-            $table->string('label', 20)->nullable(); // P1, P2, ...
+            $table->unsignedTinyInteger('status')->default(0);
+            $table->string('fase', 20)->nullable();
+            $table->string('label', 20)->nullable();
 
             $table->timestamps();
 
+            $table->unique(['stm_item_id', 'unit_id']);
+
             $table->index(['stm_item_id', 'status']);
             $table->index(['stm_item_id', 'tanggal_rencana']);
+            $table->index(['stm_item_id', 'unit_id']);
             $table->index(['start_at']);
         });
     }

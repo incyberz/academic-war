@@ -12,6 +12,7 @@ class Shift extends Model
     protected $table = 'shift';
 
     protected $fillable = [
+        'urutan',
         'kode',
         'nama',
         'jam_awal_kuliah',
@@ -34,6 +35,12 @@ class Shift extends Model
         'min_persen_presensi' => 75,
         'min_pembayaran' => 50,
     ];
+
+    public function jamSesis()
+    {
+        return $this->hasMany(JamSesi::class);
+    }
+
 
     /**
      * Scope untuk mencari shift berdasarkan kode

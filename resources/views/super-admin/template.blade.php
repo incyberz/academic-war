@@ -2,6 +2,7 @@
   <x-page-header title="Page Header" subtitle="..." />
 
   <x-page-content>
+    {{-- session message dan $errors sudah dihandle di x-app-layout --}}
     <x-alert type="danger" title="title">alert</x-alert>
     <x-card>
       <x-card-header>Card Header</x-card-header>

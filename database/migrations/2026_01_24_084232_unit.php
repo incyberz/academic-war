@@ -17,21 +17,21 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             // Identitas unit
-            $table->string('kode');              // contoh: U1, U2, HTML, LARAVEL
+            // $table->string('kode');              // contoh: U1, U2, HTML, LARAVEL
             $table->string('nama');              // contoh: Dasar HTML & CSS
             $table->text('deskripsi')->nullable();
 
-            // Urutan pedagogis
-            $table->unsignedInteger('urutan')->default(1);
+            // Urutan sesuai MK
+            $table->unsignedInteger('urutan');
 
             // Status
-            $table->boolean('aktif')->default(true);
+            $table->boolean('is_active')->default(true);
 
             // Audit
             $table->timestamps();
 
             // Constraint
-            $table->unique(['course_id', 'kode']);
+            $table->unique(['course_id', 'urutan']);
         });
     }
 

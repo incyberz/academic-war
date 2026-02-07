@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\SesiKelas;
+use App\Models\Stm;
 use App\Models\StmItem;
+use App\Models\TahunAjar;
 use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -17,41 +19,125 @@ class SesiKelasController extends Controller
             return back()->with('error', 'Hanya Dosen yang boleh mengakses halaman ini.');
         }
 
+        $userId = Auth::id();
+
+        // ============================================================
+        // Auto-generate sesi per stm_item yang belum punya sesi
+        // ============================================================
+        $urutans = config('urutan_sesi_kelas'); // key mulai dari 1
+        $tahunAjarId = session('tahun_ajar_id');
+        $arrMkId = [];
+        $arrKelasId = [];
+
+        $stm = Stm::query()
+            ->where('tahun_ajar_id', $tahunAjarId)
+            ->whereHas('dosen', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
+            ->first();
+
+        if ($stm) {
+            $stmItems = StmItem::query()
+                ->where('stm_id', $stm->id)
+                ->get();
+
+
+
+            foreach ($stmItems as $stmItem) {
+
+                $kelasId = $stmItem->kelas_id;
+                $mkId = $stmItem->kurMk->mk_id;
+
+                // masukan Kelas ke arrKelasId jika belum ada
+                if (!key_exists($kelasId, $arrKelasId)) {
+                    $arrKelasId[$kelasId] = [
+                        'mk_id' => $mkId,
+                        'label' => $stmItem->kelas->label,
+                    ];
+                }
+
+                // masukan MK ke arrMkId jika belum ada
+                if (!key_exists($mkId, $arrMkId)) {
+                    $arrMkId[$mkId] = $stmItem->kurMk->mk->singkatan;
+                }
+
+                // unit_id NOT NULL => course_id wajib ada
+                if (!$stmItem->course_id) {
+                    continue;
+                }
+
+                // generate hanya jika stm_item ini belum punya sesi
+                $hasSesi = SesiKelas::query()
+                    ->where('stm_item_id', $stmItem->id)
+                    ->exists();
+
+                if ($hasSesi) {
+                    continue;
+                }
+
+                foreach ($urutans as $urutan => $item) {
+
+                    // Unit wajib ada (unique course_id + urutan)
+                    $unit = Unit::firstOrCreate(
+                        [
+                            'course_id' => $stmItem->course_id,
+                            'urutan'    => $urutan,
+                        ],
+                        [
+                            'nama' => $item['label'] ?? ('P' . $urutan),
+                        ]
+                    );
+
+                    // SesiKelas unik per stm_item + unit
+                    SesiKelas::firstOrCreate(
+                        [
+                            'stm_item_id' => $stmItem->id,
+                            'unit_id'     => $unit->id,
+                        ],
+                        [
+                            'fase'   => $item['fase'] ?? null,
+                            'label'  => $item['label'] ?? null,
+                            'status' => 0,
+                        ]
+                    );
+                }
+            }
+        }
+
+        // ============================================================
+        // Query list (tanpa filter, karena akan difilter oleh JS)
+        // ============================================================
         $query = SesiKelas::query()
             ->with([
                 'stmItem.kelas',
                 'stmItem.kurMk.mk',
                 'unit',
             ])
-            ->whereHas('stmItem.stm', function ($q) {
-                $q->whereHas('dosen', function ($q2) {
-                    $q2->where('user_id', Auth::id());
+            ->whereHas('stmItem.stm', function ($q) use ($userId) {
+                $q->whereHas('dosen', function ($q2) use ($userId) {
+                    $q2->where('user_id', $userId);
                 });
             })
-            ->orderByDesc('start_at')
-            ->orderByDesc('id');
+            ->leftJoin('unit', 'unit.id', '=', 'sesi_kelas.unit_id')
+            ->select('sesi_kelas.*')
+            ->orderBy('sesi_kelas.stm_item_id')
+            ->orderBy('unit.urutan', 'asc')
+            ->orderBy('sesi_kelas.id', 'asc');
 
+        // $sesiKelass = $query->paginate(16)->withQueryString();
+        $sesiKelass = $query->get();
 
-        if ($request->filled('stm_item_id')) {
-            $query->where('stm_item_id', $request->stm_item_id);
-        }
+        $tahunAjar = TahunAjar::find($tahunAjarId);
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('from')) {
-            $query->whereDate('start_at', '>=', $request->from);
-        }
-
-        if ($request->filled('to')) {
-            $query->whereDate('start_at', '<=', $request->to);
-        }
-
-        $sesiKelass = $query->paginate(15)->withQueryString();
-
-        return view('sesi-kelas.index', compact('sesiKelass'));
+        return view('sesi-kelas.index', compact(
+            'sesiKelass',
+            'arrKelasId',
+            'arrMkId',
+            'tahunAjar',
+        ));
     }
+
+
 
 
     public function create(Request $request)

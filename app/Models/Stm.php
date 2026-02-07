@@ -67,6 +67,11 @@ class Stm extends Model
         return $this->hasMany(StmItem::class, 'stm_id');
     }
 
+    public function stmItems()
+    {
+        return $this->hasMany(StmItem::class, 'stm_id');
+    }
+
 
     # ============================================================
     # HELPERS

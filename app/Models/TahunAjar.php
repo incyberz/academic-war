@@ -24,6 +24,14 @@ class TahunAjar extends Model
         'is_active',
         'tanggal_mulai',
         'tanggal_selesai',
+        'senin_pertama_kuliah',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'tanggal_mulai' => 'date',
+        'tanggal_selesai' => 'date',
+        'senin_pertama_kuliah' => 'date',
     ];
 
     /**
@@ -50,5 +58,10 @@ class TahunAjar extends Model
         $ganjil_genap = $semester_digit == 1 ? 'Ganjil' : 'Genap';
 
         return "$tahun/$tahun_akhir $ganjil_genap";
+    }
+
+    public function scopeAktif($query)
+    {
+        return $query->where('is_active', true);
     }
 }

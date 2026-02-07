@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class StmItem extends Model
 {
@@ -23,6 +24,12 @@ class StmItem extends Model
         'sks_beban',
         'sks_honor',
     ];
+
+    public function jadwal()
+    {
+        return $this->hasOne(Jadwal::class, 'stm_item_id');
+    }
+
 
     /**
      * Relasi: StmItem → KurMk (MK dalam kurikulum)
@@ -59,14 +66,49 @@ class StmItem extends Model
         return $this->belongsTo(Course::class, 'course_id');
     }
 
+
     /**
-     * Relasi: StmItem -> SesiKelas
-     * (daftar sesi real untuk kelas ini)
+     * Seluruh Sesi Kelas di TA Aktif
      */
     public function sesiKelass()
     {
         return $this->hasMany(SesiKelas::class, 'stm_item_id');
     }
+
+    /**
+     * Untuk Jadwal Saya
+     * Range: Ahad s/d Sabtu di pekan ini
+     */
+    public function sesiKelassMingguIni()
+    {
+        $start = Carbon::now()->startOfWeek(Carbon::SUNDAY)->startOfDay();
+        $end   = Carbon::now()->endOfWeek(Carbon::SATURDAY)->endOfDay();
+
+        return $this->sesiKelass()
+            ->whereBetween('start_at', [$start, $end])
+            ->orderBy('start_at');
+    }
+
+    /**
+     * Untuk Presensi Mengajar Saya (Rekap SKS)
+     * Range: tanggal 21 bulan lalu s/d hari ini
+     */
+    public function sesiKelassBulanIni()
+    {
+        $today = Carbon::today();
+
+        // start = tgl 21 bulan lalu
+        $start = Carbon::today()->subMonthNoOverflow()->day(21)->startOfDay();
+
+        // end = hari ini
+        $end = $today->endOfDay();
+
+        return $this->sesiKelass()
+            ->whereBetween('start_at', [$start, $end])
+            ->orderBy('start_at');
+    }
+
+
 
     /**
      * Opsional: ambil Unit lewat Course

@@ -15,23 +15,23 @@ class Unit extends Model
     // Kolom yang boleh diisi secara mass-assignment
     protected $fillable = [
         'course_id',
-        'kode',
+        // 'kode',
         'nama',
         'deskripsi',
         'urutan',
-        'aktif',
+        'is_active',
     ];
 
     // Tipe data kolom
     protected $casts = [
-        'aktif' => 'boolean',
+        'is_active' => 'boolean',
         'urutan' => 'integer',
     ];
 
     // Default values
     protected $attributes = [
         'urutan' => 1,
-        'aktif' => true,
+        'is_active' => true,
     ];
 
     /**
@@ -43,7 +43,7 @@ class Unit extends Model
     }
 
     /**
-     * Scope untuk hanya mengambil unit yang aktif
+     * Scope untuk hanya mengambil unit yang is_active
      */
     public function scopeAktif($query)
     {

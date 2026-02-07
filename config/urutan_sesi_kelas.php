@@ -1,6 +1,6 @@
 <?php
-
 return [
+  // urutan_sesi_kelas.php
 
   1  => ['fase' => 'normal', 'label' => 'P1'],
   2  => ['fase' => 'normal', 'label' => 'P2'],
@@ -11,7 +11,7 @@ return [
   7  => ['fase' => 'normal', 'label' => 'P7'],
 
   // 8: UTS
-  8  => ['fase' => 'uts', 'label' => null],
+  8  => ['fase' => 'uts', 'label' => 'UTS'],
 
   // 9-15: P8..P14
   9  => ['fase' => 'normal', 'label' => 'P8'],
@@ -23,6 +23,6 @@ return [
   15 => ['fase' => 'normal', 'label' => 'P14'],
 
   // 16: UAS
-  16 => ['fase' => 'uas', 'label' => null],
+  16 => ['fase' => 'uas', 'label' => 'UAS'],
 
 ];
