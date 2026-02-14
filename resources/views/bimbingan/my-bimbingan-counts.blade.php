@@ -18,26 +18,26 @@ $count_disetujui = $riwayat->where(' status_sesi_bimbingan', '>', 1)->count();
 
 
   @if(isRole('dosen'))
-  <x-count class="clickable" id="review" label="Perlu Review" :value="$count_review ?? 0" :active="$hasReview"
+  <x-count class="clickable" id="review" label="Perlu Review" :value="$count_review" :active="$hasReview"
     activeBg="rose-600" />
 
-  <x-count class="clickable" id="revisi" label="Perlu Revisi" :value="$count_revisi ?? 0" :active="$hasRevisi"
+  <x-count class="clickable" id="revisi" label="Perlu Revisi" :value="$count_revisi" :active="$hasRevisi"
     activeBg="amber-500" />
   @endif
 
   @if(isRole('mhs'))
-  <x-count class="clickable" id="revisi" label="Perlu Kamu Revisi" :value="$count_revisi ?? 0" :active="$hasRevisi"
+  <x-count class="clickable" id="revisi" label="Perlu Kamu Revisi" :value="$count_revisi" :active="$hasRevisi"
     activeBg="rose-600" />
 
-  <x-count class="clickable" id="review" label="Sedang Proses" :value="$count_review ?? 0" :active="$hasReview"
+  <x-count class="clickable" id="review" label="Sedang Proses" :value="$count_review" :active="$hasReview"
     activeBg="amber-500" />
   @endif
 
 
-  <x-count id="disetujui" label="Selesai/Revised" :value="$count_disetujui ?? 0" activeBg="emerald-600" :active="true"
+  <x-count id="disetujui" label="Selesai/Revised" :value="$count_disetujui" activeBg="emerald-600" :active="true"
     :clickable="false" />
 
-  <x-count id="total" label="Total Laporan" :value="$total_laporan ?? 0" activeBg="indigo-600" :active="true"
+  <x-count id="total" label="Total Laporan" :value="$total_laporan" activeBg="indigo-600" :active="true"
     :clickable="false" />
 
 </x-grid>
@@ -67,7 +67,7 @@ $count_disetujui = $riwayat->where(' status_sesi_bimbingan', '>', 1)->count();
     @foreach ($perlu_revisi as $sesi)
     <li>
       <a class="transition-all duration-300 hover:tracking-[0.5px]"
-        href="{{ route('sesi-bimbingan.show',$sesi->id) }}">- {{$sesi->pesertaBimbingan->mhs->nama_lengkap}} -
+        href="{{ route('sesi-bimbingan.show',$sesi->id) }}">{{$sesi->pesertaBimbingan->mhs->nama_lengkap}} -
         {{$sesi->babLaporan->nama}}
         ➡️</a>
     </li>

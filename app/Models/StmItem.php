@@ -17,7 +17,6 @@ class StmItem extends Model
         'kur_mk_id',
         'kelas_id',
         'course_id', // LMS Course
-        'stm_mk_id',
         'kapasitas',
         'is_open',
         'sks_tugas',
@@ -45,15 +44,6 @@ class StmItem extends Model
     public function kelas()
     {
         return $this->belongsTo(Kelas::class, 'kelas_id');
-    }
-
-    /**
-     * Relasi: StmItem → STM Detail (dosen pengampu)
-     * nullable → belum dijadwalkan
-     */
-    public function stmMk()
-    {
-        return $this->belongsTo(StmMk::class, 'stm_mk_id');
     }
 
     public function stm()

@@ -94,7 +94,7 @@ $detailMhs = [
       <div>
         <span class="text-gray-500">Status Mahasiswa</span>
         <div class="font-semibold">
-          <x-badge type="info" text="{{ $mhs->statusMhs->nama }}" />
+          <x-badge type="info" text="{{ $mhs->statusMhs->nama ?? '-' }}" />
         </div>
       </div>
 

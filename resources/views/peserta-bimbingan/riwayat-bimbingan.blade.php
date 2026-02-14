@@ -14,8 +14,17 @@
     <x-card-sesi-bimbingan :sesi="$sesi" :highlight="$highlight" />
   </div>
   @empty
-  <div class="col-span-full p-4 text-center text-sm text-gray-500">
-    Belum ada sesi bimbingan.
+  <div class="col-span-full p-4 text-center text-sm text-red-500">
+    <x-alert type="warning">
+      Belum ada riwayat sesi {{$bimbingan->nama}}
+    </x-alert>
+    <div>
+      @if(isDosen())
+      <a href="{{ route('preview_whatsapp', $pesertaBimbingan->id) }}">
+        <x-button btn="primary" class="w-full my-4">Kirim Notif Bimbingan Pertama</x-button>
+      </a>
+      @endif
+    </div>
   </div>
   @endforelse
 </div>

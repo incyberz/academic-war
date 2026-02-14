@@ -32,11 +32,20 @@
     </script>
 </head>
 
+@php
+$user = Auth::user();
+$userId = Auth::id();
+@endphp
+
 <body class="font-sans antialiased">
     <div class="min-h-screen
               bg-gray-100 dark:bg-slate-900
               text-gray-700 dark:text-slate-200">
+
+        @if ($userId)
+
         @include('layouts.navigation')
+        @endif
 
         <!-- Page Heading -->
         @isset($header)

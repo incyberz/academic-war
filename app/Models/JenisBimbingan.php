@@ -23,4 +23,17 @@ class JenisBimbingan extends Model
     {
         return $this->hasMany(Bimbingan::class, 'jenis_bimbingan_id');
     }
+
+    public function babLaporan(): HasMany
+    {
+        return $this->hasMany(BabLaporan::class, 'jenis_bimbingan_id');
+    }
+
+    # ============================================================
+    # HELPER ATTRIBUTE
+    # ============================================================
+    public function getJumlahBabLaporanAttribute(): int
+    {
+        return $this->babLaporan()->count();
+    }
 }

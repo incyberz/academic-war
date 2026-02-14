@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Jadwal;
 use App\Models\JamSesi;
+use App\Models\Ruang;
 use App\Models\Shift;
 use App\Models\Stm;
 use App\Models\StmItem;
@@ -147,7 +148,7 @@ class JadwalController extends Controller
         $jamSesis = JamSesi::with([
             'jadwal.stmItem.kurMk.mk',
             'jadwal.stmItem.kelas',
-            'jadwal.stmItem.stmMk.dosen', // atau relasi dosen kamu
+            'jadwal.stmItem.stm.dosen', // atau relasi dosen kamu
         ])->get();
 
         $jamSesisPerWeekday = [];
@@ -210,29 +211,26 @@ class JadwalController extends Controller
         # ============================================================
         # VALIDASI KETERCUKUPAN JAM SESI BASED ON SKS 
         # ============================================================
-        // misal jika dosen charter jam sesi urutan 3 dan MK nya 3KS, maka jam sesi urutan 3,4,dan 5 terpakai
-        // validasi jika sesi jam urutan 4 atau 5 terpakai jadwal lain maka return back with error "Jam sesi tidak cukup untuk SKS MK Anda (3 SKS)"
         $stmItem = StmItem::with(['kurMk.mk', 'kelas'])->findOrFail($request->stm_item_id);
         $jamSesiAwal = JamSesi::findOrFail($request->jam_sesi_id);
 
-        // ambil SKS MK (default)
         $sksMk = $stmItem->sks_beban ?? $stmItem->kurMk->mk->sks;
 
-        // ambil jam sesi berurutan sesuai SKS
         $jamSesisDibutuhkan = JamSesi::where('weekday', $request->weekday)
             ->where('urutan', '>=', $jamSesiAwal->urutan)
             ->orderBy('urutan')
             ->take($sksMk)
             ->get();
 
-        // validasi jumlah jam sesi cukup
         if ($jamSesisDibutuhkan->count() < $sksMk) {
             return back()->withErrors([
                 'jam_sesi_id' => "Jam sesi tidak cukup untuk SKS MK Anda ({$sksMk} SKS)",
             ]);
         }
 
-        // cek konflik jadwal pada jam sesi tersebut
+        # ============================================================
+        # CEK BENTROK KELAS
+        # ============================================================
         $konflik = Jadwal::where('weekday', $request->weekday)
             ->whereIn('jam_sesi_id', $jamSesisDibutuhkan->pluck('id'))
             ->exists();
@@ -242,7 +240,6 @@ class JadwalController extends Controller
                 'jam_sesi_id' => "Jam sesi tidak cukup untuk SKS MK Anda ({$sksMk} SKS)",
             ]);
         }
-        // dd('$jamSesiCukup');
 
 
         # ============================================================
@@ -251,10 +248,6 @@ class JadwalController extends Controller
         DB::beginTransaction();
 
         try {
-
-            // ==========================
-            // AMBIL JAM SESI
-            // ==========================
             $jamSesi = JamSesi::lockForUpdate()->findOrFail($request->jam_sesi_id);
 
             if (!$jamSesi->can_chartered) {
@@ -263,9 +256,7 @@ class JadwalController extends Controller
                 ]);
             }
 
-            // ==========================
             // CEK DUPLIKASI STM ITEM
-            // ==========================
             $exists = Jadwal::where('stm_item_id', $request->stm_item_id)
                 ->where('jam_sesi_id', $jamSesi->id)
                 ->exists();
@@ -276,14 +267,12 @@ class JadwalController extends Controller
                 ]);
             }
 
-            // ==========================
             // SIMPAN JADWAL
-            // ==========================
             Jadwal::create([
                 'stm_item_id' => $request->stm_item_id,
                 'weekday'     => $request->weekday,
                 'jam_sesi_id' => $jamSesi->id,
-                'ruang_id'    => null, // dipilih di step berikutnya
+                'ruang_id'    => null,
                 'jam_awal'    => $jamSesi->jam_mulai,
                 'jam_akhir'   => $jamSesi->jam_selesai,
                 'is_locked'   => false,
@@ -304,6 +293,9 @@ class JadwalController extends Controller
             ]);
         }
     }
+
+
+
 
     public function update(Request $request, Jadwal $jadwal)
     {
@@ -357,5 +349,70 @@ class JadwalController extends Controller
         $jadwal->forceDelete();
 
         return back()->with('success', 'Jadwal berhasil dihapus.');
+    }
+
+
+    public function show()
+    {
+        abort(404);
+    }
+
+
+    # ============================================================
+    # ASSIGN RUANG SETELAH ASSIGN WAKTU
+    # ============================================================
+    /**
+     * Assign Ruangan ke Jadwal yang waktunya telah ditentukan
+     * Dapatkan semua stm items
+     * Dapatkan semua ruangs
+     * Dapatkan variabel yang diperlukan lainnya
+     * tanpa parameter
+     * STM diambil dari user login
+     * stmItem->stm->dosen->user->id
+     */
+    public function assignRuang()
+    {
+        $user = Auth::user();
+
+        // Ambil STM milik dosen login
+        $stm = Stm::whereHas('dosen.user', function ($q) use ($user) {
+            $q->where('id', $user->id);
+        })->firstOrFail();
+
+        $myJadwals = Jadwal::whereHas('stmItem.stm.dosen.user', function ($q) {
+            $q->where('id', Auth::id());
+        })
+            ->whereNotNull('jam_awal')
+            ->whereNotNull('jam_akhir')
+            ->with([
+                'stmItem',
+                'stmItem.stm',
+                'stmItem.stm.dosen',
+            ])
+            // ->orderBy('weekday')   // atau weekday kalau memang kolomnya ada
+            // ->orderBy('jam_awal')
+            ->get();
+
+
+        // Ambil semua ruang yang siap dipakai
+        $ruangs = Ruang::ready()->get();
+
+
+        // Preload jadwal yang SUDAH memakai ruang (untuk cek bentrok)
+        $jadwalRuang = Jadwal::with([
+            'stmItem.stm.dosen',
+            'mataKuliah'
+        ])
+            ->whereNotNull('ruang_id')
+            ->whereNotNull('jam_awal')
+            ->whereNotNull('jam_akhir')
+            ->get();
+
+        return view('jadwal.assign-ruang', compact(
+            'stm',
+            'myJadwals',
+            'ruangs',
+            'jadwalRuang'
+        ));
     }
 }

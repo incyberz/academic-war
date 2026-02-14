@@ -21,8 +21,8 @@
 </div>
 
 <div class="hover:tracking-[0.5px] transition-all duration-200">
-  <a href="{{ route('jenis-bimbingan.index') }}">
-    <x-progress-bar label="Bimbingan Skripsi" info="lengkapi ➡️" />
+  <a href="{{ route('bimbingan.index') }}">
+    <x-progress-bar label="Proses Bimbingan" info="cek ➡️" />
   </a>
 </div>
 

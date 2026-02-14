@@ -19,7 +19,7 @@ class PresensiMhsController extends Controller
             ->orderBy('kelas_mhs_id')
             ->paginate(15);
 
-        return view('presensi-mhs.index', compact('presensiList'));
+        return view('presensi.mhs.index', compact('presensiList'));
     }
 
     /**
@@ -53,7 +53,7 @@ class PresensiMhsController extends Controller
 
         $presensi = PresensiMhs::create($validated);
 
-        return redirect()->route('presensi-mhs.index')
+        return redirect()->route('presensi.mhs.index')
             ->with('success', "Presensi mahasiswa berhasil dibuat.");
     }
 
@@ -98,7 +98,7 @@ class PresensiMhsController extends Controller
 
         $presensiMhs->update($validated);
 
-        return redirect()->route('presensi-mhs.index')
+        return redirect()->route('presensi.mhs.index')
             ->with('success', "Presensi mahasiswa berhasil diperbarui.");
     }
 
@@ -109,7 +109,7 @@ class PresensiMhsController extends Controller
     {
         $presensiMhs->delete();
 
-        return redirect()->route('presensi-mhs.index')
+        return redirect()->route('presensi.mhs.index')
             ->with('success', "Presensi mahasiswa berhasil dihapus.");
     }
 }

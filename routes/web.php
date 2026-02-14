@@ -42,6 +42,7 @@ use App\Http\Controllers\{
     StmController,
     StmItemController,
     KurMkController,
+    RuangController,
 };
 
 
@@ -88,9 +89,11 @@ Route::middleware('auth')->group(function () {
     # ============================================================
     # ROUTE KHUSUS PEMBIMBING AKTIF
     # ============================================================
+    Route::resource('bimbingan', BimbinganController::class);
+    // Route::resource('bimbingan', BimbinganController::class)->only(['index', 'show']);
     Route::middleware('pembimbing.aktif')->group(function () {
 
-        Route::resource('bimbingan', BimbinganController::class);
+        // Route::resource('bimbingan', BimbinganController::class);
 
         // rute ke peserta bimbingan @superCreate
         Route::get(
@@ -181,6 +184,19 @@ Route::middleware('auth')->group(function () {
     Route::delete('unit/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy');
 
 
+    Route::prefix('jadwal')->name('jadwal.')->group(function () {
+
+        // Assign Ruang
+        Route::get('assign-ruang', [JadwalController::class, 'assignRuang'])
+            ->name('assign-ruang');
+
+        Route::post('assign-ruang/{stmItem}', [JadwalController::class, 'storeAssignRuang'])
+            ->name('assign-ruang.store');
+    });
+
+    # ============================================================
+    # ROUTE RESOURCES
+    # ============================================================
     Route::resource('quest', QuestController::class);
     Route::resource('challenge', ChallengeController::class);
     Route::resource('challenge-level', ChallengeLevelController::class);
@@ -219,9 +235,19 @@ Route::middleware('auth')->group(function () {
         Route::resource('item', StmItemController::class);
     });
 
+    // ZZZ upgrade route
+    // Route::resource('stm.item', StmItemController::class)
+    //     ->except(['show']);
+
+
+    Route::resource('jam-sesi', JamSesiController::class);
+
     // Jadwal STM
     Route::resource('jadwal', JadwalController::class);
-    Route::resource('jam-sesi', JamSesiController::class);
+
+
+    // Ruangan Kelas
+    Route::resource('ruang', RuangController::class);
 });
 
 

@@ -2,7 +2,8 @@
 @php $namaPeserta = $pb->namaPeserta() @endphp
 @php $namaPembimbing = $pb->namaPembimbing() @endphp
 @php $isMyBimbingan = $pb->isMyBimbingan() @endphp
-@php $namaBimbingan = $pb->namaBimbingan() @endphp
+@php $bimbingan = $pesertaBimbingan->bimbingan @endphp
+@php $namaBimbingan = $bimbingan->nama @endphp
 @php $subtitle = $pb->pageSubtitle() @endphp
 @php $statusPeserta = namaStatusPesertaBimbingan($pesertaBimbingan->status) @endphp
 @php $jenis_bimbingan_id = $pesertaBimbingan->bimbingan->jenis_bimbingan_id @endphp
@@ -14,13 +15,24 @@
 
 
   @if (isRole('mhs'))
+
+  @if (!$bimbinganCounts['total_laporan'])
+  <a href="{{ route('sesi-bimbingan.create', [
+                'peserta_bimbingan_id' => $pesertaBimbingan->id
+            ]) }}">
+    <x-button btn="primary" class="w-full my-4">Ajukan Bimbingan Pertama</x-button>
+  </a>
+  @else
   <div class="right mb-2">
     <a href="{{ route('sesi-bimbingan.create', [
         'peserta_bimbingan_id' => $pesertaBimbingan->id
     ]) }}">
-      <x-button>Add Sesi Bimbingan</x-button>
+      <x-button>Ajukan Bimbingan</x-button>
     </a>
   </div>
+  @endif
+
+
   @endif
 
   <x-page-content>
@@ -52,7 +64,9 @@
 
 
     @include('peserta-bimbingan.bimbingan-progress')
+    @if ($bimbinganCounts['total_laporan'])
     @include('peserta-bimbingan.bimbingan-counts')
+    @endif
 
     <x-card>
       <x-card-header>Riwayat Bimbingan</x-card-header>

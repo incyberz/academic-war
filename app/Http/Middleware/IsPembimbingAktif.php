@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Dosen;
+use App\Models\Mhs;
 use App\Models\Pembimbing;
 use Closure;
 use Illuminate\Http\Request;
@@ -30,6 +31,7 @@ class IsPembimbingAktif
 
         // Bukan dosen
         $dosen = Dosen::where('user_id', $user->id)->first();
+        $mhs = Mhs::where('user_id', $user->id)->first();
 
         if (!$dosen) {
             return $this->unauthorized(

@@ -9,6 +9,7 @@ use App\Models\TahunAjar;
 use App\Models\Dosen;
 use App\Models\Mhs;
 use App\Models\EligibleBimbingan;
+use App\Models\PesertaBimbingan;
 use App\Models\SesiBimbingan;
 
 use Illuminate\Http\Request;
@@ -24,7 +25,26 @@ class BimbinganController extends Controller
      */
     public function index()
     {
+        // dd('$peserta');
         if (isRole('dosen') || isRole('mhs')) {
+            if (isRole('dosen')) {
+                $dosen = Dosen::where('user_id', Auth::id())->firstOrFail();
+                $pembimbing = Pembimbing::where('dosen_id', $dosen->id)->firstOrFail();
+                $bimbingan = Bimbingan::where('pembimbing_id', $pembimbing->id)->first();
+                if ($bimbingan->count()) {
+                    return redirect()->route('bimbingan.show', $bimbingan->id);
+                }
+            } else { // mhs
+                $mhs = Mhs::where('user_id', Auth::id())->firstOrFail();
+                $peserta = PesertaBimbingan::where('mhs_id', $mhs->id)->first();
+                // dd($peserta);
+                if ($peserta->count()) { // jika termasuk peserta bimbingan
+                    return redirect()->route('peserta-bimbingan.show', $peserta->id);
+                }
+            }
+
+            dd('zzz');
+            // belum punya bimbingan | belum jadi peserta bimbingan
             return redirect()->route('jenis-bimbingan.index');
         } else {
             dd("Belum ada fitur index bimbingan selain role dosen | mhs");
@@ -146,7 +166,7 @@ class BimbinganController extends Controller
             # SPA DATA
             # ============================================================
             $bimbingans = Bimbingan::where('pembimbing_id', $pembimbing->id)
-                ->where('tahun_ajar_id', $tahun_ajar_id)
+                // ->where('tahun_ajar_id', $tahun_ajar_id) // all bimbingan termasuk di semester sebelumnya
                 ->with([
                     'pembimbing',
                     'jenisBimbingan',
@@ -171,6 +191,8 @@ class BimbinganController extends Controller
                 ->get()
                 ->groupBy('jenis_bimbingan_id');
 
+            // dd($bimbingans);
+
             foreach ($bimbingans as $bimb) {
 
                 $pesertaCollection = $bimb->pesertaBimbingan;
@@ -192,12 +214,12 @@ class BimbinganController extends Controller
                     $tahun_ajar_id
                 ) {
                     $query->where('pembimbing_id', $pembimbing_id)
-                        ->where('jenis_bimbingan_id', $jenis_bimbingan_id)
-                        ->where('tahun_ajar_id', $tahun_ajar_id);
+                        // ->where('tahun_ajar_id', $tahun_ajar_id)
+                        ->where('jenis_bimbingan_id', $jenis_bimbingan_id);
                 })->get();
             }
         } else {
-            dump("Akses untuk role selain dosen belum diimplementasi.");
+            dd("Akses untuk role selain dosen belum diimplementasi.");
         }
 
         $bimbingan->load([

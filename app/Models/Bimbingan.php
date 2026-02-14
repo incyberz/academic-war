@@ -31,9 +31,7 @@ class Bimbingan extends Model
         'akhir_masa_bimbingan',
     ];
 
-    /**
-     * Casting tipe data
-     */
+
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -63,5 +61,13 @@ class Bimbingan extends Model
     public function tahunAjar()
     {
         return $this->belongsTo(TahunAjar::class, 'tahun_ajar_id');
+    }
+
+    # ============================================================
+    # GET ATTRIBUTES
+    # ============================================================
+    public function getNamaAttribute()
+    {
+        return $this->jenisBimbingan->nama;
     }
 }

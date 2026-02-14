@@ -35,7 +35,6 @@ return new class extends Migration
             $table->string('penandatangan_jabatan')->nullable();
             $table->uuid('uuid')->unique();
 
-            // rekap SKS (snapshot, sumber utama ada di stm_mk)
             $table->unsignedTinyInteger('total_sks_tugas')->nullable();
             $table->unsignedTinyInteger('total_sks_beban')->nullable();
             $table->unsignedTinyInteger('total_sks_honor')->nullable();

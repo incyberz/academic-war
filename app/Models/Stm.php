@@ -83,4 +83,26 @@ class Stm extends Model
         $this->total_sks_honor = $this->items->sum('sks_honor');
         $this->save();
     }
+
+    public function getProgressRuangAttribute(): int
+    {
+        $total = $this->stmItems()
+            ->whereHas('jadwal', function ($q) {
+                $q->whereNotNull('jam_awal')
+                    ->whereNotNull('jam_akhir');
+            })
+            ->count();
+
+        if ($total === 0) {
+            return 0;
+        }
+
+        $assigned = $this->stmItems()
+            ->whereHas('jadwal', function ($q) {
+                $q->whereNotNull('ruang_id');
+            })
+            ->count();
+
+        return (int) round(($assigned / $total) * 100);
+    }
 }

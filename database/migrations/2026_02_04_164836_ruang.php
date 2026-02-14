@@ -14,7 +14,7 @@ return new class extends Migration
     Schema::create('ruang', function (Blueprint $table) {
       $table->id();
 
-      $table->string('kode')->unique();       // Kode ruang resmi
+      $table->string('kode', 10)->unique();       // Kode ruang resmi
       $table->string('nama')->unique();       // Nama display ruang
       $table->unsignedInteger('kapasitas');
 

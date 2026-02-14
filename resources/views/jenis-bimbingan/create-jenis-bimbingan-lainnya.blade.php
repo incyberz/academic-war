@@ -43,16 +43,29 @@
       </x-card-body>
 
       {{-- FOOTER --}}
-      <x-card-footer>
+      <x-card-footer style="display: block">
 
         @if ($jenis->status == 1)
 
-        <a onclick="return confirm('Add Bimbingan ini?')"
-          href="{{ route('bimbingan.create', ['jenis_bimbingan_id' => $jenis->id]) }}">
-          <x-btn-add class="w-full">
-            Add Bimbingan
-          </x-btn-add>
-        </a>
+        <div>
+          @if (!$jenis->jumlah_bab_laporan)
+          <x-alert type="warning">
+            Tidak bisa Tambah Jenis Bimbingan ini
+            <div class="text-xs">
+              <i>
+                Setting Bab Laporan belum siap.
+              </i>
+            </div>
+          </x-alert>
+          @else
+          <a onclick="return confirm('Tambah Jenis Bimbingan ini?')"
+            href="{{ route('bimbingan.create', ['jenis_bimbingan_id' => $jenis->id]) }}">
+            <x-button class="w-full">
+              Tambah Jenis Bimbingan Ini
+            </x-button>
+          </a>
+          @endif
+        </div>
 
         @else
 

@@ -2,7 +2,10 @@
 @include('bimbingan.nav')
 
 @foreach ($myJenisBimbingan as $jenis)
-@php $list = $listPeserta[$jenis->id]; @endphp
+@php
+$list = $listPeserta[$jenis->id]; // ?? null; // tidak boleh null ambil semua untuk SPA
+// if(!$list) continue;
+@endphp
 {{-- @dd($list) --}}
 @php $namaBimbingan = $jenis->nama; @endphp
 @php $jenis_bimbingan_id = $jenis->id; @endphp

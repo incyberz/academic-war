@@ -17,11 +17,6 @@ class PesertaBimbinganView
     return config('status_peserta_bimbingan');
   }
 
-  public function namaBimbingan()
-  {
-    return $this->peserta->bimbingan->jenisBimbingan->nama;
-  }
-
   public function namaPeserta()
   {
     return $this->peserta->mhs->nama_lengkap;
@@ -58,7 +53,7 @@ class PesertaBimbinganView
   public function pageSubtitle(): string
   {
     if ($this->isMe()) {
-      return 'Riwayat dan progres bimbingan skripsi Anda';
+      return 'Riwayat dan Progres Bimbingan Anda';
     }
 
     if ($this->isMyBimbingan()) {

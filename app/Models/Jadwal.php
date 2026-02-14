@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 
 class Jadwal extends Model
 {
@@ -63,5 +64,27 @@ class Jadwal extends Model
     public function getWeekdayAttribute()
     {
         return optional($this->jamSesi)->weekday;
+    }
+
+
+    public static function isBentrokKelasInput(
+        int $kelasId,
+        int $weekday,
+        $jamAwal,
+        $jamAkhir,
+        ?int $excludeJadwalId = null
+    ): bool {
+        $query = DB::table('jadwal')
+            ->join('stm_item', 'stm_item.id', '=', 'jadwal.stm_item_id')
+            ->where('stm_item.kelas_id', $kelasId)
+            ->where('jadwal.weekday', $weekday)
+            ->where('jadwal.jam_awal', '<', $jamAkhir)
+            ->where('jadwal.jam_akhir', '>', $jamAwal);
+
+        if ($excludeJadwalId) {
+            $query->where('jadwal.id', '!=', $excludeJadwalId);
+        }
+
+        return $query->exists();
     }
 }

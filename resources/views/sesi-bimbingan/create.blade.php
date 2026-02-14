@@ -7,10 +7,14 @@
 @php $nama_dok_rev = $isRevisi ? $revisi->nama_dokumen .'_revisi-ke-'.$revisi_ke : null @endphp
 
 <x-app-layout>
-  <x-page-header title="{{$isRevisi ? 'Revisi' :'Create Sesi'}} Bimbingan" subtitle="{{$subtitle}}" />
+  <x-page-header title="{{$isRevisi ? 'Revisi' :'Ajukan Sesi'}} Bimbingan" subtitle="{{$subtitle}}" />
 
   <x-page-content>
 
+    @if (!$babLaporan->count())
+    <x-alert type='danger'
+      title="Belum dapat mengajukan proses bimbingan karena belum ada Tahapan Bab Laporan pada Jenis Bimbingan [{{ $pesertaBimbingan->bimbingan->jenisBimbingan->nama }}]. Segera laporakan!" />
+    @endif
     <x-card>
       <x-card-header>Pengajuan {{$isRevisi ? 'Revisi' : 'Bimbingan'}}</x-card-header>
       <x-card-body>
@@ -46,7 +50,7 @@
             </div>
             @else
             <x-select required name="bab_laporan_id" id="bab_laporan_id">
-              <option value="">--pilih--</option>
+              <option value="">-- Pilih Tahapan Bab --</option>
               @foreach ($babLaporan as $bab)
               {{-- @php $selected = $bab->id == $revisi_id ? 'selected' : '' @endphp --}}
               {{-- @php if($selected) dd($bab->nama) @endphp --}}
@@ -175,7 +179,7 @@
 
           {{-- action --}}
           <div class="flex justify-end gap-3 pt-4">
-            <a href="{{ route('peserta-bimbingan.show',$revisi->peserta_bimbingan_id) }}">
+            <a href="{{ $isRevisi ? route('peserta-bimbingan.show',$revisi->peserta_bimbingan_id) : '#' }}">
               <x-btn-back>Batal</x-btn-back>
             </a>
 

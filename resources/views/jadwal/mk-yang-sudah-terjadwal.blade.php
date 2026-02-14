@@ -6,7 +6,7 @@
   </x-card-header>
 
   <x-card-body>
-    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-{{count($weekdays)}} gap-4">
 
       @foreach ($weekdays as $w => $namaHari)
       <div class="border rounded-lg overflow-hidden
@@ -30,7 +30,7 @@
 
           @if(!empty($arrStmItemsSigned[$w][$shift->id]))
           @foreach ($arrStmItemsSigned[$w][$shift->id] as $item)
-          <div class="item_jadwal cursor-pointer p-3 rounded-lg
+          <div class="item_jadwal p-3 rounded-lg
                    bg-gray-50 dark:bg-gray-900
                    border border-gray-200 dark:border-gray-700
                    hover:border-blue-400 dark:hover:border-blue-500
@@ -54,7 +54,8 @@
             </div>
 
             {{-- TOGGLE --}}
-            <div class="edit_jadwal text-xs text-right text-gray-400" data-jadwal_id="{{$item->jadwal->id}}">
+            <div class="edit_jadwal text-xs text-right text-gray-400 cursor-pointer"
+              data-jadwal_id="{{$item->jadwal->id}}">
               ⬇️
             </div>
 
@@ -67,6 +68,9 @@
                 Penyesuaian Jadwal
               </div>
 
+              {{-- ===================================== --}}
+              {{-- FORM PENYESUAIAN JADWAL --}}
+              {{-- ===================================== --}}
               <form method="POST" action="{{route('jadwal.update', $item->jadwal->id)}}" class="space-y-3">
                 @csrf
                 @method('PUT')
@@ -109,6 +113,9 @@
                 </div>
               </form>
 
+              {{-- ===================================== --}}
+              {{-- FORM DROP JADWAL --}}
+              {{-- ===================================== --}}
               <form method="POST" action="{{route('jadwal.destroy', $item->jadwal->id)}}">
                 @csrf
                 @method('DELETE')
