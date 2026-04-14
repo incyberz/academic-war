@@ -129,7 +129,6 @@
               <th>Tanggal</th>
               <th>Jam</th>
               <th>Status</th>
-              <th>Aksi</th>
             </tr>
           </thead>
 
@@ -143,15 +142,22 @@
               <td>{{ $sesiKelas->unit->nama }} - {{$sesiKelas->stmItem->kurMk->mk->singkatan}}</td>
               <td>{{$sesiKelas->stmItem->kelas->label}}</td>
 
-              <td>{{ optional($sesiKelas->start_at)->format('d M Y') ?? '-' }}</td>
+              <td>{{$sesiKelas->tanggal_rencana->format('D, d-M-Y')}} </td>
 
-              <td>{{ optional($sesiKelas->start_at)->format('H:i') ?? '-' }}</td>
+              <td>
+                {{ optional($sesiKelas->start_at)->format('H:i') }}-
+                {{ optional($sesiKelas->end_at)->format('H:i') }}
+              </td>
 
 
 
               <td>
+                {{-- jika tanggal terlewat dan status==0 maka ZZZ --}}
+
+
+
                 @php
-                $status = (int) ($sesiKelas->status ?? 0);
+                $status = (int) ($sesiKelas->status);
                 $statusLabel = match($status) {
                 0 => 'Draft',
                 1 => 'Aktif',
@@ -162,18 +168,6 @@
                 {{ $statusLabel }}
               </td>
 
-              <td>
-                {{-- <x-button btn="warning" onclick="window.location='{{ route('sesi-kelas.edit', $sesiKelas->id) }}'">
-                  Edit
-                </x-button> --}}
-
-                <form action="{{ route('sesi-kelas.destroy', $sesiKelas->id) }}" method="POST"
-                  onsubmit="return confirm('Hapus sesi kelas ini?')">
-                  @csrf
-                  @method('DELETE')
-                  <x-button btn="danger" type="submit">Hapus</x-button>
-                </form>
-              </td>
             </tr>
             @empty
             <tr>

@@ -45,6 +45,11 @@ class Jadwal extends Model
         return $this->belongsTo(JamSesi::class, 'jam_sesi_id');
     }
 
+    public function ruang()
+    {
+        return $this->belongsTo(Ruang::class, 'ruang_id');
+    }
+
     /**
      * Accessor: jam efektif (override jika ada)
      */

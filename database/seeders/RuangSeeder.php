@@ -10,7 +10,7 @@ class RuangSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['nama' => 'ONLINE', 'kapasitas' => 999, 'gedung' => null, 'jenis_ruang' => 'kelas', 'is_ready' => true],
+            ['nama' => 'ZOOM', 'kapasitas' => 500, 'gedung' => null, 'jenis_ruang' => 'kelas', 'is_ready' => true],
 
             ['nama' => 'A201', 'kapasitas' => 40, 'gedung' => 'A', 'jenis_ruang' => 'kelas', 'is_ready' => true],
             ['nama' => 'A202', 'kapasitas' => 40, 'gedung' => 'A', 'jenis_ruang' => 'kelas', 'is_ready' => true],
@@ -34,6 +34,7 @@ class RuangSeeder extends Seeder
             ['nama' => 'B301', 'kapasitas' => 40, 'gedung' => 'B', 'jenis_ruang' => 'lab', 'is_ready' => true],
             ['nama' => 'B302', 'kapasitas' => 40, 'gedung' => 'B', 'jenis_ruang' => 'lab', 'is_ready' => true],
             ['nama' => 'B303', 'kapasitas' => 40, 'gedung' => 'B', 'jenis_ruang' => 'lab', 'is_ready' => true],
+            ['nama' => 'B304', 'kapasitas' => 40, 'gedung' => 'B', 'jenis_ruang' => 'lab', 'is_ready' => true],
             ['nama' => 'A301', 'kapasitas' => 40, 'gedung' => 'A', 'jenis_ruang' => 'lab', 'is_ready' => true],
         ];
 

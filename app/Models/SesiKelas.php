@@ -18,9 +18,15 @@ class SesiKelas extends Model
         'start_at',
         'end_at',
         'catatan_dosen',
-        'status', // status sesi kelas tsb
+        'status', // default 0
         'fase', // normal / uts / uas
         'label', // P1, P2, etc
+    ];
+
+    public $casts = [
+        'tanggal_rencana' => 'date',
+        'start_at' => 'datetime:H:i',
+        'end_at' => 'datetime:H:i',
     ];
 
     /**

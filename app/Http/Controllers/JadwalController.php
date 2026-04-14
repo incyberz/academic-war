@@ -215,6 +215,7 @@ class JadwalController extends Controller
         $jamSesiAwal = JamSesi::findOrFail($request->jam_sesi_id);
 
         $sksMk = $stmItem->sks_beban ?? $stmItem->kurMk->mk->sks;
+        $menitSks = $stmItem->kelas->shift->menit_sks;
 
         $jamSesisDibutuhkan = JamSesi::where('weekday', $request->weekday)
             ->where('urutan', '>=', $jamSesiAwal->urutan)
@@ -267,14 +268,24 @@ class JadwalController extends Controller
                 ]);
             }
 
+            $jamAwal = $jamSesi->jam_mulai;
+
+            $jamAkhir = null; // jam_awal + ($sksMk * $menitSks) menit
+            $jamAkhir = $jamAwal->copy()->addMinutes($sksMk * $menitSks);
+            // dd(
+            //     $jamAwal->format('H:i'),
+            //     $jamAkhir->format('H:i'),
+            //     $sksMk,
+            // );
+
             // SIMPAN JADWAL
             Jadwal::create([
                 'stm_item_id' => $request->stm_item_id,
                 'weekday'     => $request->weekday,
                 'jam_sesi_id' => $jamSesi->id,
                 'ruang_id'    => null,
-                'jam_awal'    => $jamSesi->jam_mulai,
-                'jam_akhir'   => $jamSesi->jam_selesai,
+                'jam_awal'    => $jamAwal,
+                'jam_akhir'   => $jamAkhir,
                 'is_locked'   => false,
                 'created_by'  => Auth::id(),
             ]);
@@ -299,6 +310,18 @@ class JadwalController extends Controller
 
     public function update(Request $request, Jadwal $jadwal)
     {
+        $ruang_id = intval($request['ruang_id']) ?? null;
+
+        // assign ruang
+        if ($ruang_id) {
+            $validated = $request->validate([
+                'ruang_id'    => ['required', 'integer'],
+            ]);
+            $jadwal->update($validated);
+            return back()->with('success', 'Ruangan Jadwal berhasil diperbarui.');
+        }
+
+
         $validated = $request->validate([
             'jam_awal'    => ['required', 'date_format:H:i'],
             'jam_akhir'   => ['required', 'date_format:H:i', 'after:jam_awal'],
@@ -385,6 +408,7 @@ class JadwalController extends Controller
             ->whereNotNull('jam_awal')
             ->whereNotNull('jam_akhir')
             ->with([
+                'ruang',
                 'stmItem',
                 'stmItem.stm',
                 'stmItem.stm.dosen',
@@ -401,7 +425,7 @@ class JadwalController extends Controller
         // Preload jadwal yang SUDAH memakai ruang (untuk cek bentrok)
         $jadwalRuang = Jadwal::with([
             'stmItem.stm.dosen',
-            'mataKuliah'
+            'stmItem.kurMk.mk',
         ])
             ->whereNotNull('ruang_id')
             ->whereNotNull('jam_awal')

@@ -5,9 +5,14 @@ $statusPembimbingAktif = $pembimbing->count() ? $pembimbing->is_active : false;
 <span class="inline-flex rounded-full px-3 py-1 text-sm font-semibold mb-3
           {{ $statusPembimbingAktif ? 'bg-green-100 text-green-700' :
              'bg-red-100 text-red-700' }}">
-  {{ $statusPembimbingAktif ? 'Pembimbing Aktif' :
+  {{ $statusPembimbingAktif ? 'Anda Pembimbing Aktif' :
   'Perhatian! ⚠️ Status pembimbing Anda Nonaktif' }}
 </span>
+
+<div class="flex items-center gap-3 my-3 mb-4">
+  <span class="step-no">1</span>
+  <span class="step leading-tight">Silahkan pilih Jenis Bimbingan yang Anda ikuti.</span>
+</div>
 
 @php
 $myBimMap = collect($myBimbingans ?? [])

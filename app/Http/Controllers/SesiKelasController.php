@@ -124,8 +124,83 @@ class SesiKelasController extends Controller
             ->orderBy('unit.urutan', 'asc')
             ->orderBy('sesi_kelas.id', 'asc');
 
-        // $sesiKelass = $query->paginate(16)->withQueryString();
         $sesiKelass = $query->get();
+
+        # ============================================================
+        # AUTO FILL DEFAULT, 16 kali pertemuan, awal_sesi dan akhir_ssesi sesuai jadwal
+        # ============================================================
+        foreach ($sesiKelass as $key => $sesi) {
+            $isPertama = $sesi->unit->urutan == 1;
+            $belumTerjadwal = $sesi->tanggal_rencana === null;
+            if ($isPertama and $belumTerjadwal) {
+                $tgl = $sesi->stmItem->stm->tahunAjar->senin_pertama_kuliah;
+                $weekday = $sesi->stmItem->jadwal->weekday;
+                $jam_awal = $sesi->stmItem->jadwal->jam_awal;
+                $jam_akhir = $sesi->stmItem->jadwal->jam_akhir;
+                if (!$tgl) dd('Admin belum setting tahun ajar (ondev).');
+                if (!$weekday || !$jam_awal || !$jam_akhir) {
+                    dd(
+                        "Tidak boleh Null pada prasyarat variabels (ondev)",
+                        "weekday: $weekday",
+                        "jam_awal: " . $jam_awal->format('H:i'),
+                        "jam_akhir: " . $jam_akhir->format('H:i'),
+                    );
+                }
+                if ($sesi->status) dd("Status sesi tidak nol (ondev)");
+
+                $sesiKelassMkIni = $sesiKelass
+                    ->where('stm_item_id', $sesi->stm_item_id)
+                    ->sortBy(fn($s) => $s->unit->urutan)
+                    ->values();
+
+                // geser dari senin ke hari X
+                $tgl->addDays($weekday - 1);
+
+                // selisih menit
+                $selisihMenit = $jam_awal->diffInMinutes($jam_akhir);
+
+                foreach ($sesiKelassMkIni as $index => $sesiTarget) {
+                    $urutan = $sesiTarget->unit->urutan;
+                    $singkatanMk = $sesiTarget->stmItem->kurMk->mk->singkatan;
+
+                    $startAt = $tgl->copy()->setTimeFrom($jam_awal);
+                    $endAt = $tgl->copy()->setTimeFrom($jam_akhir);
+
+
+                    dump(
+                        "Auto Update Timing | $singkatanMk P-$urutan | +$selisihMenit menit | " . $tgl->format('d M Y') . ' ' .
+                            $startAt->format('H:i') . ' ' .
+                            $endAt->format('H:i')
+                    );
+
+                    if ($sesiTarget->unit->urutan == 10 and false) {
+                        dd(
+                            $selisihMenit,
+                            $jam_awal->format('H:i'),
+                            $jam_akhir->format('H:i'),
+                            $sesiKelassMkIni->count(),
+                            // $sesiTarget,
+                            $tgl->format('d M Y'),
+                            $startAt->format('H:i'),
+                            $endAt->format('H:i')
+                        );
+                    }
+                    $sesiTarget->update([
+                        'start_at' => $startAt->format('Y-m-d H:i'),
+                        'end_at'   => $endAt->format('Y-m-d H:i'),
+                        'tanggal_rencana'   => $tgl,
+                        'status'   => 0,
+                    ]);
+
+                    $tgl->addWeeks(1);
+                }
+
+                dump('OK. Next MK =================================================');
+            }
+        }
+
+        // dd('OK');
+
 
         $tahunAjar = TahunAjar::find($tahunAjarId);
 

@@ -13,6 +13,7 @@ class Shift extends Model
 
     protected $fillable = [
         'urutan',
+        'menit_sks',
         'kode',
         'nama',
         'jam_awal_kuliah',

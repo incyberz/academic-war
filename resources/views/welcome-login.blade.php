@@ -1,60 +1,76 @@
 @php
 $roles = [
 [
-'key' => 'mhs',
+'role' => 'mhs',
 'label' => 'Mhs',
 'avatar' => 'img/roles/mhs.png',
 ],
 [
-'key' => 'dosen',
+'role' => 'dosen',
 'label' => 'Dosen',
 'avatar' => 'img/roles/dosen.png',
 ],
 [
-'key' => 'praktisi',
+'role' => 'praktisi',
 'label' => 'Praktisi',
 'avatar' => 'img/roles/praktisi.png',
 ],
 [
-'key' => 'mitra',
+'role' => 'mitra',
 'label' => 'Mitra',
 'avatar' => 'img/roles/mitra.png',
 ],
 [
-'key' => 'akademik',
+'role' => 'akademik',
 'label' => 'Akademik',
 'avatar' => 'img/roles/akademik.png',
 ],
 ];
 @endphp
 
+
 <div class="text-center flex flex-col gap-4">
-  <h1 class="text-2xl font-bold mb-2 ">
-    Welcome!
-  </h1>
-  <p class="text-sm text-gray-600 dark:text-gray-400 mb-8">
-    Pilih peran untuk login...
-  </p>
-
-  <div class="blok_roles">
-    @foreach ($roles as $role)
-    @php
-    // if(strtolower($role['label'])=='mitra') continue;
-    // if(strtolower($role['label'])=='praktisi') continue;
-
-    @endphp
-    <div class="group flex-shrink-0 cursor-pointer">
-      <div class="bg-white dark:bg-gray-900/50 rounded-xl shadow hover:shadow-lg transition p-4 w-36 text-center">
-
-        <img src="{{ asset($role['avatar']) }}" alt="{{ $role['label'] }}" class="img_role mx-auto">
-
-        <div class="font-semibold  mt-2">
-          {{ $role['label'] }}
-        </div>
-
-      </div>
+  <div id="pilih_role">
+    <div id="welcome">
+      <h1 class="text-2xl font-bold mb-2 ">
+        Welcome!
+      </h1>
+      <p class="text-sm text-gray-600 dark:text-gray-400 mb-8">
+        Pilih peran untuk login...
+      </p>
     </div>
-    @endforeach
+
+    <div id="blok_roles" class="blok_roles">
+      @foreach ($roles as $role)
+      @php
+      // if(strtolower($role['label'])=='mitra') continue;
+      // if(strtolower($role['label'])=='praktisi') continue;
+
+      @endphp
+      <div class="group flex-shrink-0 cursor-pointer pilihan_role" data-role="{{$role['role']}}"
+        data-label="{{$role['label']}}" data-avatar="{{$role['avatar']}}">
+        <div class="bg-white dark:bg-gray-900/50 rounded-xl shadow hover:shadow-lg transition p-4 w-36 text-center">
+
+          <img src="{{ asset($role['avatar']) }}" alt="{{ $role['label'] }}" class="img_role mx-auto">
+
+          <div class="font-semibold  mt-2">
+            {{ $role['label'] }}
+          </div>
+
+        </div>
+      </div>
+      @endforeach
+    </div>
+  </div>
+
+  <div id="blok_selected_role" class="hidden mt-4">
+    <img id="avatar_selected" src="#" alt="avatar_selected" class="img_role mx-auto">
+    <div class="mt-3">
+      Login as
+      <span class="hidden" id="role_selected">role_selected</span>
+      <span id="label_selected">label_selected</span>
+      <span id="cancel_role" class="cursor-pointer">🔁</span>
+    </div>
   </div>
 </div>
 
@@ -80,7 +96,8 @@ $role_deskripsi = $roles[$role]['deskripsi'] ?? "Role [$role] belum dibuat";
 $role_color = $roles[$role]['color'] ?? 'text-white';
 $role_gradient = $roles[$role]['gradient'] ?? 'bg-gray-600';
 @endphp
-<div class="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg mt-10 mb-10" style="z-index: 1000">
+<div id="blok_form_login" class="hidden max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg my-3"
+  style="z-index: 1000">
   {{-- Login Form --}}
   <form method="POST" action="{{ route('login') }}" class="space-y-4">
     @csrf
@@ -131,3 +148,60 @@ $role_gradient = $roles[$role]['gradient'] ?? 'bg-gray-600';
 
 {{-- Dev Login Include --}}
 @include('auth.devlogin')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  function ui_awal(){
+      $('#pilih_role').slideDown();
+      $('#blok_selected_role').slideUp();
+      $('#blok_form_login').slideUp();
+  }
+
+  $(function(){
+    $('#cancel_role').click(function(){
+      ui_awal()
+    })
+    $('.pilihan_role').click(function(){
+      // $('.pilihan_role').hide();
+      // $(this).slideDown();
+      let role = $(this).data('role');
+      let label = $(this).data('label');
+      let avatar = $(this).data('avatar');
+
+      console.log(role,label,avatar);
+
+      $('#avatar_selected').prop('src',avatar);
+      $('#avatar_selected').prop('alt','Login as '+label);
+      $('#role_selected').text(role);
+      $('#label_selected').text(label);
+
+      $('#pilih_role').slideUp();
+      $('#blok_selected_role').slideDown();
+      $('#blok_form_login').slideDown();
+
+
+      
+
+    })
+  })
+</script>

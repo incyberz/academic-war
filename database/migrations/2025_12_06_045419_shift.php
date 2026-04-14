@@ -14,7 +14,8 @@ return new class extends Migration
             // identitas shift
             $table->string('kode', 10)->unique(); // R, NR, P, S, dll
             $table->string('nama');               // Reguler, Non-Reguler, Pagi, Sore
-            $table->tinyInteger('urutan')->nullable();
+            $table->tinyInteger('urutan');
+            $table->tinyInteger('menit_sks');
 
             // jam operasional default
             $table->time('jam_awal_kuliah')->default('08:00');

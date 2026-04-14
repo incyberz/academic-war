@@ -93,6 +93,17 @@ class Stm extends Model
             })
             ->count();
 
+        $assigned = $this->stmItems()
+            ->whereHas('jadwal', function ($q) {
+                $q->whereNotNull('ruang_id');
+            })
+            ->count();
+
+        $zzz = $this->stmItems();
+
+
+        // dd($total, $assigned, $zzz);
+
         if ($total === 0) {
             return 0;
         }

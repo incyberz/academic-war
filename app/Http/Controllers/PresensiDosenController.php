@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dosen;
+use App\Models\Jadwal;
 use App\Models\PresensiDosen;
 use App\Models\SesiKelas;
 use App\Models\Stm;
@@ -21,9 +22,22 @@ class PresensiDosenController extends Controller
         $stm = null;
         $stmItems = collect();
         $sesiKelasList = collect();
+        $unfinishedJadwals = collect();
 
         $state = null;
         $message = null;
+        $aHref = null;
+        $aLabel = null;
+        $aType = null;
+        $aEmoji = null;
+
+        $arrSesiPerKelas = []; // mapping sesiKelasList dengan index kelas_id
+        $arrMyKelas = [];
+        $periode = []; // periode penanggalan gaji
+
+        $start_date = null; // periode presensi
+        $end_date = null;
+
 
         if (isRole('dosen')) {
 
@@ -50,6 +64,10 @@ class PresensiDosenController extends Controller
                 if (!$stm) {
                     $state = 'NO_STM';
                     $message = 'Persiapkan STM (Surat Tugas Mengajar) dari Fakultas/Kampus Anda, lalu Silahkan Anda Create New STM.';
+                    $aLabel = 'Create New STM';
+                    $aType = 'primary';
+                    $aHref = route('stm.create');
+                    $aEmoji = '📝';
                 } else {
 
                     // 2) cek STM items
@@ -65,6 +83,10 @@ class PresensiDosenController extends Controller
                     if ($stmItems->isEmpty()) {
                         $state = 'NO_STM_ITEMS';
                         $message = 'Belum ada MK pada Surat Tugas Anda, silahkan Tambah Item MK.';
+                        $aLabel = 'Tambah Item MK';
+                        $aType = 'primary';
+                        $aHref = route('item.create', ['stm' => $stm->id]);
+                        $aEmoji = '➕';
                     } else {
 
                         // 3) cek apakah ada sesi kelas di TA ini
@@ -77,34 +99,129 @@ class PresensiDosenController extends Controller
                         if (!$existsSesi) {
                             $state = 'NO_SESI_KELAS';
                             $message = 'Belum ada sesi kelas di Tahun Ajar ini pada STM Anda.';
-                        } else {
+                            $aLabel = 'Buat Jadwal Sesi Kelas';
+                            $aType = 'primary';
+                            $aHref = route('jadwal.create', ['stm' => $stm->id]);
+                            $aEmoji = '📅';
+                        } else { // punya sesi
 
-                            // 4) Ambil sesi kelas untuk presensi dosen:
-                            // range: tgl 21 bulan lalu -> hari ini
-                            $startDate = Carbon::today()->subMonthNoOverflow()->day(21)->startOfDay();
-                            $endDate   = Carbon::today()->endOfDay();
-
-                            $sesiKelasList = SesiKelas::query()
-                                ->with([
-                                    'stmItem.kelas',
-                                    'stmItem.kurMk.mk',
-                                    'unit',
-                                ])
-                                ->whereIn('stm_item_id', $stmItemIds)
-                                ->whereBetween('start_at', [$startDate, $endDate])
-                                ->leftJoin('unit', 'unit.id', '=', 'sesi_kelas.unit_id')
-                                ->select('sesi_kelas.*')
-                                ->orderBy('sesi_kelas.stm_item_id', 'asc')
-                                ->orderBy('unit.urutan', 'asc')
+                            // cek jika penjadwalan masih belum lengkap
+                            $unfinishedJadwals = Jadwal::whereNull('ruang_id')
+                                ->whereHas('stmItem.stm', function ($q) use ($tahunAjarId) {
+                                    $q->where('tahun_ajar_id', $tahunAjarId)
+                                        ->whereHas('dosen', function ($q2) {
+                                            $q2->where('user_id', Auth::id());
+                                        });
+                                })
                                 ->get();
+                            if ($unfinishedJadwals->isNotEmpty()) {
+                                $state = 'INCOMPLETE_SCHEDULING';
+                                $message = 'Penjadwalan Anda belum lengkap. Silahkan lengkapi ruangan untuk jadwal kuliah Anda.';
+                                $aLabel = 'Lengkapi Penjadwalan Ruangan';
+                                $aType = 'warning';
+                                $aHref = route('jadwal.assign-ruang');
+                                $aEmoji = '⚠️';
+                            } else { // penjadwalan ruangan lengkap, lanjut ke ambil sesi kelas untuk presensi dosen
 
-                            if ($sesiKelasList->isEmpty()) {
-                                $state = 'NO_SESI_KELAS_RANGE';
-                                $startDateFormatted = $startDate->format('d M Y');
-                                $message = "Belum ada sesi kelas pada rentang tanggal $startDateFormatted hingga skg di Tahun Ajar ini pada STM Anda.";
-                            } else {
-                                $state = 'READY';
-                            }
+                                // 4) Ambil sesi kelas untuk presensi dosen:
+                                // range: tgl 21 bulan lalu -> hari ini
+                                $tanggal = Carbon::today()->day;
+                                $bulan = Carbon::today()->month;
+                                $tahun = Carbon::today()->year;
+
+                                // $tanggal = 20; // testing
+                                // $bulan = 1; // testing
+
+                                $tanggal_penggajian = 21;
+                                $belum_gajian = $tanggal < $tanggal_penggajian;
+
+                                $periode_tahun = $tahun;
+                                // if bulan == 1 maka bulan = 12 dan tahun--
+                                if ($belum_gajian) {
+                                    if ($bulan == 1) {
+                                        $periode_bulan = 12; // rollback ke desember
+                                        $periode_tahun--; // kurangi tahun
+                                    } else {
+                                        $periode_bulan = $bulan - 1; // jangan sampai 0
+                                    }
+                                } else {
+                                    $periode_bulan = $bulan;
+                                }
+
+                                // if periode_bulan == 1 maka bulanSeb = 12 dan tahunSeb--
+                                $periode_bulan_sebelumnya = $periode_bulan == 1 ? 12 : $periode_bulan - 1;
+                                $periode_tahun_sebelumnya = $periode_bulan == 1 ? $periode_tahun - 1 : $periode_tahun;
+
+
+                                // start/end date untuk ambil ke DB
+                                $periode_tanggal_end = $tanggal_penggajian - 1;
+                                $start_date = Carbon::parse("$periode_tahun-$periode_bulan_sebelumnya-$tanggal_penggajian");
+                                $end_date = Carbon::parse("$periode_tahun-$periode_bulan-$periode_tanggal_end");
+
+                                $periode = [
+                                    'tanggal' => $tanggal,
+                                    'bulan' => $bulan,
+                                    'tahun' => $tahun,
+                                    'tanggal_penggajian' => $tanggal_penggajian,
+                                    'belum_gajian' => $belum_gajian,
+                                    'periode_bulan' => $periode_bulan,
+                                    'periode_tahun' => $periode_tahun,
+                                    'periode_bulan_sebelumnya' => $periode_bulan_sebelumnya,
+                                    'periode_tahun_sebelumnya' => $periode_tahun_sebelumnya,
+                                    'sekarang' => $tanggal . ' ' . config('nama_bulan')[$bulan] . ' ' . $tahun,
+                                    'periode' => config('nama_bulan')[$periode_bulan] . ' ' . $periode_tahun,
+                                    'periode_sebelumnya' => config('nama_bulan')[$periode_bulan_sebelumnya] . ' ' . $periode_tahun_sebelumnya,
+                                    'start_date' => $start_date,
+                                    'end_date' => $end_date,
+                                ];
+                                dd(
+                                    $periode,
+                                );
+
+
+                                // if bulan 2 dan > tanggal 20 maka periode bulan 2
+                                // if bulan 2 dan <= tanggal 20 maka periode bulan 1
+
+
+
+
+                                $sesiKelasList = SesiKelas::query()
+                                    ->with([
+                                        'stmItem.kelas',
+                                        'stmItem.kurMk.mk',
+                                        'unit',
+                                    ])
+                                    ->whereIn('stm_item_id', $stmItemIds)
+                                    ->whereBetween('start_at', [$start_date, $end_date])
+                                    ->leftJoin('unit', 'unit.id', '=', 'sesi_kelas.unit_id')
+                                    ->select('sesi_kelas.*')
+                                    ->orderBy('sesi_kelas.stm_item_id', 'asc')
+                                    ->orderBy('unit.urutan', 'asc')
+                                    ->get();
+
+                                // mapping ke arrSesiPerKelas
+                                foreach ($sesiKelasList as $sesi) {
+                                    $kelasId = $sesi->stmItem->kelas->id;
+                                    if (!isset($arrSesiPerKelas[$kelasId])) $arrSesiPerKelas[$kelasId] = [];
+                                    $arrSesiPerKelas[$kelasId][] = $sesi;
+
+                                    if (!isset($arrMyKelas[$kelasId])) $arrMyKelas[$kelasId] = [];
+                                    $arrMyKelas[$kelasId] = $sesi->stmItem->kelas;
+                                }
+
+
+                                if ($sesiKelasList->isEmpty()) {
+                                    $state = 'NO_SESI_KELAS_RANGE';
+                                    $startDateFormatted = $start_date->format('d M Y');
+                                    $message = "Belum ada sesi kelas pada rentang tanggal $startDateFormatted hingga skg di Tahun Ajar ini pada STM Anda.";
+                                    $aLabel = 'Lihat Jadwal';
+                                    $aType = 'primary';
+                                    $aHref = route('jadwal.index');
+                                    $aEmoji = '📅';
+                                } else {
+                                    $state = 'PRESENSI_DOSEN_READY';
+                                }
+                            } // end cek penjadwalan
                         }
                     }
                 }
@@ -127,6 +244,16 @@ class PresensiDosenController extends Controller
             $message = 'Anda tidak memiliki akses ke halaman ini.';
         }
 
+
+        $alert = [
+            'state' => $state,
+            'message' => $message,
+            'href' => $aHref,
+            'label' => $aLabel,
+            'emoji' => $aEmoji,
+            'type' => $aType,
+        ];
+
         // ============================================================
         // RETURN VIEW PRESENSI MENGAJAR SAYA | ALL DOSEN
         // ============================================================
@@ -136,8 +263,15 @@ class PresensiDosenController extends Controller
             'stm',
             'stmItems',
             'sesiKelasList',
-            'state',
-            'message'
+            'unfinishedJadwals',
+
+            'alert',
+
+            'arrSesiPerKelas',
+            'arrMyKelas',
+
+            'start_date',
+            'end_date',
         ));
     }
 

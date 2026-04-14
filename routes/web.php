@@ -15,6 +15,7 @@ use App\Http\Controllers\WhatsappController;
 use App\Http\Controllers\NotifikasiBimbinganController;
 
 use App\Http\Controllers\{
+    BootcampController,
     CourseController,
     UnitController,
     QuestController,
@@ -42,7 +43,9 @@ use App\Http\Controllers\{
     StmController,
     StmItemController,
     KurMkController,
+    MissionController,
     RuangController,
+    SkillController,
 };
 
 
@@ -248,6 +251,11 @@ Route::middleware('auth')->group(function () {
 
     // Ruangan Kelas
     Route::resource('ruang', RuangController::class);
+
+    // Bootcamp
+    Route::resource('bootcamp', BootcampController::class);
+    Route::resource('skill', SkillController::class);
+    Route::resource('mission', MissionController::class);
 });
 
 

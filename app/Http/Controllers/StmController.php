@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
+use function Pest\Laravel\session;
+
 class StmController extends Controller
 {
     /**
@@ -133,9 +135,15 @@ class StmController extends Controller
     /**
      * Tampilkan detail STM.
      */
-    public function show(Stm $stm): \Illuminate\View\View
+    // public function show(Stm $stm): \Illuminate\View\View
+    public function show(Stm $stm)
     {
         // Eager load semua relasi yang diperlukan, termasuk detail STM Items
+        if (!isRole('dosen')) dd('Saat ini Show STM only dosen. [ondev]');
+        $dosen = Dosen::where('user_id', Auth::id())->firstOrFail();
+        if ($stm->dosen_id != $dosen->id) {
+            return back()->with('error', 'Dosen hanya bisa melihat STM miliknya sendiri.');
+        }
 
         $stm->updateTotalSks();
 

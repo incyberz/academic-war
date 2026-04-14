@@ -2,7 +2,7 @@
 $stm->updateTotalSks()
 @endphp
 <x-app-layout>
-  <x-page-header title="STM Saya - {{$taAktif}}" subtitle="Back | Informasi lengkap Surat Tugas Mengajar"
+  <x-page-header title="STM Saya - {{$stm->tahunAjar->nama}}" subtitle="Back | Informasi lengkap Surat Tugas Mengajar"
     route="{{ isSuperAdmin() ? route('stm.index') : (isDosen() ? route('presensi-dosen.index') : route('dashboard')) }}" />
 
   <x-page-content>

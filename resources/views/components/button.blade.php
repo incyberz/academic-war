@@ -24,6 +24,12 @@ dark:bg-indigo-500 dark:hover:bg-indigo-600',
 'outline' => 'border border-indigo-600 text-indigo-600 hover:bg-indigo-50
 dark:border-indigo-400 dark:text-indigo-400 dark:hover:bg-indigo-950',
 ],
+'success' => [
+'solid' => 'bg-green-600 hover:bg-green-700 text-white
+dark:bg-green-500 dark:hover:bg-green-600',
+'outline' => 'border border-green-600 text-green-600 hover:bg-green-50
+dark:border-green-400 dark:text-green-400 dark:hover:bg-green-950',
+],
 'danger' => [
 'solid' => 'bg-red-600 hover:bg-red-700 text-white
 dark:bg-red-500 dark:hover:bg-red-600',

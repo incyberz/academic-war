@@ -1,35 +1,69 @@
 <x-app-layout>
   <x-page-header title="Assign Ruang Perkuliahan"
-    subtitle="Jadwal milik {{$stm->dosen->namaGelar()}} - {{$myJadwals->count()}} Sesi" />
+    subtitle="Jadwal milik {{$stm->dosen->nama}} - {{$myJadwals->count()}} Mata Kuliah" />
 
   <x-page-content>
 
     <x-progress-bar label="Assign Ruang Progress" value="{{$stm->progress_ruang}}" />
 
     {{-- Navigasi Jadwal --}}
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div>
+      <div class="flex flex-wrap gap-2 ">
 
-      @foreach ($myJadwals as $jadwal)
-      @php
-      $hasRuang = !is_null($jadwal->ruang_id);
-      @endphp
+        @php
+        $hasRuangCount = 0;
+        @endphp
+        @foreach ($myJadwals as $jadwal)
+        @php
+        $hasRuang = !is_null($jadwal->ruang_id);
+        if($hasRuang) $hasRuangCount++ ;
+        $ruangan = $hasRuang ? '<br>'.$jadwal->ruang->kode : '<br>⚠️';
+        @endphp
 
-      <x-button type="button" size="sm" btn="{{ $hasRuang ? 'success' : 'warning' }}" class="nav_jadwal text-xs"
-        data-jadwal_id="{{ $jadwal->id }}">
-        {{ $jadwal->stmItem->kurMk->mk->singkatan }}/{{ $jadwal->stmItem->kelas->shift->kode }}
-      </x-button>
-
-      @endforeach
-
+        <x-button type="button" size="sm" btn="{{ $hasRuang ? 'success' : 'warning' }}" class="nav_jadwal text-xs"
+          data-jadwal_id="{{ $jadwal->id }}">
+          {{ $jadwal->stmItem->kurMk->mk->singkatan }}
+          <br>
+          {{ $jadwal->stmItem->kelas->label }}
+          {!!$ruangan!!}
+        </x-button>
+        @endforeach
+      </div>
+      <div class="flex gap-2 text-xs mb-4 mt-2">
+        <div class="rounded-full h-3 w-3 bg-green-500 mt-1">&nbsp;</div>
+        <div class="mr-5">Ruang available</div>
+        <div class="rounded-full h-3 w-3 bg-yellow-500 mt-1">&nbsp;</div>
+        <div class="mr-5">Belum punya ruang</div>
+        <div class="rounded-full h-3 w-3 bg-rose-500 mt-1">&nbsp;</div>
+        <div class="mr-5">Ruangan terpakai</div>
+      </div>
     </div>
 
-    {{-- Assign Ruang --}}
-    @foreach ($myJadwals as $jadwal)
-    @php
-    $stmItem = $jadwal->stmItem;
-    @endphp
+    @if ($hasRuangCount == $myJadwals->count())
+    <div>
+      <x-alert type="success" title="Penjadwalan Ruang Sudah Lengkap">
+        ZZZ
+      </x-alert>
+    </div>
+    @endif
 
-    <x-card id="blok_jadwal--{{$jadwal->id}}">
+    {{-- Assign Ruang --}}
+    @php $first = true; @endphp
+    @foreach ($myJadwals as $jadwal)
+    @php $stmItem = $jadwal->stmItem @endphp
+
+    <script>
+      $(function(){
+        $('.nav_jadwal').click(function(){
+          let jadwal_id = $(this).data('jadwal_id');
+          $('.blok_jadwal').hide();
+          $('#blok_jadwal--'+jadwal_id).slideDown();
+        })
+      })
+    </script>
+
+    <x-card id="blok_jadwal--{{$jadwal->id}}" class="blok_jadwal {{$first?'':'hidden'}}">
+      @php $first = false; @endphp
       <x-card-header>
         <div style="display:flex; justify-content:space-between; align-items:center">
           <div>
@@ -50,9 +84,9 @@
           </div>
 
           @if ($jadwal->ruang)
-          <span>✅ <span class="hidden md:inline">Ruang sudah ditentukan</span></span>
+          <span>✅ <span class="hidden md:inline">{{$jadwal->ruang->kode}}</span></span>
           @else
-          <span>⚠️ <span class="hidden md:inline">Belum ada ruang</span></span>
+          <span>⚠️ <span class="hidden md:inline text-red-800 dark:text-red-400">Belum ada ruang</span></span>
           @endif
         </div>
       </x-card-header>
@@ -60,11 +94,7 @@
       <x-card-body>
 
         {{-- List Ruang --}}
-        <div style="
-            display:flex;
-            flex-wrap:wrap;
-            gap:16px;
-          ">
+        <div class="flex flex-wrap gap-2">
           @foreach ($ruangs as $ruang)
           {{-- zzz here ubah ke radio --}}
 
@@ -78,20 +108,10 @@
             });
             @endphp
 
-            <div style="
-                flex:1 1 260px;
-                border:1px solid #ddd;
-                border-radius:8px;
-                padding:12px;
-                display:flex;
-                flex-direction:column;
-                justify-content:space-between;
-                gap:8px;
-                {{ $bentrok ? 'opacity:.6;' : '' }}
-              ">
+            <div class="{{ $bentrok ? 'cursor-not-allowed' : '' }}">
 
               {{-- Info Ruang --}}
-              <div>
+              {{-- <div>
                 <strong>{{ $ruang->nama }}</strong>
                 <div style="font-size:13px">
                   Gedung {{ $ruang->gedung }} · Lantai {{ $ruang->lantai }}
@@ -99,46 +119,48 @@
                 <div style="font-size:13px">
                   Kapasitas: {{ $ruang->kapasitas }}
                 </div>
-              </div>
+              </div> --}}
 
               {{-- Status --}}
               <div style="font-size:13px">
                 @if ($bentrok)
-                ❌ Dipakai oleh
+
+                {{-- ❌ Dipakai oleh
                 <br>
                 <small>
                   {{ $bentrok->stmItem->stm->dosen->nama }}
-                  — {{ $bentrok->mataKuliah->nama }}
+                  — {{ $bentrok->stmItem->kurMk->mk->nama }}
                 </small>
                 <br>
                 <small>
                   {{ $bentrok->jam_awal->format('H:i') }}
                   -
                   {{ $bentrok->jam_akhir->format('H:i') }}
-                </small>
+                </small> --}}
                 @else
-                ✅ Tersedia
+                {{-- ✅ Tersedia --}}
                 @endif
               </div>
 
               {{-- Aksi --}}
               <div>
                 @if ($bentrok)
-                <x-button btn="secondary" disabled>
-                  Tidak tersedia
+
+                <x-button btn="danger" disabled class="{{ $bentrok ? 'cursor-not-allowed' : '' }}">
+                  {{ $ruang->kode }}
                 </x-button>
 
-                @if (!$stmItem->is_locked)
+                {{-- @if (!$stmItem->is_locked)
                 <x-button btn="warning">
                   Barter Jadwal
                 </x-button>
-                @endif
+                @endif --}}
                 @else
-                <form method="POST" action="{{ route('jadwal.assign-ruang.store', $jadwal->id) }}">
+                <form method="POST" action="{{ route('jadwal.update', $jadwal->id) }}">
                   @csrf
-                  <input type="hidden" name="ruang_id" value="{{ $ruang->id }}">
-                  <x-button btn="primary">
-                    Pilih Ruang
+                  @method('PUT')
+                  <x-button btn="success" name="ruang_id" value="{{ $ruang->id }}">
+                    {{ $ruang->kode }}
                   </x-button>
                 </form>
                 @endif

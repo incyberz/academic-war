@@ -1,7 +1,7 @@
 @php
 $menus = [
 [
-'key' => 'login',
+'key' => 'welcome_login',
 'label' => 'Welcome Login',
 'icon' => '👋',
 'active'=> true, // default page
@@ -73,7 +73,7 @@ $menus = [
         {{-- SPA Sections --}}
         <div class="blok_content">
 
-            <div id="login" class="spa-section">
+            <div id="welcome_login" class="spa-section">
                 @include('welcome-login')
             </div>
 
@@ -135,10 +135,10 @@ $menus = [
         console.log(lastActive);
         
         if (lastActive) {
-        // setActive(lastActive);
-        $('#btn_nav--'+lastActive).addClass('btn-fire-active');
-        $('.spa-section').hide();
-        $('#'+lastActive).slideDown();
+            // setActive(lastActive);
+            $('#btn_nav--'+lastActive).addClass('btn-fire-active');
+            $('.spa-section').hide();
+            $('#'+lastActive).slideDown();
         }
     })
 </script>
