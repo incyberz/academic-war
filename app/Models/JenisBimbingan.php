@@ -28,12 +28,34 @@ class JenisBimbingan extends Model
     {
         return $this->hasMany(BabLaporan::class, 'jenis_bimbingan_id');
     }
+    public function tahapan(): HasMany
+    {
+        return $this->hasMany(TahapanBimbingan::class, 'jenis_bimbingan_id');
+    }
 
-    # ============================================================
-    # HELPER ATTRIBUTE
-    # ============================================================
-    public function getJumlahBabLaporanAttribute(): int
+    // ============================================================
+    // HELPER ATTRIBUTE
+    // ============================================================
+
+    public function getJumlahBabAttribute(): int
     {
         return $this->babLaporan()->count();
+    }
+
+    public function getJumlahBabIntiAttribute(): int
+    {
+        return $this->babLaporan()->where('is_inti', true)->count();
+    }
+
+    public function getJumlahSubBabAttribute(): int
+    {
+        return \App\Models\SubBabLaporan::whereHas('bab', function ($q) {
+            $q->where('jenis_bimbingan_id', $this->id);
+        })->count();
+    }
+
+    public function getJumlahTahapanAttribute(): int
+    {
+        return $this->tahapan()->count();
     }
 }

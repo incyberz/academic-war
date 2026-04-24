@@ -20,6 +20,7 @@ class PesertaBimbingan extends Model
         'terakhir_bimbingan',
         'terakhir_reviewed',
         'current_tahapan_bimbingan_id',
+        'poin',
     ];
 
     /* ================= RELASI ================= */

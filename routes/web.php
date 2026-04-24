@@ -15,6 +15,7 @@ use App\Http\Controllers\WhatsappController;
 use App\Http\Controllers\NotifikasiBimbinganController;
 
 use App\Http\Controllers\{
+    BabLaporanController,
     BootcampController,
     CourseController,
     UnitController,
@@ -46,6 +47,7 @@ use App\Http\Controllers\{
     MissionController,
     RuangController,
     SkillController,
+    SubBabLaporanController,
 };
 
 
@@ -116,6 +118,27 @@ Route::middleware('auth')->group(function () {
             '/dosen/bimbingan/{pesertaBimbingan}/update-whatsapp',
             [PesertaBimbinganController::class, 'updateWhatsappMyBimbingan']
         )->name('dosen.bimbingan.update-whatsapp');
+
+
+        # ============================================================
+        # BAB DAN SUBBAB LAPORAN
+        # ============================================================
+        Route::resource('bab-laporan', BabLaporanController::class);
+        Route::patch('bab-laporan/{babLaporan}/toggle', [BabLaporanController::class, 'toggle'])
+            ->name('bab-laporan.toggle');
+
+
+        Route::resource('sub-bab-laporan', SubBabLaporanController::class);
+
+        Route::patch(
+            'sub-bab-laporan/{subBabLaporan}/toggle',
+            [SubBabLaporanController::class, 'toggle']
+        )->name('sub-bab-laporan.toggle');
+
+        Route::patch(
+            'sub-bab-laporan/{subBabLaporan}/lock',
+            [SubBabLaporanController::class, 'lock']
+        )->name('sub-bab-laporan.lock');
     });
 
 

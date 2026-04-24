@@ -18,7 +18,10 @@ return new class extends Migration
 
             $table->string('kode', 10); // BAB I, BAB II, dst
             $table->string('nama', 100); // Pendahuluan, Metodologi, dll
-            $table->boolean('is_inti')->default(true);
+            $table->boolean('is_inti')->default(false)->nullable();
+            $table->boolean('is_awal')->default(false)->nullable();
+            $table->boolean('is_akhir')->default(false)->nullable();
+            $table->boolean('is_active')->default(true)->nullable();
             $table->unsignedTinyInteger('urutan'); // urutan tampil & progres
 
             $table->text('deskripsi')->nullable(); // opsional (penjelasan bab)

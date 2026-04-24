@@ -44,6 +44,7 @@ return new class extends Migration
 
             $table->integer('current_tahapan_bimbingan_id')
                 ->nullable();
+            $table->integer('poin')->nullable();
 
             $table->timestamps();
         });

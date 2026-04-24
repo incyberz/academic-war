@@ -16,17 +16,38 @@ class BabLaporan extends Model
         'kode',
         'nama',
         'urutan',
+        'is_awal',
         'is_inti',
+        'is_akhir',
+        'is_active',
         'deskripsi',
     ];
 
     protected $casts = [
         'is_awal'   => 'boolean',
-        'is_utama'  => 'boolean',
+        'is_inti'  => 'boolean',
         'is_akhir'  => 'boolean',
         'is_active' => 'boolean',
         'urutan'    => 'integer',
     ];
+
+    # ============================================================
+    # RELASI
+    # ============================================================
+    public function subBab()
+    {
+        return $this->hasMany(SubBabLaporan::class, 'bab_laporan_id');
+    }
+
+
+    public function jenisBimbingan()
+    {
+        return $this->belongsTo(JenisBimbingan::class, 'jenis_bimbingan_id');
+    }
+
+
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -47,9 +68,9 @@ class BabLaporan extends Model
     }
 
     /** bab utama (BAB I–V) */
-    public function scopeUtama($query)
+    public function scopeInti($query)
     {
-        return $query->where('is_utama', true);
+        return $query->where('is_inti', true);
     }
 
     /** bab akhir */
@@ -62,5 +83,14 @@ class BabLaporan extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('urutan');
+    }
+
+
+    # ============================================================
+    # HELPERS
+    # ============================================================
+    public function GetJumlahSubBabAttribute(): int
+    {
+        return $this->subBab()->count();
     }
 }
