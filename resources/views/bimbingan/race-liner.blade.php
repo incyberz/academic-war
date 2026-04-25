@@ -1,8 +1,9 @@
-<x-card class="mb-6">
+<x-card class="mb-6" judul="Race Liner">
+	zzz here show to mhs
 
 	<x-card-body>
 		<div class="right">Last Bab: 3.4 Deskripsi Dokumen</div>
-		@if ($list->isEmpty())
+		@if ($pesertas->isEmpty())
 			<div
 				class="flex items-start gap-2
                 p-3 rounded-lg
@@ -108,7 +109,7 @@
 			</style>
 
 			@php
-				$sorted = $list->sortByDesc('poin')->values();
+				$sorted = $pesertas->sortByDesc('poin')->values();
 				$max_poin = $sorted->max('poin');
 			@endphp
 
@@ -131,7 +132,7 @@
 
 						<!-- Nama -->
 						<div>
-							{{ $peserta->mhs->nama_lengkap }}
+							{{ $peserta->mhs->nickname }}
 						</div>
 
 						<!-- Poin -->

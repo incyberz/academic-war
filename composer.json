@@ -11,6 +11,7 @@
         "php": "^8.2",
         "doctrine/dbal": "^4.3",
         "filament/filament": "3.3",
+        "lab404/laravel-impersonate": "^1.7",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9"
     },

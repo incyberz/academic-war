@@ -46,7 +46,8 @@
 					{{-- POIN --}}
 					<div>
 						<x-label>Poin</x-label>
-						<x-input name="poin" type="number" value="{{ old('poin', $subBab->poin) }}" />
+						<x-input max="100" min="10" name="poin" required type="number"
+							value="{{ old('poin', $subBab->poin ?? 10) }}" />
 					</div>
 
 					{{-- DESKRIPSI --}}

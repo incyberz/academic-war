@@ -6,13 +6,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Facades\Hash;
+use Lab404\Impersonate\Models\Impersonate;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, Impersonate;
 
     /**
      * The attributes that are mass assignable.
@@ -48,8 +50,14 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+
+
     ];
 
+
+    # ============================================================
+    # RELASI
+    # ============================================================
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id', 'id');
@@ -63,10 +71,23 @@ class User extends Authenticatable
     // Relation to Dosen
     public function dosen()
     {
-        return $this->hasOne(Dosen::class, 'user_id', 'id');
+        return $this->hasMany(Dosen::class, 'user_id', 'id');
+    }
+
+    public function mhs()
+    {
+        return $this->hasMany(Mhs::class, 'user_id', 'id');
+    }
+
+    public function admin()
+    {
+        return $this->hasMany(Admin::class, 'user_id', 'id');
     }
 
 
+    # ============================================================
+    # HELPER
+    # ============================================================
     public function pathAvatar()
     {
         if ($this->avatar && Storage::disk('public')->exists($this->avatar)) {

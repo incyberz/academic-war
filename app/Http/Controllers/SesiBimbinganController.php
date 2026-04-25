@@ -39,7 +39,7 @@ class SesiBimbinganController extends Controller
      */
     public function create()
     {
-        abort_unless(isRole('mhs'), 403, 'Hanya mhs yang berhak membuat sesi bimbingan');
+        abort_unless(isMhs(), 403, 'Hanya mhs yang berhak membuat sesi bimbingan');
 
         $pesertaBimbinganId = request('peserta_bimbingan_id');
         abort_if(!$pesertaBimbinganId, 404);

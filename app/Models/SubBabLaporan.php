@@ -49,20 +49,37 @@ class SubBabLaporan extends Model
     |--------------------------------------------------------------------------
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relasi
+    |--------------------------------------------------------------------------
+    */
+
     public function bab()
     {
         return $this->belongsTo(BabLaporan::class, 'bab_laporan_id');
     }
 
+    public function checklists()
+    {
+        return $this->morphMany(Checklist::class, 'checklistable')
+            ->orderBy('urutan');
+    }
+
+    public function bukti()
+    {
+        return $this->hasMany(BuktiSubBabLaporan::class, 'sub_bab_laporan_id');
+    }
+
     /*
     |--------------------------------------------------------------------------
-    | Scope
+    | Scopes
     |--------------------------------------------------------------------------
     */
 
-    public function scopeActive($query)
+    public function scopeByBab($query, $babId)
     {
-        return $query->where('is_active', true);
+        return $query->where('bab_laporan_id', $babId);
     }
 
     public function scopeOrdered($query)
@@ -70,15 +87,111 @@ class SubBabLaporan extends Model
         return $query->orderBy('urutan');
     }
 
-    public function scopeByBab($query, $babId)
+    public function scopeActive($query)
     {
-        return $query->where('bab_laporan_id', $babId);
+        return $query->where('is_active', true);
     }
 
-    public function bukti()
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers - Checklist
+    |--------------------------------------------------------------------------
+    */
+
+    public function checklistsAktif()
     {
-        return $this->hasMany(BuktiSubBabLaporan::class, 'sub_bab_laporan_id');
+        return $this->checklists()->where('is_active', true);
     }
+
+    public function checklistsWajib()
+    {
+        return $this->checklistsAktif()->where('is_wajib', true);
+    }
+
+    public function checklistsChallenge()
+    {
+        return $this->checklistsAktif()->where('is_wajib', false);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers - Agregasi
+    |--------------------------------------------------------------------------
+    */
+
+    public function totalChecklist()
+    {
+        return $this->checklistsAktif()->count();
+    }
+
+    public function totalChecklistWajib()
+    {
+        return $this->checklistsWajib()->count();
+    }
+
+    public function totalPoinChecklist()
+    {
+        return $this->checklistsAktif()->sum('poin');
+    }
+
+    public function totalPoinWajib()
+    {
+        return $this->checklistsWajib()->sum('poin');
+    }
+
+    public function totalPoinChallenge()
+    {
+        return $this->checklistsChallenge()->sum('poin');
+    }
+
+    public function totalPoinSemua()
+    {
+        return (int) $this->poin + (int) $this->totalPoinChecklist();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers - Validasi Submission
+    |--------------------------------------------------------------------------
+    */
+
+    public function isChecklistWajibTerpenuhi(array $checkedIds = [])
+    {
+        $totalWajib = $this->totalChecklistWajib();
+
+        if ($totalWajib === 0) {
+            return true;
+        }
+
+        $checkedWajib = $this->checklistsWajib()
+            ->whereIn('id', $checkedIds)
+            ->count();
+
+        return $checkedWajib === $totalWajib;
+    }
+
+    public function hitungXpDariChecklist(array $checkedIds = [])
+    {
+        if (empty($checkedIds)) {
+            return 0;
+        }
+
+        return $this->checklistsAktif()
+            ->whereIn('id', $checkedIds)
+            ->sum('poin');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Accessor (opsional tapi enak dipakai di Blade)
+    |--------------------------------------------------------------------------
+    */
+
+    public function getTotalPoinAttribute()
+    {
+        return $this->totalPoinSemua();
+    }
+
 
     /*
     |--------------------------------------------------------------------------

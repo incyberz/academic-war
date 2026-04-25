@@ -3,10 +3,10 @@
 
 @foreach ($myJenisBimbingan as $jenis)
 	@php
-		$list = $listPeserta[$jenis->id]; // ?? null; // tidak boleh null ambil semua untuk SPA
-		// if(!$list) continue;
+		$pesertas = $listPeserta[$jenis->id]; // ?? null; // tidak boleh null ambil semua untuk SPA
+		// if(!$pesertas) continue;
 	@endphp
-	{{-- @dd($list) --}}
+	{{-- @dd($pesertas) --}}
 	@php $kodeBimbingan = $jenis->kode; @endphp
 	@php $namaBimbingan = $jenis->nama; @endphp
 	@php $jenis_bimbingan_id = $jenis->id; @endphp
@@ -17,9 +17,9 @@
 		@include('bimbingan.my-bimbingan-counts')
 
 		{{-- LIST PESERTA --}}
-		@include('bimbingan.the-best')
-		@include('bimbingan.peserta-bimbingan')
-		@include('bimbingan.manage-bimbingan')
+		@include('bimbingan.race-liner')
+		@include('bimbingan.peserta-bimbingan-dashboard')
+		@include('bimbingan.manage-bimbingan-dashboard')
 
 		<div class="grid lg:grid-cols-3 gap-6">
 

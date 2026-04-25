@@ -32,3 +32,8 @@ function isMhs()
 {
   return isRole('mhs');
 }
+
+function isAkademik()
+{
+  return isRole('akademik');
+}

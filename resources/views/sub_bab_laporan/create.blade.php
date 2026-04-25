@@ -54,7 +54,7 @@
 						<x-textarea name="deskripsi">{{ old('deskripsi') }}</x-textarea>
 					</div>
 
-					<div>
+					<div class="hidden">
 						<x-label>Urutan</x-label>
 						<x-input name="urutan" readonly value="{{ $nextUrutan }}" />
 					</div>
@@ -63,7 +63,7 @@
 
 					<div>
 						<x-label>Poin</x-label>
-						<x-input name="poin" type="number" value="{{ old('poin', 0) }}" />
+						<x-input max="100" min="10" name="poin" required type="number" value="{{ old('poin', 10) }}" />
 					</div>
 
 					<div>
@@ -77,7 +77,7 @@
 					<hr>
 
 					<div>
-						<x-label>Petunjuk Bukti</x-label>
+						<x-label>Petunjuk Pengumpulan Bukti Gambar</x-label>
 						<x-textarea name="petunjuk_bukti">{{ old('petunjuk_bukti') }}</x-textarea>
 					</div>
 

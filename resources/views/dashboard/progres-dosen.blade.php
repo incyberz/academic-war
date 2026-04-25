@@ -1,29 +1,34 @@
 {{-- Progress Grid --}}
 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
 
-  @if ($user->profile_completeness_progress<100) <div class="hover:tracking-[0.5px] transition-all duration-200">
-    <a href="{{ route('profile.edit') }}">
-      <x-progress-bar label="Kelengkapan Akun" info="lengkapi ➡️" :value="$user->profile_completeness_progress" />
-    </a>
-</div>
-@endif
+	@if ($user->profile_completeness_progress < 100)
+		<a class="hover:scale-[1.02] transition duration-200" href="{{ route('profile.edit') }}">
+			<x-progress-bar :value="$user->profile_completeness_progress" info="Lengkapi ➜" label="Kelengkapan Akun" />
+		</a>
+	@endif
 
-<div class="hover:tracking-[0.5px] transition-all duration-200">
-  <a href="{{ route('dosen.index') }}">
-    <x-progress-bar label="Data Dosen" info="lengkapi ➡️" />
-  </a>
-</div>
+	<a class="hover:scale-[1.02] transition duration-200" href="{{ route('dosen.index') }}">
+		<x-progress-bar info="Kelola ➜" label="Data Dosen" />
+	</a>
 
-<div class="hover:tracking-[0.5px] transition-all duration-200">
-  <a href="{{ route('presensi-dosen.index') }}">
-    <x-progress-bar label="Presensi Mengajar" info="lengkapi ➡️" />
-  </a>
-</div>
+	<a class="hover:scale-[1.02] transition duration-200" href="{{ route('presensi-dosen.index') }}">
+		<x-progress-bar info="Isi ➜" label="Presensi Mengajar" />
+	</a>
 
-<div class="hover:tracking-[0.5px] transition-all duration-200">
-  <a href="{{ route('jenis-bimbingan.index') }}">
-    <x-progress-bar label="Bimbingan Skripsi" info="lengkapi ➡️" />
-  </a>
-</div>
+	@if ($bimbingans && $bimbingans->count())
+		<a class="hover:scale-[1.02] transition duration-200" href="{{ route('bimbingan.show', $bimbingans->first()->id) }}">
+			<x-progress-bar info="Lanjut ➜" label="Bimbingan" />
+		</a>
+	@else
+		<div
+			class="rounded-xl border border-dashed border-slate-300 dark:border-slate-700 p-5 text-center text-sm text-slate-500 dark:text-slate-400">
+			Belum ada data bimbingan.
+			<div class="mt-2">
+				<a class="text-blue-500 hover:underline" href="{{ route('jenis-bimbingan.index') }}">
+					Pilih Jenis Bimbingan
+				</a>
+			</div>
+		</div>
+	@endif
 
 </div>

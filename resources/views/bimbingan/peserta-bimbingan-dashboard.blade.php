@@ -1,11 +1,4 @@
-<x-card class="mb-6">
-
-	<x-card-header>
-		<h2 class="font-semibold text-lg">
-			Peserta Bimbingan {{ $namaBimbingan }}
-		</h2>
-	</x-card-header>
-
+<x-card :href="route('peserta-bimbingan.index')" class="mb-6" emoji="👥" judul2="Detail" judul="Peserta Bimbingan {{ $kodeBimbingan }}">
 	<x-card-body>
 		@if ($list->isEmpty())
 			<div
@@ -47,7 +40,9 @@
 
 		@php $debug= 1 @endphp
 		@if ($debug)
-			@php $bimbinganId= $jenis->bimbingan->first()->id @endphp
+			@php
+				$bimbinganId = $jenis->bimbingan->where('pembimbing_id', $pembimbing->id)->first()->id;
+			@endphp
 			<a
 				href="{{ route('peserta-bimbingan.super-create', [
 				    'bimbingan' => $bimbinganId,

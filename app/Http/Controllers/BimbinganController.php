@@ -26,7 +26,7 @@ class BimbinganController extends Controller
     public function index()
     {
         // dd('$peserta');
-        if (isRole('dosen') || isRole('mhs')) {
+        if (isRole('dosen') || isMhs()) {
             if (isRole('dosen')) {
                 $dosen = Dosen::where('user_id', Auth::id())->firstOrFail();
                 $pembimbing = Pembimbing::where('dosen_id', $dosen->id)->firstOrFail();

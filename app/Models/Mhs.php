@@ -87,6 +87,36 @@ class Mhs extends Model
     # ============================================================
     public function properNama()
     {
-        return ucwords(strtolower($this->nama_lengkap));
+        return ucwords(strtolower(trim($this->nama_lengkap)));
+    }
+
+    // nickname, jika satu kata, ambil nama lengkap 
+    // else 
+    // jika nama pertama < 3 karakter, ambil nama kedua
+    // array = muhamad, muhammad, muh, moch, mochamad, dll
+    // else jika nama depan tidak ada pada array, ambil nama depan
+    // else ambil nama tengah/terakhir 
+    public function getNicknameAttribute()
+    {
+        $nama = $this->properNama();
+        $parts = explode(' ', $nama);
+
+        if (count($parts) === 1) {
+            return $nama;
+        }
+
+        $first = $parts[0];
+        $second = $parts[1];
+
+        $muhammadVariants = ['muhammad', 'muhamad', 'muh', 'moch', 'mochamad', 'mochammad', 'mohamad', 'moh', 'mohammad'];
+
+        if (strlen($first) < 3) {
+            return $second;
+        } elseif (!in_array(strtolower($first), $muhammadVariants)) {
+            return $first;
+        } else {
+            return $second;
+            // return count($parts) > 2 ? $parts[2] : $second;
+        }
     }
 }

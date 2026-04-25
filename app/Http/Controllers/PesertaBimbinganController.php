@@ -28,18 +28,40 @@ class PesertaBimbinganController extends Controller
 
     public function index()
     {
-        dd('index peserta bimbingan');
+        $query = PesertaBimbingan::query()
+            ->with([
+                'mhs',
+                'bimbingan.pembimbing.dosen'
+            ]);
+
+        if (isAkademik()) {
+            $pesertaBimbingan = $query->latest()->get();
+        } else if (isDosen()) {
+            $userId = Auth::id();
+
+            $pesertaBimbingan = $query->whereHas('bimbingan.pembimbing.dosen', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
+                ->latest()
+                ->get();
+        } else {
+            abort(403);
+        }
+        return view('peserta-bimbingan.index', compact('pesertaBimbingan'));
     }
 
     public function show($peserta_bimbingan_id)
     {
         $user = Auth::user();
 
-        $isMhs = isRole('mhs');
+        $isMhs = isMhs();
         $isDosen = isRole('dosen');
         $peserta = PesertaBimbingan::where('id', $peserta_bimbingan_id)
             ->firstOrFail();
         $bimbinganId = $peserta->bimbingan_id;
+        $jenis_bimbingan_id = $peserta->bimbingan->jenis_bimbingan_id;
+
+        $pesertas = collect(); // kawan se-bimbingan
 
         if ($isDosen || $isMhs) {
 
@@ -68,12 +90,14 @@ class PesertaBimbinganController extends Controller
 
 
 
-            $pesertaBimbingan = PesertaBimbingan::with([
+            $pesertas = PesertaBimbingan::with([
                 'mhs',
                 'bimbingan.jenisBimbingan',
                 'bimbingan.tahunAjar',
                 'penunjuk',
-            ])->findOrFail($peserta_bimbingan_id);
+            ])->get(); // where bimbingan.jenis_bimbingan_id == $jenis_bimbingan_id
+
+            $pesertaBimbingan = $pesertas->findOrFail($peserta_bimbingan_id);
 
             $riwayatBimbingan = SesiBimbingan::where('peserta_bimbingan_id', $peserta_bimbingan_id)
                 ->orderByRaw("
@@ -143,6 +167,7 @@ class PesertaBimbinganController extends Controller
                 'peserta-bimbingan.show',
                 compact(
                     'pesertaBimbingan',
+                    'pesertas',
                     'riwayatBimbingan',
                     'bimbinganCounts',
                     'tahapanBimbingan',
@@ -452,6 +477,10 @@ class PesertaBimbinganController extends Controller
         Bimbingan $bimbingan,
         JenisBimbingan $jenisBimbingan
     ) {
+
+        // zzz debug hardcore 
+        // cek hanya bimbingan saya
+
         $yearNow = date('Y');
         // ================= VALIDASI =================
         $validated = $request->validate([

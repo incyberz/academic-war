@@ -28,4 +28,10 @@ class Pembimbing extends Model
     {
         return $this->belongsTo(Dosen::class, 'dosen_id');
     }
+
+    // hasmany bimbingan
+    public function bimbingan()
+    {
+        return $this->hasMany(Bimbingan::class, 'pembimbing_id');
+    }
 }

@@ -52,7 +52,7 @@ class JenisBimbinganController extends Controller
                     ]);
                 }
             }
-        } elseif (isRole('mhs')) {
+        } elseif (isMhs()) {
             $mhs = Mhs::where('user_id', $user->id)->firstOrFail();
 
             // bimbingan yang saya ikuti

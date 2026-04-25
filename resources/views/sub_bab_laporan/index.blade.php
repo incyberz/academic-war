@@ -72,10 +72,10 @@
 				<table>
 					<thead>
 						<tr>
-							<th>No</th>
 							<th>Kode</th>
 							<th>Nama</th>
 							<th>Poin</th>
+							<th>Checklists</th>
 							<th>Revisi</th>
 							<th>Status</th>
 							<th>Aksi</th>
@@ -85,8 +85,6 @@
 					<tbody>
 						@forelse($data as $item)
 							<tr>
-
-								<td>{{ $item->urutan }}</td>
 
 								<td>{{ $item->kode }}</td>
 
@@ -101,7 +99,11 @@
 										value="{{ $persen }}" />
 								</td>
 
+								{{-- POIN --}}
 								<td>{{ $item->poin }}</td>
+
+								{{-- CHECKLIST --}}
+								@include('sub_bab_laporan.td_checklist')
 
 								{{-- REVISI --}}
 								<td>
@@ -179,6 +181,9 @@
 								</td>
 
 							</tr>
+
+							@include('sub_bab_laporan.tr_manage_checklist')
+
 						@empty
 							<tr>
 								<td colspan="7">
@@ -196,3 +201,28 @@
 	</x-page-content>
 
 </x-app-layout>
+
+<script>
+	function toggleChecklist(id) {
+		const row = document.getElementById('checklist-row-' + id);
+		const icon = document.getElementById('icon-' + id);
+
+		if (!row) return;
+
+		const isHidden = row.classList.contains('hidden');
+
+		row.classList.toggle('hidden');
+
+		if (icon) {
+			icon.innerText = isHidden ? '▼' : '▶';
+		}
+
+		// auto focus input saat dibuka
+		if (isHidden) {
+			setTimeout(() => {
+				const input = document.getElementById('input-' + id);
+				if (input) input.focus();
+			}, 100);
+		}
+	}
+</script>

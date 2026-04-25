@@ -24,6 +24,9 @@ use App\Http\Controllers\{
     ChallengeLevelController,
     ChallengeSubmissionController,
     ChallengeLevelSubmissionController,
+    ChecklistController,
+    DashboardController,
+    ImpersonateController,
     JadwalController,
     JamSesiController,
     QuestSubmissionController,
@@ -61,9 +64,10 @@ Route::get('/welcome', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
 
@@ -279,6 +283,21 @@ Route::middleware('auth')->group(function () {
     Route::resource('bootcamp', BootcampController::class);
     Route::resource('skill', SkillController::class);
     Route::resource('mission', MissionController::class);
+
+    // Checklist (umum untuk semua yang berkaitan dengan checklistable)
+    Route::post('/checklists', [ChecklistController::class, 'store'])->name('checklists.store');
+    Route::patch('/checklists/{id}', [ChecklistController::class, 'update'])->name('checklists.update');
+    Route::delete('/checklists/{id}', [ChecklistController::class, 'destroy'])->name('checklists.destroy');
+    Route::patch('/checklists/{id}/toggle', [ChecklistController::class, 'toggle'])->name('checklists.toggle');
+
+    // impersonate
+    // 🔹 mulai impersonate (Login As)
+    Route::get('/impersonate/{id}', [ImpersonateController::class, 'impersonate'])
+        ->name('impersonate.start');
+
+    // 🔹 stop impersonate (kembali ke dosen/admin)
+    Route::get('/impersonate-leave', [ImpersonateController::class, 'leave'])
+        ->name('impersonate.leave');
 });
 
 

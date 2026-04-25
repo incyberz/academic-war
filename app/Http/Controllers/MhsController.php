@@ -23,7 +23,7 @@ class MhsController extends Controller
         $shift = Shift::all();
 
 
-        if (isRole('mhs')) {
+        if (isMhs()) {
             $mhs = Mhs::where('user_id', $user->id)->firstOrFail();
         } elseif (isRole('super_admin')) {
             $dataMhs = Mhs::with(['user', 'prodi', 'statusMhs'])
