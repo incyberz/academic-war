@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\BabLaporan;
+use App\Models\PesertaBimbingan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BabLaporanController extends Controller
 {
@@ -12,19 +14,71 @@ class BabLaporanController extends Controller
      */
     public function index(Request $request)
     {
-        // kalau tidak ada parameter, redirect
-        if (!$request->filled('jenis_bimbingan_id')) {
-            return redirect()->route('jenis-bimbingan.index')
-                ->with('warning', 'Silakan pilih jenis bimbingan terlebih dahulu');
+
+        $peserta_bimbingan_id = request('peserta_bimbingan_id') ?? null;
+        $pesertas = null; // inisialisasi variabel peserta untuk nav di view
+
+        if ($peserta_bimbingan_id) { // jika dosen akses monitoring-bimbingan
+
+            if (!isDosen()) {
+                return back()->with('error', 'Maaf, hanya dosen pembimbing yang dapat monitoring bimbingan mahasiswa');
+            }
+
+            $peserta = PesertaBimbingan::findOrFail($peserta_bimbingan_id);
+            if ($peserta->bimbingan->pembimbing->dosen->user_id != Auth::id()) {
+                return back()->with('error', 'Bukan mhs bimbingan Anda');
+            }
+
+            // dapatkan jenis bimbingan dari peserta bimbingan
+            $jenis_bimbingan_id = $peserta->bimbingan->jenis_bimbingan_id;
+
+            // dapatkan seluruh peserta bimbingan dg jenis dan pembimbing yg sama 
+            $pesertas = PesertaBimbingan::query()
+                ->whereHas('bimbingan', function ($q) use ($jenis_bimbingan_id) {
+                    $q->where('jenis_bimbingan_id', $jenis_bimbingan_id)
+                        ->whereHas('pembimbing', function ($q2) {
+                            $q2->whereHas('dosen.user', function ($q3) {
+                                $q3->where('id', Auth::id());
+                            });
+                        });
+                })
+                ->get();
+        } else { // tanpa parameter peserta_bimbingan_id, yg akses adalah mhs dg rute misi-bimbingan.index
+
+            // kalau tidak ada parameter, redirect
+            if (!$request->filled('jenis_bimbingan_id')) {
+                return redirect()->route('jenis-bimbingan.index')
+                    ->with('warning', 'Silakan pilih jenis bimbingan terlebih dahulu');
+            }
+            $jenis_bimbingan_id = $request->jenis_bimbingan_id;
         }
 
-        $query = BabLaporan::query();
 
-        $query->where('jenis_bimbingan_id', $request->jenis_bimbingan_id);
+        $babs = BabLaporan::query()
+            ->where('jenis_bimbingan_id', $jenis_bimbingan_id)
+            ->ordered()
+            ->get();
 
-        $data = $query->ordered()->get();
+        if (isMhs()) {
+            $peserta = PesertaBimbingan::query()
+                ->whereHas('mhs.user', function ($q) {
+                    $q->where('id', Auth::id());
+                })
+                ->whereHas('bimbingan', function ($q) use ($jenis_bimbingan_id) {
+                    $q->where('jenis_bimbingan_id', $jenis_bimbingan_id);
+                })
+                ->firstOrFail();
+            return view('bimbingan.misi-bimbingan.index', compact('babs', 'peserta'));
+        }
 
-        return view('bab_laporan.index', compact('data'));
+        $jenisBimbingan = $babs->first()->jenisBimbingan ?? null;
+
+        return view('bab_laporan.index', compact(
+            'babs',
+            'jenisBimbingan',
+            'pesertas',
+            'peserta'
+        ));
     }
 
     /**

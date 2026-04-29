@@ -95,7 +95,11 @@ class PesertaBimbinganController extends Controller
                 'bimbingan.jenisBimbingan',
                 'bimbingan.tahunAjar',
                 'penunjuk',
-            ])->get(); // where bimbingan.jenis_bimbingan_id == $jenis_bimbingan_id
+            ])
+                ->whereHas('bimbingan', function ($query) use ($jenis_bimbingan_id) {
+                    $query->where('jenis_bimbingan_id', $jenis_bimbingan_id);
+                })
+                ->get();
 
             $pesertaBimbingan = $pesertas->findOrFail($peserta_bimbingan_id);
 

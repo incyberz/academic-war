@@ -5,6 +5,7 @@
 	$isMyBimbingan = $pb->isMyBimbingan();
 	$bimbingan = $pesertaBimbingan->bimbingan;
 	$namaBimbingan = $bimbingan->nama;
+	$kodeBimbingan = $bimbingan->jenisBimbingan->kode;
 	$subtitle = $pb->pageSubtitle();
 	$statusPeserta = namaStatusPesertaBimbingan($pesertaBimbingan->status);
 	$jenis_bimbingan_id = $pesertaBimbingan->bimbingan->jenis_bimbingan_id;
@@ -69,8 +70,8 @@
 		@if ($bimbinganCounts['total_laporan'])
 			@include('peserta-bimbingan.bimbingan-counts')
 			@include('peserta-bimbingan.riwayat-bimbingan')
-			@include('bimbingan.race-liner')
 		@endif
+		@include('bimbingan.race-liner')
 
 		{{-- Informasi --}}
 		<div class="grid md:grid-cols-2 gap-4">

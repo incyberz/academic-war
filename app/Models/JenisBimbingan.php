@@ -28,7 +28,7 @@ class JenisBimbingan extends Model
     {
         return $this->hasMany(BabLaporan::class, 'jenis_bimbingan_id');
     }
-    public function tahapan(): HasMany
+    public function tahapanBimbingan(): HasMany
     {
         return $this->hasMany(TahapanBimbingan::class, 'jenis_bimbingan_id');
     }
@@ -36,6 +36,17 @@ class JenisBimbingan extends Model
     // ============================================================
     // HELPER ATTRIBUTE
     // ============================================================
+
+    public function getLabelAttribute()
+    {
+        $labels = [
+            'ta' => 'TA',
+            'skripsi' => 'Skripsi',
+            'tesis' => 'Tesis',
+            'disertasi' => 'Disertasi',
+        ];
+        return $labels[$this->kode] ?? $this->nama ?? 'Undefined';
+    }
 
     public function getJumlahBabAttribute(): int
     {
@@ -56,6 +67,6 @@ class JenisBimbingan extends Model
 
     public function getJumlahTahapanAttribute(): int
     {
-        return $this->tahapan()->count();
+        return $this->tahapanBimbingan()->count();
     }
 }

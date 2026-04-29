@@ -16,17 +16,18 @@
 	@php $hasRevisi = ($count_revisi ?? 0) > 0; @endphp
 
 	@if (isRole('dosen'))
-		<x-count :active="$hasReview" :value="$count_review" activeBg="rose-600" class="clickable" id="review" label="Perlu Review" />
-
-		<x-count :active="$hasRevisi" :value="$count_revisi" activeBg="amber-500" class="clickable" id="revisi" label="Perlu Revisi" />
+		<x-count :active="$hasReview" :value="$count_review" activeBg="rose-600" class="clickable"
+			data-jenis_bimbingan_id="{{ $jenis_bimbingan_id }}" id="review" label="Perlu Review" />
+		<x-count :active="$hasRevisi" :value="$count_revisi" activeBg="amber-500" class="clickable"
+			data-jenis_bimbingan_id="{{ $jenis_bimbingan_id }}" id="revisi" label="Perlu Revisi" />
 	@endif
 
 	@if (isMhs())
-		<x-count :active="$hasRevisi" :value="$count_revisi" activeBg="rose-600" class="clickable" id="revisi"
-			label="Perlu Kamu Revisi" />
+		<x-count :active="$hasRevisi" :value="$count_revisi" activeBg="rose-600" class="clickable"
+			data-jenis_bimbingan_id="{{ $jenis_bimbingan_id }}" id="revisi" label="Perlu Kamu Revisi" />
 
-		<x-count :active="$hasReview" :value="$count_review" activeBg="amber-500" class="clickable" id="review"
-			label="Sedang Proses" />
+		<x-count :active="$hasReview" :value="$count_review" activeBg="amber-500" class="clickable"
+			data-jenis_bimbingan_id="{{ $jenis_bimbingan_id }}" id="review" label="Sedang Proses" />
 	@endif
 
 	<x-count :active="true" :clickable="false" :value="$count_disetujui" activeBg="emerald-600" id="disetujui"
@@ -39,14 +40,15 @@
 
 @if ($count_review)
 	<div
-		class="count_detail hidden bg-rose-600 text-white transition-all duration-300
+		class="count_detail hiddena bg-rose-600 text-white transition-all duration-300
     opacity-90 hover:opacity-100 
     p-4 rounded-lg border mb-5"
-		id=count_detail--review>
+		id="count_detail--review--{{ $jenis_bimbingan_id }}">
 		<ol>
 			@foreach ($perlu_review as $sesi)
 				<li>
-					<a class="transition-all duration-300 hover:tracking-[0.5px]" href="{{ route('sesi-bimbingan.show', $sesi->id) }}">-
+					<a class="transition-all duration-300 hover:tracking-[0.5px]"
+						href="{{ route('sesi-bimbingan.show', $sesi->id) }}">-
 						{{ $sesi->pesertaBimbingan->mhs->nama_lengkap }} -
 						{{ $sesi->babLaporan->nama }}
 						➡️</a>
@@ -74,3 +76,13 @@
 		</ol>
 	</div>
 @endif
+
+<script>
+	$(function() {
+		$('.clickable').click(function() {
+			let jenisBimbinganId = $(this).data('jenis_bimbingan_id');
+			$('.count_detail').hide()
+			$('#count_detail--' + $(this).prop('id') + '--' + jenisBimbinganId).fadeIn()
+		})
+	})
+</script>

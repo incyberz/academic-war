@@ -50,6 +50,12 @@ class PesertaBimbingan extends Model
         return $this->belongsTo(TahapanBimbingan::class, 'current_tahapan_bimbingan_id', 'id');
     }
 
+    // many buktiLaporanan (polymorphic)
+    public function buktiLaporan()
+    {
+        return $this->hasMany(BuktiLaporan::class, 'peserta_bimbingan_id');
+    }
+
     /* ================= HELPER LOGIC ================= */
 
     /**
@@ -113,5 +119,15 @@ class PesertaBimbingan extends Model
     {
         return $this->hasMany(SesiBimbingan::class, 'peserta_bimbingan_id')
             ->where('status_sesi_bimbingan', '>', 1);
+    }
+
+
+    # ============================================================
+    # HELPER BUKTI LAPORAN 
+    # ============================================================
+    // jumlahBukti yang ia upload 
+    public function jumlahBuktiLaporan()
+    {
+        return $this->buktiLaporan()->count();
     }
 }

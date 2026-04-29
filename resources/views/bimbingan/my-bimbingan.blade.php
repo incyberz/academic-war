@@ -9,6 +9,7 @@
 	{{-- @dd($pesertas) --}}
 	@php $kodeBimbingan = $jenis->kode; @endphp
 	@php $namaBimbingan = $jenis->nama; @endphp
+	@php $labelBimbingan = $jenis->label; @endphp
 	@php $jenis_bimbingan_id = $jenis->id; @endphp
 
 	<div class="tab-content {{ $jenis->id == $bimbingan->jenis_bimbingan_id ? '' : 'hidden' }}" id="tab-{{ $jenis->id }}">
@@ -193,12 +194,3 @@
 		</div>
 	</div>
 @endforeach
-
-<script>
-	$(function() {
-		$('.clickable').click(function() {
-			$('.count_detail').hide()
-			$('#count_detail--' + $(this).prop('id')).fadeIn()
-		})
-	})
-</script>

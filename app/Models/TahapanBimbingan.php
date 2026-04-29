@@ -34,6 +34,12 @@ class TahapanBimbingan extends Model
         return $this->belongsTo(JenisBimbingan::class, 'jenis_bimbingan_id');
     }
 
+    // many sesi bimbingan
+    public function sesiBimbingan()
+    {
+        return $this->hasMany(SesiBimbingan::class, 'tahapan_bimbingan_id');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | SCOPES

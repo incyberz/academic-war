@@ -50,7 +50,7 @@ class SesiBimbingan extends Model
     /** 
      * Sesi dimiliki oleh satu peserta bimbingan
      */
-    public function pesertaBimbingan(): BelongsTo
+    public function pesertaBimbingan()
     {
         return $this->belongsTo(
             PesertaBimbingan::class,

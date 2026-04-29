@@ -17,6 +17,7 @@ use App\Http\Controllers\NotifikasiBimbinganController;
 use App\Http\Controllers\{
     BabLaporanController,
     BootcampController,
+    BuktiLaporanController,
     CourseController,
     UnitController,
     QuestController,
@@ -145,6 +146,23 @@ Route::middleware('auth')->group(function () {
         )->name('sub-bab-laporan.lock');
     });
 
+    // misi bimbingan khusus untuk mhs
+    Route::get('/misi-bimbingan', [BabLaporanController::class, 'index'])
+        ->name('misi-bimbingan.index');
+
+
+    // bukti laporan (umum untuk semua yang berkaitan dengan bukti laporan, termasuk sub-bab)
+    Route::post('/bukti', [BuktiLaporanController::class, 'store'])->name('bukti.store');
+    Route::patch('/bukti/{id}/approve', [BuktiLaporanController::class, 'approve'])->name('bukti.approve');
+    Route::patch('/bukti/{id}/reject', [BuktiLaporanController::class, 'reject'])->name('bukti.reject');
+    Route::get('/bukti/{id}', [BuktiLaporanController::class, 'show'])->name('bukti.show');
+    Route::delete('/bukti/{id}', [BuktiLaporanController::class, 'destroy'])->name('bukti.destroy');
+
+    // rute sementara
+    // Route::resource('bukti-laporan', BuktiLaporanController::class);
+
+    // monitoring bukti laporan per peserta mhs per bab
+    Route::get('/monitoring-bimbingan/{peserta_bimbingan_id}', [BabLaporanController::class, 'index'])->name('monitoring-bimbingan.index');;
 
     # ============================================================
     # RUTE UMUM BIMBINGAN
@@ -153,6 +171,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('peserta-bimbingan', PesertaBimbinganController::class);
     Route::resource('sesi-bimbingan', SesiBimbinganController::class); //->only('create', 'store', 'update', 'destroy');
 
+    // detail sesi bimbingan (bisa diakses oleh pembimbing, co-pembimbing, dan mahasiswa yang bersangkutan)
     // Route::get(
     //     '/sesi-bimbingan/{sesi}',
     //     [SesiBimbinganController::class, 'show']

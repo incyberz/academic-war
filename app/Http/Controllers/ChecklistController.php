@@ -38,15 +38,31 @@ class ChecklistController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'pertanyaan' => 'required|string',
-            'poin'       => 'nullable|integer|min:0',
-            'is_wajib'   => 'required|boolean',
-            'after'      => 'nullable|integer|min:0',
+            'checklistable_id'   => 'required|integer',
+            'checklistable_type' => 'required|string',
+            'pertanyaan'         => 'required|string|min:10',
+            'poin'               => 'nullable|integer|min:0',
+            'is_wajib'           => 'required|boolean',
+            'after'              => 'nullable|integer|min:0',
         ]);
 
         return DB::transaction(function () use ($request) {
 
-            [$parent, $type] = $this->resolveParent($request);
+            $type = $request->checklistable_type;
+
+            // 🔐 optional: whitelist biar aman (WAJIB kalau expose class)
+            $allowedTypes = [
+                \App\Models\SubBabLaporan::class,
+                \App\Models\BabLaporan::class,
+                // \App\Models\ProgramLaporan::class,
+            ];
+
+            if (!in_array($type, $allowedTypes)) {
+                abort(403, 'Tipe tidak valid');
+            }
+
+            // ambil parent model
+            $parent = $type::findOrFail($request->checklistable_id);
 
             $after = (int) $request->after;
 
@@ -72,7 +88,7 @@ class ChecklistController extends Controller
                 'pertanyaan'         => $request->pertanyaan,
                 'urutan'             => $urutanBaru,
                 'poin'               => $request->poin ?? 0,
-                'is_wajib'           => $request->is_wajib,
+                'is_wajib'           => $request->boolean('is_wajib'),
                 'is_active'          => true,
             ]);
 

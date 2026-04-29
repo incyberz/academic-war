@@ -1,6 +1,6 @@
 <x-card :href="route('peserta-bimbingan.index')" class="mb-6" emoji="👥" judul2="Detail" judul="Peserta Bimbingan {{ $kodeBimbingan }}">
 	<x-card-body>
-		@if ($list->isEmpty())
+		@if ($pesertas->isEmpty())
 			<div
 				class="flex items-start gap-2
                 p-3 rounded-lg
@@ -14,7 +14,7 @@
 		@else
 			<x-grid class="space-y-3">
 
-				@foreach ($list as $peserta)
+				@foreach ($pesertas as $peserta)
 					@php $id = $peserta->id @endphp
 					@php $isTelat = $rules->isTelat($peserta['terakhir_bimbingan']); @endphp
 					@php $isKritis = $rules->isKritis($peserta['terakhir_bimbingan']); @endphp

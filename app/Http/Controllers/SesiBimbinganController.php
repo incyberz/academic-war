@@ -187,8 +187,10 @@ class SesiBimbinganController extends Controller
     /**
      * Detail sesi bimbingan
      */
-    public function show(SesiBimbingan $sesi)
+    public function show($id)
     {
+        $sesi = SesiBimbingan::findOrFail($id);
+
         // Policy / guard bisa ditambahkan di sini
         // $this->authorize('view', $sesi);
 
