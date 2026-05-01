@@ -42,7 +42,7 @@ small {
 }
 
 a {
-  @apply text-blue-600 dark:text-blue-400 hover:text-yellow-500;
+  @apply text-blue-600 dark:text-blue-400 hover:text-yellow-500 no-underline hover:no-underline;
 }
 
 /* ===== Lists ===== */

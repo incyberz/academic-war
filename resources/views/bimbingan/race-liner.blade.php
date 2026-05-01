@@ -1,3 +1,4 @@
+{{-- controller BimbinganController --}}
 <x-card class="mb-6" judul="{{ $labelBimbingan }} Balap - Race Liner Leaderboard">
 	<x-card-body>
 
@@ -15,9 +16,9 @@
 			</div>
 		@else
 			@php
-				$sorted = $pesertas->sortBy([['poin', 'desc'], ['mhs.nickname', 'asc']])->values();
+				$sorted = $pesertas->sortBy([['poin_total', 'desc'], ['mhs.nickname', 'asc']])->values();
 
-				$max_poin = $sorted->max('poin');
+				$max_poin = $sorted->max('poin_total');
 			@endphp
 
 			<!-- RACE CONTAINER -->
@@ -29,7 +30,7 @@
 				@foreach ($sorted as $index => $peserta)
 					@php
 						$rank = $index + 1;
-						$persen = $max_poin > 0 ? ($peserta->poin / $max_poin) * 100 : 0;
+						$persen = $max_poin > 0 ? ($peserta->poin_total / $max_poin) * 100 : 0;
 						$persen = min($persen, 95);
 						$isStarted = $persen > 0;
 						$isMe = auth()->id() === $peserta->mhs->user_id;
@@ -62,7 +63,7 @@
 
 						<!-- Poin -->
 						<div class="text-sm text-gray-600 dark:text-gray-300">
-							{{ $peserta->poin }}
+							{{ $peserta->poin_total }}
 						</div>
 
 						<!-- Avatar bergerak -->
@@ -89,77 +90,7 @@
 				</x-button>
 			</a>
 		@elseif(isDosen())
-			{{-- ========================= --}}
-			{{-- 🚨 PANEL DOSEN (DUMMY UI) --}}
-			{{-- ========================= --}}
-			<div class="mt-4 p-4 rounded-xl border bg-white dark:bg-gray-900 shadow-sm space-y-4">
-
-				{{-- 🔴 STATUS --}}
-				<div class="flex items-center justify-between">
-					<div class="text-sm">
-						<div class="font-semibold text-gray-700 dark:text-gray-200">
-							Antrian Review
-						</div>
-						<div class="text-xs text-gray-500">
-							7 menunggu • 2 overdue
-						</div>
-					</div>
-
-					<div class="flex gap-2">
-						<span class="px-2 py-1 text-xs rounded bg-red-100 text-red-600 dark:bg-red-900/30">
-							2 Overdue
-						</span>
-						<span class="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30">
-							7 Pending
-						</span>
-					</div>
-				</div>
-
-				{{-- 📊 PROGRESS --}}
-				<div>
-					<div class="flex justify-between text-xs mb-1 text-gray-500">
-						<span>Progress Review</span>
-						<span>12 / 20</span>
-					</div>
-					<div class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded">
-						<div class="h-2 bg-blue-500 rounded" style="width: 60%"></div>
-					</div>
-				</div>
-
-				{{-- 🧾 ACTIVITY FEED --}}
-				<div class="space-y-2 text-xs">
-
-					<div class="flex items-center justify-between">
-						<div>
-							<span class="font-semibold">Ahmad</span> upload BAB 3
-						</div>
-						<span class="text-gray-400">2 jam lalu</span>
-					</div>
-
-					<div class="flex items-center justify-between">
-						<div>
-							<span class="font-semibold">Siti</span> revisi BAB 2
-						</div>
-						<span class="text-gray-400">5 jam lalu</span>
-					</div>
-
-					<div class="flex items-center justify-between">
-						<div>
-							<span class="font-semibold">Budi</span> upload BAB 1
-						</div>
-						<span class="text-red-500 font-semibold">3 hari ⚠️</span>
-					</div>
-
-				</div>
-
-				{{-- 🔘 CTA --}}
-				<a class="block" href="{{ route('monitoring-bimbingan.index', ['peserta_bimbingan_id' => 5]) }}">
-					<x-button btn="danger" class="w-full">
-						🔍 Review Sekarang
-					</x-button>
-				</a>
-
-			</div>
+			@include('bimbingan.race-liner-antrian-review')
 		@endif
 
 	</x-card-body>

@@ -1,3 +1,12 @@
+@php
+	$configStatus = config('status_bukti_laporan');
+
+	if (isDosen()) {
+	    // hanya status yang boleh dipilih dosen
+	    $optionKeys = ['in_review', 'revised', 'approved'];
+	    $optionStatus = collect($configStatus)->only($optionKeys);
+	}
+@endphp
 <x-app-layout>
 
 	<x-page-header subtitle="Kelola struktur bab laporan untuk mendukung sistem bimbingan dan penilaian Academic War."
@@ -112,6 +121,7 @@
 						@forelse($babs as $bab)
 							@php
 								$isActive = $bab->is_active;
+								$perluReviewBukti = $bab->perlu_review_bukti;
 							@endphp
 							<tr>
 
@@ -168,26 +178,7 @@
 								@endif
 
 								{{-- STATUS --}}
-								<td>
-									<form action="{{ route('bab-laporan.toggle', $bab->id) }}" method="POST"
-										onsubmit="return confirm('{{ $isActive ? 'Nonaktifkan bab ini?' : 'Aktifkan bab ini?' }}')"
-										style="display:inline;">
-
-										@csrf
-										@method('PATCH')
-
-										<button style="border:none; background:none; cursor:pointer; font-size:16px;"
-											title="{{ $isActive ? 'Nonaktifkan' : 'Aktifkan' }}" type="submit">
-
-											@if ($isActive)
-												✅
-											@else
-												💤
-											@endif
-
-										</button>
-									</form>
-								</td>
+								@include('bab_laporan.td_toggle_status_laporan')
 
 								@if (!$isActive)
 									<td style="color:gray; font-style:italic;">-</td>
@@ -218,6 +209,10 @@
 
 							</tr>
 
+							{{-- row tambahan untuk manage bukti --}}
+							@include('bab_laporan.tr_manage_bukti')
+
+							{{-- row tambahan untuk manage ceklis --}}
 							@if ($isActive)
 								@include('bab_laporan.tr_manage_checklist')
 							@endif
@@ -242,3 +237,6 @@
 </x-app-layout>
 
 @include('bab_laporan.script_checklist')
+@if (isDosen())
+	@include('bab_laporan.script_monitoring_bimbingan')
+@endif

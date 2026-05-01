@@ -41,5 +41,10 @@
 			showList();
 		});
 
+
+		$('.cancel-upload-bukti').click(function() {
+			$('.blokForm').slideUp();
+		});
+
 	});
 </script>

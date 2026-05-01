@@ -1,5 +1,5 @@
 <form
-	action="{{ route('bukti.store') }}" class="space-y-3" enctype="multipart/form-data"
+	action="{{ route('bukti-laporan.store') }}" class="space-y-3 form-submit-bukti" enctype="multipart/form-data"
 	id="form_submit_bukti_laporan--{{ $bab->id }}" method="POST">
 	@csrf
 
@@ -34,19 +34,39 @@
 	@if ($hasChecklist)
 		<div class="space-y-2 mb-6">
 			@foreach ($bab->checklists as $c)
-				<label class="flex items-start gap-2 text-sm cursor-pointer">
+				<label
+					class="flex gap-3 p-3 rounded-xl border w-full cursor-pointer
+                  transition
+
+                  border-gray-200 bg-white text-gray-800
+                  dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100
+
+                  hover:bg-gray-50 dark:hover:bg-gray-700
+                  active:bg-gray-100 dark:active:bg-gray-600">
 
 					<input
 						{{ $c->is_wajib ? 'required' : '' }} {{ in_array($c->id, $checklist_ids ?? []) ? 'checked' : '' }}
-						autocomplete="off" class="mt-1" name="checklist_{{ $c->id }}" type="checkbox"
-						value="{{ $c->id }}" />
+						autocomplete="off" class="mt-1 w-5 h-5 shrink-0
+                   accent-blue-600 dark:accent-blue-400"
+						name="checklist_{{ $c->id }}" type="checkbox" value="{{ $c->id }}" />
 
-					<span>
-						{{ $c->pertanyaan }}
-						{!! $c->is_wajib
-						    ? '<span class="text-red-500">🧱 wajib</span>'
-						    : '<span class="text-gray-400">⚔️ challenge</span>' !!}
-					</span>
+					<div class="text-sm leading-relaxed">
+						<div>
+							{{ $c->pertanyaan }}
+						</div>
+
+						<div class="mt-1">
+							@if ($c->is_wajib)
+								<span class="text-red-500 dark:text-red-400 text-xs font-semibold">
+									🧱 Wajib
+								</span>
+							@else
+								<span class="text-gray-500 dark:text-gray-400 text-xs">
+									⚔️ Challenge
+								</span>
+							@endif
+						</div>
+					</div>
 
 				</label>
 			@endforeach
@@ -59,9 +79,19 @@
                bg-indigo-500 hover:bg-indigo-600
                text-white text-sm font-medium
                transition
-               disabled:opacity-50"
+               disabled:opacity-50 mb-1"
 		type="submit">
-		Upload Bukti
+		Upload {{ 'Bukti' }}
+	</button>
+
+	<button
+		class="cancel-upload-bukti w-full py-1.5 rounded-lg
+               bg-gray-500 hover:bg-gray-600
+               text-white text-sm font-medium
+               transition
+               disabled:opacity-50 mb-1"
+		type="button">
+		Cancel
 	</button>
 
 </form>

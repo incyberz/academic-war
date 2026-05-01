@@ -5,6 +5,7 @@
 	$isMyBimbingan = $pb->isMyBimbingan();
 	$bimbingan = $pesertaBimbingan->bimbingan;
 	$namaBimbingan = $bimbingan->nama;
+	$labelBimbingan = $bimbingan->label;
 	$kodeBimbingan = $bimbingan->jenisBimbingan->kode;
 	$subtitle = $pb->pageSubtitle();
 	$statusPeserta = namaStatusPesertaBimbingan($pesertaBimbingan->status);

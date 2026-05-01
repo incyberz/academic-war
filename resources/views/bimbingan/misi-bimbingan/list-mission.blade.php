@@ -15,6 +15,10 @@
 					$rejected = $bab->isRejected($pesertaId);
 					$hasForm = $bab->is_active && !$approved && !$submitted; // punya form submit/reupload bukti
 					$hasChecklist = $bab->checklists->count() > 0;
+
+					$subBabCount = $bab->subBab()->count();
+					$subBabs = $bab->subBab()->get();
+					$subBabCompleted = false;
 				@endphp
 
 				<div
@@ -29,7 +33,8 @@
 
 					<!-- EXPANDABLE CONTENT -->
 					@if ($hasForm)
-						<div class="hidden mt-4 border-t pt-3 border-gray-200 dark:border-gray-700" id="blokForm_{{ $bab->id }}">
+						<div class="hidden mt-4 border-t pt-3 border-gray-200 dark:border-gray-700 blokForm"
+							id="blokForm_{{ $bab->id }}">
 
 							<div class="text-sm text-gray-600 dark:text-gray-300 mb-2">
 								Upload bukti penyelesaian misi

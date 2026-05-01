@@ -49,7 +49,9 @@ class BabLaporan extends Model
 
     public function buktiLaporan(): MorphMany
     {
-        return $this->morphMany(BuktiLaporan::class, 'buktiable');
+        // yang non revisi (parent_id = null)
+        return $this->morphMany(BuktiLaporan::class, 'buktiable')
+            ->whereNull('parent_id');
     }
 
     public function checklists()
@@ -106,11 +108,24 @@ class BabLaporan extends Model
     }
 
 
+    public function getPerluReviewBuktiAttribute(): int
+    {
+        return $this->buktiLaporan()
+            ->where(function ($q) {
+                $q->whereIn('status', ['submitted', 'in_review'])
+                    ->orWhereNull('status');
+            })
+            ->count();
+    }
+
+
+
+
 
     # ============================================================
     # HELPER BUKTI
     # ============================================================
-    public function buktiTerakhir($pesertaId)
+    public function buktiTerakhir(int $pesertaId)
     {
         return $this->buktiLaporan()
             ->where('peserta_bimbingan_id', $pesertaId)
@@ -118,32 +133,50 @@ class BabLaporan extends Model
             ->first();
     }
 
-    public function jumlahBuktiApproved()
+    public function jumlahBuktiApproved(): int
     {
         return $this->buktiLaporan()
-            ->where('status', 1) // hanya approved
+            ->where('status', 'approved')
             ->count();
     }
 
-    public function jumlahBuktiPending()
+    public function jumlahBuktiPending(): int
     {
+        $keys = collect(config('status_bukti_laporan'))
+            ->where('is_pending', true)
+            ->keys()
+            ->toArray();
+
         return $this->buktiLaporan()
-            ->where('status', 0) // pending | submitted
+            ->where(function ($q) use ($keys) {
+                $q->whereIn('status', $keys)
+                    ->orWhereNull('status');
+            })
             ->count();
     }
+
 
     public function getBuktiLabelAttribute()
     {
         $approved = $this->jumlahBuktiApproved();
         $pending = $this->jumlahBuktiPending();
 
+        // return "Approved: $approved, Pending: $pending";
+
         if ($approved > 0 || $pending > 0) {
 
             $html = '<div class="flex items-center gap-1 text-xs font-semibold">';
 
+            // 🔹 ambil key pending dari config
+            $pendingKeys = collect(config('status_bukti_laporan'))
+                ->where('is_pending', true)
+                ->keys()
+                ->toArray();
+
             // 🔹 ambil 1 pending terbaru
             $pendingItem = $this->buktiLaporan()
-                ->where('status', 0)
+                ->whereIn('status', $pendingKeys)
+                ->orWhereNull('status')
                 ->latest()
                 ->with('pesertaBimbingan.mhs')
                 ->first();
@@ -152,24 +185,23 @@ class BabLaporan extends Model
 
                 $nickname = optional($pendingItem?->pesertaBimbingan?->mhs)->nickname ?? '...';
 
-
                 $html .= '<span 
-                        title="Ada ' . $pending . ' bukti pending"
-                        class="px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300 animate-pulse flex items-center gap-1">
-                        
-                        ⏳ ' . $pending . '
+                    title="Ada ' . $pending . ' bukti pending"
+                    class="px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300 animate-pulse flex items-center gap-1">
+                    
+                    ⏳ ' . $pending . '
 
-                        <span class=" text-[10px] font-normal opacity-80">
-                            • ' . e($nickname) . '
-                        </span> 
+                    <span class=" text-[10px] font-normal opacity-80">
+                        • ' . e($nickname) . '
+                    </span> 
 
-                      </span>';
+                  </span>';
             }
 
             if ($approved > 0) {
                 $html .= '<span class="px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
-                        ✅ ' . $approved . '
-                      </span>';
+                    ✅ ' . $approved . '
+                  </span>';
             }
 
             $html .= '</div>';
@@ -185,25 +217,25 @@ class BabLaporan extends Model
     # ============================================================
     # HELPER POIN
     # ============================================================
-    public function totalPoin($pesertaId): int
+    public function totalPoin(int $pesertaId): int
     {
         return (int) $this->buktiLaporan()
             ->where('peserta_bimbingan_id', $pesertaId)
-            ->where('status', 1) // hanya approved
-            ->sum('poin_didapat');
+            ->where('status', 'approved')
+            ->sum('poin');
     }
 
     # ============================================================
     # HELPER STATUS
     # ============================================================
-    public function sudahSubmit($pesertaId): bool
+    public function sudahSubmit(int $pesertaId): bool
     {
         return $this->buktiLaporan()
             ->where('peserta_bimbingan_id', $pesertaId)
             ->exists();
     }
 
-    public function statusTerakhir($pesertaId): ?int
+    public function statusTerakhir(int $pesertaId): string|null
     {
         return $this->buktiLaporan()
             ->where('peserta_bimbingan_id', $pesertaId)
@@ -211,49 +243,98 @@ class BabLaporan extends Model
             ->value('status');
     }
 
-    public function statusLabel($pesertaId): string
+    public function statusLabel(int $pesertaId): string
     {
-        return match ($this->statusTerakhir($pesertaId)) {
-            1 => '✅ Approved',
-            2 => '❌ Rejected',
-            0 => '⏳ Submitted',
-            default => '⚠️ Belum Submit',
+        $status = $this->statusTerakhir($pesertaId);
+
+        if ($status) {
+            $config = config("status_bukti_laporan.$status");
+
+            if ($config) {
+                return $config['emoji'] . ' ' . $config['label'];
+            }
+        }
+
+        // cek apakah pernah submit
+        $pernahSubmit = $this->buktiLaporan()
+            ->where('peserta_bimbingan_id', $pesertaId)
+            ->exists();
+
+        return $pernahSubmit
+            ? '⏳ Baru Submit'
+            : '⚠️ Belum Submit';
+    }
+
+    public function statusBadge(int $pesertaId): string
+    {
+        $status = $this->statusTerakhir($pesertaId);
+        $config = config("status_bukti_laporan.$status");
+
+        if ($config) {
+            return match ($config['color'] ?? null) {
+                'success' => 'badge-success',
+                'danger'  => 'badge-danger',
+                'warning' => 'badge-warning',
+                'info'    => 'badge-info',
+                default   => 'badge-secondary',
+            };
+        }
+
+        return 'badge-warning';
+    }
+
+    public function statusBg(int $pesertaId): string
+    {
+        $status = $this->statusTerakhir($pesertaId);
+
+        // cek apakah pernah submit
+        $pernahSubmit = $this->buktiLaporan()
+            ->where('peserta_bimbingan_id', $pesertaId)
+            ->exists();
+
+        // jika status null
+        if (!$status) {
+            return $pernahSubmit
+                // sudah submit tapi belum diproses
+                ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
+                // belum submit sama sekali
+                : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300';
+        }
+
+        $config = config("status_bukti_laporan.$status");
+
+        return match ($config['color'] ?? null) {
+            'success' => 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300',
+            'danger'  => 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300',
+            'warning' => 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
+            'info'    => 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
+            default   => 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
         };
     }
 
-    public function statusBadge($pesertaId): string
+    public function isRejected(int $pesertaId): bool
     {
-        return match ($this->statusTerakhir($pesertaId)) {
-            1 => 'badge-success',   // approved
-            2 => 'badge-danger',    // rejected
-            0 => 'badge-info',   // submitted
-            default => 'badge-warning', // belum submit
-        };
+        return $this->statusTerakhir($pesertaId) === 'revised';
     }
 
-    public function statusBg($pesertaId): string
+    public function isApproved(int $pesertaId): bool
     {
-        return match ($this->statusTerakhir($pesertaId)) {
-            1 => 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700',
-            2 => 'bg-red-100 dark:bg-red-900/40 border-red-400 dark:border-red-600',
-            0 => 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700',
-            default => 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700',
-        };
+        return $this->statusTerakhir($pesertaId) === 'approved';
     }
 
-
-    public function isRejected($pesertaId): bool
+    public function isSubmitted(int $pesertaId): bool
     {
-        return $this->statusTerakhir($pesertaId) === 2;
+        return $this->statusTerakhir($pesertaId) === 'submitted';
     }
 
-    public function isApproved($pesertaId): bool
+    public function catatanReview(int $pesertaId, int $babId): ?string
     {
-        return $this->statusTerakhir($pesertaId) === 1;
-    }
-
-    public function isSubmitted($pesertaId): bool
-    {
-        return $this->statusTerakhir($pesertaId) === 0;
+        return $this->buktiLaporan()
+            ->where('peserta_bimbingan_id', $pesertaId)
+            ->where('buktiable_id', $babId)
+            ->where('buktiable_type', static::class) // polymorphic fix
+            // ->whereNotNull('catatan')
+            ->latest()
+            ->value('catatan');
     }
 }

@@ -21,10 +21,11 @@ class BuktiLaporan extends Model
         'status',
         'catatan',
         'checklist_ids',
-        'poin_didapat',
+        'poin',
         'approved_by',
         'approved_at',
         'revisi_ke',
+        'perlu_diskusi_offline', // status in_review
         'parent_id', // flag, tidak ikut ke count/summary poin
     ];
 
@@ -59,16 +60,15 @@ class BuktiLaporan extends Model
     public function getStatusConfigAttribute(): array
     {
         return config('status_bukti_laporan.' . $this->status, [
-            'key'   => 'unknown',
-            'label' => 'Unknown',
-            'emoji' => '❓',
+            'label' => 'Baru Submit',
+            'emoji' => '⚠️',
             'color' => 'gray',
-            'ket'   => 'Status tidak dikenali',
+            'ket'   => 'Mhs baru submit bukti, perlu review',
         ]);
     }
 
     /* ======================
-     * ACCESSOR
+     * STATUS UI HELPER
      * ====================== */
 
     public function getStatusLabelAttribute(): string
@@ -84,11 +84,6 @@ class BuktiLaporan extends Model
     public function getStatusColorAttribute(): string
     {
         return $this->status_config['color'];
-    }
-
-    public function getStatusKeyAttribute(): string
-    {
-        return $this->status_config['key'];
     }
 
     public function getStatusDescriptionAttribute(): string
@@ -114,28 +109,34 @@ class BuktiLaporan extends Model
      * BOOLEAN HELPER
      * ====================== */
 
-    public function getIsSubmittedAttribute(): bool
+    public function getPerluReviewAttribute(): bool
     {
-        return $this->status_key === 'submitted';
+        // Status "Belum Review" adalah status submitted atau in_review (tanpa flag perlu_diskusi_offline) atau yang statusnya null
+        return $this->status === 'submitted' || ($this->status === 'in_review' && !$this->perlu_diskusi_offline) || $this->status === null;
     }
 
-    public function getIsReviewedAttribute(): bool
+    public function getIsSubmittedAttribute(): bool
     {
-        return $this->status_key === 'reviewed';
+        return $this->status === 'submitted';
+    }
+
+    public function getIsInReviewAttribute(): bool
+    {
+        return $this->status === 'in_review';
     }
 
     public function getIsRevisedAttribute(): bool
     {
-        return $this->status_key === 'revised';
+        return $this->status === 'revised';
     }
 
     public function getIsApprovedAttribute(): bool
     {
-        return $this->status_key === 'approved';
+        return $this->status === 'approved';
     }
 
     /* ======================
-     * FILE
+     * AKSES FILE BUKTI
      * ====================== */
 
     public function getSrcBuktiAttribute(): ?string
@@ -144,6 +145,23 @@ class BuktiLaporan extends Model
             return null;
         }
 
-        return route('bukti.show', $this->id);
+        return route('bukti-laporan.file', $this->id);
+    }
+
+
+    /** 
+     * SCOPES
+     */
+
+    public function scopeUnReviewedBukti($q)
+    {
+        return $q->where(function ($q) {
+            $q->whereNull('status')
+                ->orWhere('status', 'submitted')
+                ->orWhere(function ($q2) {
+                    $q2->where('status', 'in_review')
+                        ->where('perlu_diskusi_offline', false);
+                });
+        });
     }
 }

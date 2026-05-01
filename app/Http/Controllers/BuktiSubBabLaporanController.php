@@ -55,7 +55,7 @@ class BuktiLaporanController extends Controller
             'status' => 1,
             'approved_by' => Auth::id(),
             'approved_at' => now(),
-            'poin_didapat' => $bukti->poin_didapat ?? 10, // default XP
+            'poin' => $bukti->poin ?? 10, // default XP
         ]);
 
         return back()->with('success', 'Bukti disetujui');

@@ -1,5 +1,5 @@
 <div
-	class="flex items-start justify-between gap-3 item_misi {{ $hasForm ? 'cursor-pointer' : ($bab->is_active ? '' : 'cursor-not-allowed') }}"
+	class="flex items-start justify-between gap-3 item_misi {{ $hasForm && !$subBabCount ? 'cursor-pointer' : ($bab->is_active ? '' : 'cursor-not-allowed') }}"
 	data-id="{{ $bab->id }}">
 
 	<!-- LEFT -->
@@ -23,6 +23,33 @@
 				<span>📌</span>
 				<span>{{ $jumlahSub }} Sub Mission</span>
 			</div>
+		@endif
+
+		{{-- CATATAN --}}
+		@php
+			$catatan = $bab->catatanReview($pesertaId, $bab->id);
+			$status = $bab->statusTerakhir($pesertaId);
+
+			$isUrgent =
+			    $status === 'revised' ||
+			    ($status === 'in_review' &&
+			        $bab->buktiLaporan()->where('peserta_bimbingan_id', $pesertaId)->latest()->value('perlu_diskusi_offline'));
+		@endphp
+
+		@if ($catatan)
+			<div
+				class="mt-2 p-2 rounded text-xs border
+        {{ $isUrgent
+								    ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800 animate-pulse'
+								    : 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700' }}
+    ">
+				<i>pembimbing:</i> 💬 {{ $catatan }}
+			</div>
+		@endif
+
+		{{-- JIKA ADA SUBBAB --}}
+		@if ($subBabCount)
+			@include('bimbingan.misi-bimbingan.sub-mission-header')
 		@endif
 
 	</div>

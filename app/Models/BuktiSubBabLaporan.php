@@ -26,7 +26,7 @@ class BuktiSubBabLaporan extends Model
         'catatan',
 
         // gamifikasi
-        'poin_didapat',
+        'poin',
 
         // approval
         'approved_by',
@@ -38,7 +38,7 @@ class BuktiSubBabLaporan extends Model
 
     protected $casts = [
         'status'       => 'integer',
-        'poin_didapat' => 'integer',
+        'poin' => 'integer',
         'revisi_ke'    => 'integer',
         'approved_at'  => 'datetime',
     ];

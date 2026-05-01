@@ -30,14 +30,13 @@ return new class extends Migration
             // file
             $table->string('file_path');
 
-            // workflow status (0: pending, 1: approved, 2: rejected)
-            $table->tinyInteger('status')->default(0);
+            $table->string('status', 10)->nullable();
 
             $table->text('catatan')->nullable();
 
             // gamifikasi
             $table->longText('checklist_ids')->nullable();
-            $table->integer('poin_didapat')->default(0);
+            $table->integer('poin')->default(0);
 
             // approval
             $table->foreignId('approved_by')
@@ -46,6 +45,8 @@ return new class extends Migration
                 ->nullOnDelete();
 
             $table->timestamp('approved_at')->nullable();
+
+            $table->boolean('perlu_diskusi_offline ')->nullable();
 
             // revisi
             $table->unsignedInteger('revisi_ke')->default(0);

@@ -44,7 +44,11 @@ return new class extends Migration
 
             $table->integer('current_tahapan_bimbingan_id')
                 ->nullable();
-            $table->integer('poin')->nullable();
+
+            // derived data, untuk gamifikasi dan leaderboard
+            $table->integer('poin_bukti')->nullable();
+            $table->integer('poin_sesi')->nullable();
+            $table->integer('poin_total')->nullable();
 
             $table->timestamps();
         });

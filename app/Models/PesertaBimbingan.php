@@ -20,7 +20,9 @@ class PesertaBimbingan extends Model
         'terakhir_bimbingan',
         'terakhir_reviewed',
         'current_tahapan_bimbingan_id',
-        'poin',
+        'poin_bukti', // derived, upload bukti laporan
+        'poin_sesi', // derived, aktifitas bimbingan
+        'poin_total', // derived, total poin = bukti + sesi + dll (nextdev)
     ];
 
     /* ================= RELASI ================= */
@@ -129,5 +131,33 @@ class PesertaBimbingan extends Model
     public function jumlahBuktiLaporan()
     {
         return $this->buktiLaporan()->count();
+    }
+
+    public function jumlahBuktiApproved()
+    {
+        return $this->buktiLaporan()
+            ->where('status', 'approved')
+            ->count();
+    }
+
+    # ============================================================
+    # TEMPORARY LOGIC
+    # ============================================================
+    // ZZZ seharusnya ada di Service, tapi untuk sementara biar gampang di model aja
+    public function sumPoinBukti(): int
+    {
+        return $this->buktiLaporan()
+            ->where('status', 'approved')
+            ->sum('poin');
+    }
+
+    public function sumPoinSesi(): int
+    {
+        return 0; // placeholder, nanti dihitung dari sesi bimbingan yang disetujui, dll
+    }
+
+    public function sumPoinTotal(): int
+    {
+        return $this->sumPoinBukti() + $this->sumPoinSesi(); // poin lainnya menyusul
     }
 }

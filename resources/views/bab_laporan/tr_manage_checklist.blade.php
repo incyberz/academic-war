@@ -1,4 +1,4 @@
-<tr class="hidden" id="checklist-row-{{ $item->id }}">
+<tr class="hidden" id="tr_manage_checklist--{{ $item->id }}">
 	<td>&nbsp;</td>
 
 	<td class="pb-5" colspan="100">

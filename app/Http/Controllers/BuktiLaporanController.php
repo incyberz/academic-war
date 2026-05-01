@@ -66,7 +66,8 @@ class BuktiLaporanController extends Controller
                 ->get();
 
             // 🔹 hitung XP
-            $totalXP = $validChecklist->sum('poin');
+            $sumPoinBukti = $validChecklist->sum('poin');
+            // dd($sumPoinBukti);
 
             // 🔹 simpan sebagai JSON array
             $checklistJson = $validChecklist->pluck('id')->values()->all();
@@ -81,6 +82,8 @@ class BuktiLaporanController extends Controller
                 'peserta_bimbingan_id' => $request->peserta_bimbingan_id,
             ])->max('revisi_ke') ?? 0;
 
+            $basicPoin = config('basic_poin.submit_bukti_laporan');
+
             // 🔹 simpan
             BuktiLaporan::create([
                 'buktiable_id' => $request->buktiable_id,
@@ -90,9 +93,8 @@ class BuktiLaporanController extends Controller
 
                 // 'checklist_ids' => $checklistJson, // 🔥 JSON (array), MariaDB not support
                 'checklist_ids' => json_encode($checklistJson),
-                'poin_didapat' => $totalXP,
+                'poin' => $basicPoin + $sumPoinBukti,
 
-                'status' => 0,
                 'revisi_ke' => $lastRevisi + 1,
             ]);
 
@@ -101,47 +103,46 @@ class BuktiLaporanController extends Controller
     }
 
     /* ======================
-     * APPROVE
+     * UPDATE | APPROVE | REVISED
      * ====================== */
-    public function approve($id)
+    public function update(Request $request, $id)
     {
         $bukti = BuktiLaporan::findOrFail($id);
 
-        $bukti->update([
-            'status' => 1,
-            'approved_by' => Auth::id(),
-            'approved_at' => now(),
-            'poin_didapat' => $bukti->poin_didapat ?? 10, // default XP
+        $data = $request->validate([
+            'status'  => 'required|in:in_review,revised,approved',
+            'catatan' => 'nullable|string|min:10',
         ]);
 
-        return back()->with('success', 'Bukti disetujui');
+        // default false
+        $data['perlu_diskusi_offline'] = false;
+
+        // hanya aktif jika in_review
+        if ($data['status'] === 'in_review') {
+            $data['perlu_diskusi_offline'] = true;
+        }
+
+        $bukti->update($data);
+
+
+
+        // trigger update total poin peserta ini
+        $poin_total = $bukti->pesertaBimbingan->sumPoinTotal();
+        $bukti->pesertaBimbingan->update([
+            'poin_total' => $poin_total,
+        ]);
+
+
+        return back()->with('success', 'Review berhasil disimpan');
     }
 
-    /* ======================
-     * REJECT
-     * ====================== */
-    public function reject(Request $request, $id)
-    {
-        $request->validate([
-            'catatan' => 'required|string|max:255',
-        ]);
 
-        $bukti = BuktiLaporan::findOrFail($id);
-
-        $bukti->update([
-            'status' => 2,
-            'catatan' => $request->catatan,
-            'approved_by' => Auth::id(),
-            'approved_at' => now(),
-        ]);
-
-        return back()->with('warning', 'Bukti ditolak');
-    }
 
     /* ======================
      * SHOW FILE
+     * Tampilkan file bukti, hanya untuk pembimbing terkait, mahasiswa pemilik, atau akademik
      * ====================== */
-    public function show($id)
+    public function showFile($id)
     {
         $bukti = BuktiLaporan::findOrFail($id);
         $userPembimbingId = $bukti->pesertaBimbingan->bimbingan->pembimbing->dosen->user->id;

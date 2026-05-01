@@ -70,4 +70,19 @@ class Bimbingan extends Model
     {
         return $this->jenisBimbingan->nama;
     }
+
+    # ============================================================
+    # AGREGAT
+    # ============================================================
+    // public function totalBuktiLaporan()
+    // {
+    //     return BuktiLaporan::whereHas('pesertaBimbingan.bimbingan', function ($q) {
+    //         $q->where('jenis_bimbingan_id', $this->id);
+    //     })->count();
+    // }
+
+    // public function totalBuktiApproved()
+    // {
+    //     return $this->pesertaBimbingan->jumlahBuktiApproved();
+    // }
 }

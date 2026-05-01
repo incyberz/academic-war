@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bimbingan;
+use App\Models\BuktiLaporan;
 use App\Models\Pembimbing;
 use App\Models\JenisBimbingan;
 use App\Models\TahunAjar;
@@ -146,6 +147,8 @@ class BimbinganController extends Controller
         $notPeserta = [];
         $rules = null;
         $riwayatBimbingan = [];
+        $rekapBimbingan = [];
+
 
 
         if (isRole('dosen')) {
@@ -217,10 +220,40 @@ class BimbinganController extends Controller
                         // ->where('tahun_ajar_id', $tahun_ajar_id)
                         ->where('jenis_bimbingan_id', $jenis_bimbingan_id);
                 })->get();
+
+
+                $query = BuktiLaporan::whereHas('pesertaBimbingan.bimbingan', function ($q) use ($jenis_bimbingan_id) {
+                    $q->where('jenis_bimbingan_id', $jenis_bimbingan_id);
+                });
+
+                $totalBuktiLaporan = (clone $query)->count();
+
+                $totalBuktiLaporanApproved = (clone $query)
+                    ->where('status', 'approved')
+                    ->count();
+
+                // ambil 3 bukti terbaru untuk antrian review
+                $unReviewedBukti = (clone $query)
+                    ->unReviewedBukti()
+                    ->latest()
+                    // ->take(3)
+                    ->take(100) // hanya max 100 yang tampil di dashboard
+                    ->get();
+
+
+                $rekapBimbingan[$jenis_bimbingan_id] = [
+                    'totalBuktiLaporan' => $totalBuktiLaporan,
+                    'totalBuktiLaporanApproved' => $totalBuktiLaporanApproved,
+                    'unReviewedBukti' => $unReviewedBukti,
+                ];
             }
         } else {
             dd("Akses untuk role selain dosen belum diimplementasi.");
         }
+
+
+
+        // dd($rekapBimbingan);
 
         $bimbingan->load([
             'pembimbing',
@@ -231,6 +264,7 @@ class BimbinganController extends Controller
         return view('bimbingan.show', compact(
             'bimbingan',
             'bimbingans',
+            'rekapBimbingan',
             'dosen',
             'pembimbing',
             'listPeserta',

@@ -1,6 +1,6 @@
 <script>
 	function toggleChecklist(id) {
-		const row = document.getElementById('checklist-row-' + id);
+		const row = document.getElementById('tr_manage_checklist--' + id);
 		const icon = document.getElementById('icon-' + id);
 
 		if (!row) return;

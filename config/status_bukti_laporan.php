@@ -5,47 +5,38 @@
  * Polymorphic ke: BabLaporan, SubBabLaporan, dll (buktiable_type, buktiable_id)
  * Relasi utama ke PesertaBimbingan (peserta_bimbingan_id) 
  * Terdapat gamified checklist yang dimanage dosen, wajib/optional diceklis oleh mhs
- * 
- * Status: 
- * 0 - submitted (oleh mhs, belum dibuka dosen)
- * 1 - reviewed (opened by dosen),
- * 2 - revised
- * 3 - approved
  */
 
 return [
 
-  0 => [
-    'key'   => 'submitted',
+  'submitted' => [
     'label' => 'Submitted',
     'emoji' => '⏳',
     'color' => 'warning',
-    'ket' => 'bukti baru di-submit oleh mhs, belum dibuka dosen',
+    'is_pending' => true,
   ],
 
-  1 => [
-    'key'   => 'reviewed',
-    'label' => 'Reviewed',
+  'in_review' => [
+    'label' => 'In Review',
     'emoji' => '👀',
     'color' => 'info',
-    'ket' => 'bukti sudah dibuka dan direview oleh dosen, belum ada feedback',
+    'is_pending' => true,
+    'allow_offline_discussion' => true,
   ],
 
-  2 => [
-    'key'   => 'revised',
+  'revised' => [
     'label' => 'Revised',
     'emoji' => '⚠️',
     'color' => 'danger',
-    'ket' => 'bukti perlu revisi, dosen sudah memberikan catatan revisi',
+    'is_pending' => false,
   ],
 
-  3 => [
-    'key'   => 'approved',
+  'approved' => [
     'label' => 'Approved',
     'emoji' => '✅',
     'color' => 'success',
-    'ket' => 'bukti sudah disetujui dosen, tidak perlu revisi',
+    'is_pending' => false,
+    'is_final' => true,
   ],
-
 
 ];

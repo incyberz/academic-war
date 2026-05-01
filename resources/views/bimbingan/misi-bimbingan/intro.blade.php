@@ -28,7 +28,7 @@
 					<div>
 						<strong>Kerjakan Bab / Sub Bab</strong><br>
 						<span class="text-gray-500 dark:text-gray-400">
-							Pastikan ada progres nyata (minimal 1 sub bab)
+							Pastikan ada progres nyata (min. 1 subbab)
 						</span>
 					</div>
 				</div>
@@ -54,11 +54,11 @@
 				</div>
 
 				<div class="flex gap-3">
-					<div class="step bg-emerald-600">4</div>
+					<div class="step">4</div>
 					<div>
 						<strong>Menunggu Approval</strong><br>
 						<span class="text-gray-500 dark:text-gray-400">
-							Jika disetujui, kamu akan mendapatkan XP dan naik rank 🚀
+							hingga dapet XP, auto-up rank 🚀
 						</span>
 					</div>
 				</div>
@@ -83,7 +83,7 @@
 
 			<div class="flex gap-2">
 				<span>✔️</span>
-				<span>Bukti harus relevan dengan bab/sub bab yang dikerjakan</span>
+				<span>Harus relevan dg bab/sub bab yg dikerjakan</span>
 			</div>
 
 			<div class="flex gap-2">
@@ -99,39 +99,8 @@
 		</x-card-body>
 	</x-card>
 
-	{{-- STATUS FLOW --}}
-	<x-card class="mt-4">
-		<x-card-header>
-			🔄 Alur Status Misi
-		</x-card-header>
-
-		<x-card-body class="text-sm">
-
-			<div class="flex items-center gap-2 flex-wrap">
-
-				<span class="px-2 py-1 rounded bg-gray-200 dark:bg-gray-700">
-					Draft
-				</span>
-
-				<span>➡️</span>
-
-				<span class="px-2 py-1 rounded bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300">
-					⏳ Menunggu Review
-				</span>
-
-				<span>➡️</span>
-
-				<span class="px-2 py-1 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
-					✅ Disetujui (XP +)
-				</span>
-
-			</div>
-
-		</x-card-body>
-	</x-card>
-
 	{{-- CTA --}}
-	<div class="mt-6">
+	<div class="mt-6 pb-8">
 		<button
 			class="w-full inline-flex items-center justify-center gap-2
                 px-4 py-2.5 rounded-lg font-semibold
